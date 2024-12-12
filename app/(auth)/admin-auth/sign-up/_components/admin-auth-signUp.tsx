@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createAdminUser } from "@/actions/admin/sign-up/createAdminUser";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react"; // Import loader icon (or replace with your own)
+import Link from "next/link";
 
 // Schema for form validation
 const formSchema = z
@@ -165,6 +166,21 @@ export const AdminAuthSignUp = () => {
                 "Sign Up"
               )}
             </Button>
+
+            <Link
+              href={"/admin-auth/login"}
+              className=" w-full flex flex-row items-center justify-center"
+            >
+              <Button
+                variant={"link"}
+                className=" flex flex-row items-center justify-center text-gray-500 text-sm"
+              >
+                Already have an account ?{" "}
+                {/* <a href="/login" className="text-blue-600 hover:text-blue-700">
+                Login
+                </a> */}
+              </Button>
+            </Link>
           </form>
         </CardContent>
       </Card>
