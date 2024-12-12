@@ -21,7 +21,7 @@ const AdminAuthComponent = () => {
       {/* Buttons */}
       <div className="flex space-x-4">
         <Button
-          onClick={() => router.push("/signup")}
+          onClick={() => router.push("/admin-auth/sign-up")}
           className="px-6 py-3 bg-white text-purple-600 rounded-lg shadow-lg font-semibold hover:bg-gray-100 transition-all hover:bg-opacity-70"
         >
           Sign Up

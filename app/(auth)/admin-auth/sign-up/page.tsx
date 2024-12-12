@@ -1,5 +1,12 @@
 import React from "react";
+import AdminAuthSignUp from "./_components/admin-auth-signUp";
 
-export const AdminAuthSignUp = () => {
-  return <div>AdminAuthSignUp</div>;
+const AdminAuthSignUpPage = () => {
+  return (
+    <div>
+      <AdminAuthSignUp />
+    </div>
+  );
 };
+
+export default AdminAuthSignUpPage;
