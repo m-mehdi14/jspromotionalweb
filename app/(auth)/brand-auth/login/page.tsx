@@ -1,7 +1,12 @@
 import React from "react";
+import BrandAuthLogin from "./_components/login";
 
-const BrandAuthLogin = () => {
-  return <div>BrandAuthLogin</div>;
+const BrandAuthLoginPage = () => {
+  return (
+    <div>
+      <BrandAuthLogin />
+    </div>
+  );
 };
 
-export default BrandAuthLogin;
+export default BrandAuthLoginPage;

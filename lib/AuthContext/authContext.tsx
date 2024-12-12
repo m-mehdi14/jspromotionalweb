@@ -13,10 +13,9 @@ import {
   onAuthStateChanged,
   signOut,
   User as FirebaseUser,
-  setPersistence,
-  browserSessionPersistence,
 } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
+import Cookies from "js-cookie"; // Import js-cookie
 import { app, db } from "@/config/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { MoonLoader } from "react-spinners";
@@ -68,17 +67,10 @@ const publicRoutes = [
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [redirected, setRedirected] = useState(false); // Track if redirected
-  console.log("🚀", redirected);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    // Set session persistence to browser session
-    setPersistence(auth, browserSessionPersistence).catch((error) => {
-      console.error("Error setting session persistence:", error);
-    });
-
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setLoading(true);
 
@@ -92,16 +84,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
             email: userData.email,
           };
           setUser(extendedUser);
-          setRedirected(false); // Reset redirection state
+
+          // Set cookies for session persistence
+          // secure: true
+          Cookies.set("session", currentUser.uid, { expires: 1 });
+          Cookies.set("role", userData.role || "", {
+            expires: 1,
+          });
+          // secure: true,
         } else {
           console.warn("User not found in the 'users' collection.");
           setUser(null);
+
+          // Clear cookies if user not found
+          Cookies.remove("session");
+          Cookies.remove("role");
+
           if (!publicRoutes.includes(pathname || "")) {
             router.push("/");
           }
         }
       } else {
         setUser(null);
+
+        // Clear cookies on logout
+        Cookies.remove("session");
+        Cookies.remove("role");
+
         // Redirect to home only if the current route is not public
         if (!publicRoutes.includes(pathname || "")) {
           router.push("/");
@@ -117,6 +126,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const handleLogout = async () => {
     await signOut(auth);
     setUser(null);
+
+    // Clear cookies on logout
+    Cookies.remove("session");
+    Cookies.remove("role");
+
     router.push("/"); // Redirect to homepage
   };
 
