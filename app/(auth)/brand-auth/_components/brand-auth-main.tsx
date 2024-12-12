@@ -23,7 +23,7 @@ export const BrandAuthMain = () => {
           </Button>
           <Button
             className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md"
-            onClick={() => router.push("/brand-auth/signup")}
+            onClick={() => router.push("/brand-auth/sign-up")}
           >
             Sign Up
           </Button>
