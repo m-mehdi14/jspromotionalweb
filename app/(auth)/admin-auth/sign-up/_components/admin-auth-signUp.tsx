@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -14,6 +14,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createAdminUser } from "@/actions/admin/sign-up/createAdminUser";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react"; // Import loader icon (or replace with your own)
 
 // Schema for form validation
 const formSchema = z
@@ -29,6 +32,8 @@ const formSchema = z
   });
 
 export const AdminAuthSignUp = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,8 +44,18 @@ export const AdminAuthSignUp = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("Form Submitted:", values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true); // Disable fields and show loader
+    const { name, email, password } = values;
+
+    const result = await createAdminUser(email, password, name);
+    if (result.success) {
+      toast.success(result.success);
+      form.reset(); // Clear form on success
+    } else {
+      toast.error(result.error || "An unknown error occurred.");
+    }
+    setIsSubmitting(false); // Re-enable fields and hide loader
   };
 
   return (
@@ -52,8 +67,8 @@ export const AdminAuthSignUp = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <Form {...form}>
               {/* Name Field */}
               <FormField
                 control={form.control}
@@ -62,7 +77,11 @@ export const AdminAuthSignUp = () => {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter your name" {...field} />
+                      <Input
+                        placeholder="Enter your name"
+                        {...field}
+                        disabled={isSubmitting} // Disable during submission
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -81,6 +100,7 @@ export const AdminAuthSignUp = () => {
                         placeholder="Enter your email"
                         type="email"
                         {...field}
+                        disabled={isSubmitting} // Disable during submission
                       />
                     </FormControl>
                     <FormMessage />
@@ -100,6 +120,7 @@ export const AdminAuthSignUp = () => {
                         placeholder="Enter your password"
                         type="password"
                         {...field}
+                        disabled={isSubmitting} // Disable during submission
                       />
                     </FormControl>
                     <FormMessage />
@@ -119,22 +140,32 @@ export const AdminAuthSignUp = () => {
                         placeholder="Confirm your password"
                         type="password"
                         {...field}
+                        disabled={isSubmitting} // Disable during submission
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+            </Form>
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Sign Up
-              </Button>
-            </form>
-          </Form>
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={isSubmitting} // Disable during submission
+            >
+              {isSubmitting ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />{" "}
+                  {/* Loader Icon */}
+                  <span>Signing Up...</span>
+                </div>
+              ) : (
+                "Sign Up"
+              )}
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>
