@@ -13,15 +13,16 @@ import {
   onAuthStateChanged,
   signOut,
   User as FirebaseUser,
+  setPersistence,
+  browserSessionPersistence,
 } from "firebase/auth";
-import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { app, db } from "@/config/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { MoonLoader } from "react-spinners";
 
 // Define user roles
-type UserRole = "admin" | "user";
+type UserRole = "admin" | "brand" | "store";
 
 // Extend FirebaseUser to include additional fields from Firestore
 // @ts-expect-error
@@ -54,21 +55,34 @@ const fetchUserData = async (userId: string) => {
   return userDoc.exists() ? userDoc.data() : null;
 };
 
-// AuthProvider Component
+const publicRoutes = [
+  "/",
+  "/admin-auth/login",
+  "/admin-auth/sign-up",
+  "/admin-auth",
+  "/brand-auth",
+  "/brand-auth/login",
+  "/brand-auth/sign-up",
+]; // Add all public routes here
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [redirected, setRedirected] = useState(false); // Track if redirected
+  console.log("🚀", redirected);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    // Set session persistence to browser session
+    setPersistence(auth, browserSessionPersistence).catch((error) => {
+      console.error("Error setting session persistence:", error);
+    });
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setLoading(true);
 
       if (currentUser) {
-        const token = await currentUser.getIdToken();
-        Cookies.set("session", token, { expires: 1, secure: true });
-
-        // Fetch user data from the 'users' collection
         const userData = await fetchUserData(currentUser.uid);
         if (userData) {
           const extendedUser: ExtendedUser = {
@@ -78,29 +92,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
             email: userData.email,
           };
           setUser(extendedUser);
+          setRedirected(false); // Reset redirection state
         } else {
           console.warn("User not found in the 'users' collection.");
           setUser(null);
-          router.push("/"); // Redirect if user not found
+          if (!publicRoutes.includes(pathname || "")) {
+            router.push("/");
+          }
         }
       } else {
-        // Handle logout
-        Cookies.remove("session");
         setUser(null);
-        router.push("/");
+        // Redirect to home only if the current route is not public
+        if (!publicRoutes.includes(pathname || "")) {
+          router.push("/");
+        }
       }
 
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [pathname, router]);
 
   const handleLogout = async () => {
     await signOut(auth);
-    Cookies.remove("session");
     setUser(null);
-    router.push("/");
+    router.push("/"); // Redirect to homepage
   };
 
   return (

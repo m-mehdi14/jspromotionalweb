@@ -22,6 +22,9 @@ export function RoleBasedRoute({
   useEffect(() => {
     if (!loading) {
       if (!user) {
+        console.log(
+          "Redirected to Home page from Role Based Route line number 26"
+        );
         router.push("/"); // Redirect to home if not authenticated
       } else if (!allowedRoles.includes(user.role as UserRole)) {
         router.push("/unauthorized"); // Redirect to unauthorized page if role is not allowed
