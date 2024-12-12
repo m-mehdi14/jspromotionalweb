@@ -18,6 +18,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { app, db } from "@/config/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { MoonLoader } from "react-spinners";
 
 // Define user roles
 type UserRole = "admin" | "user";
@@ -104,7 +105,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   return (
     <AuthContext.Provider value={{ user, loading, handleLogout }}>
-      {loading ? <div>Loading...</div> : children}
+      {loading ? (
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+          <MoonLoader size={35} color="#4A5568" />
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }

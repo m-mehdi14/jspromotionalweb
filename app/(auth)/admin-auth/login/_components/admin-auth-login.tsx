@@ -15,9 +15,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
-import { app } from "@/config/firebase"; // Firebase app config
+import { app, db } from "@/config/firebase"; // Firebase app config
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 // Schema for form validation
 const loginSchema = z.object({
@@ -25,7 +27,26 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters."),
 });
 
+// Function to validate if the user is an admin
+const validateAdmin = async (email: string): Promise<boolean> => {
+  try {
+    const usersRef = collection(db, "users");
+    const q = query(
+      usersRef,
+      where("email", "==", email),
+      where("role", "==", "admin")
+    );
+    const querySnapshot = await getDocs(q);
+    console.log("🚀 ~ validateAdmin ~ querySnapshot:", querySnapshot);
+    return !querySnapshot.empty; // Returns true if a matching document is found
+  } catch (error) {
+    console.error("Error validating admin:", error);
+    return false;
+  }
+};
+
 export const AdminAuthLogin = () => {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm({
@@ -41,10 +62,21 @@ export const AdminAuthLogin = () => {
     const { email, password } = values;
 
     try {
+      // Validate if the user is an admin
+      const isAdmin = await validateAdmin(email);
+      if (!isAdmin) {
+        toast.error("You are not authorized to access this admin panel.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Proceed with login if validation succeeds
       const auth = getAuth(app);
       await signInWithEmailAndPassword(auth, email, password);
       toast.success("Logged in successfully!");
       form.reset(); // Clear form on success
+      // Navigate Admin to user
+      router.push("/admin");
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message || "Login failed. Please try again.");
