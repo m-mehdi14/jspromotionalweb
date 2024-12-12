@@ -62,6 +62,9 @@ const publicRoutes = [
   "/brand-auth",
   "/brand-auth/login",
   "/brand-auth/sign-up",
+  "/store-auth",
+  "/store-auth/login",
+  "/store-auth/sign-up",
 ]; // Add all public routes here
 
 export function AuthProvider({ children }: AuthProviderProps) {
