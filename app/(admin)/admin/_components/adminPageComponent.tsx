@@ -2,10 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/AuthContext/authContext";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export const AdminPageComponent = () => {
   const { handleLogout, user } = useAuth();
+  const router = useRouter();
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
@@ -40,7 +42,7 @@ export const AdminPageComponent = () => {
             </p>
             <Button
               className="bg-blue-600 hover:bg-blue-700 w-full"
-              onClick={() => alert("Navigate to Manage Brands Page")}
+              onClick={() => router.push("/admin/brand")}
             >
               Manage Brands
             </Button>
