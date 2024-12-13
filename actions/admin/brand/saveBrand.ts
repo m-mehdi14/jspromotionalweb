@@ -46,6 +46,7 @@ export async function saveBrand(brandData: {
       hashedPassword, // Save hashed password
       salt, // Save salt for validation
       createdAt: new Date().toISOString(),
+      type: "brand", // type brand for when brand is try to login , so this type field will help in there
     };
 
     // Save brand data to Firestore
