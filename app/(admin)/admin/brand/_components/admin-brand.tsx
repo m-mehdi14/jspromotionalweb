@@ -38,6 +38,7 @@ const AdminBrand = () => {
   const [brandPassword, setBrandPassword] = useState("");
   const [brandDescription, setBrandDescription] = useState("");
   const [brandImage, setBrandImage] = useState<string | null>(null);
+  const [postalCode, setPostalCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -81,6 +82,7 @@ const AdminBrand = () => {
       description: brandDescription,
       image: brandImage,
       adminId: user.uid,
+      postalCode: postalCode,
     };
 
     const response = await saveBrand(brandData);
@@ -180,6 +182,19 @@ const AdminBrand = () => {
                   placeholder="Enter a description"
                   value={brandDescription}
                   onChange={(e) => setBrandDescription(e.target.value)}
+                />
+              </div>
+
+              {/* Postal Code */}
+              <div className="">
+                <label className="block text-sm font-medium mb-2">
+                  Postal Code
+                </label>
+                <Input
+                  placeholder="Enter your postal code"
+                  type="text"
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
                 />
               </div>
 

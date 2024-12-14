@@ -19,9 +19,11 @@ export async function saveBrand(brandData: {
   description: string;
   image: string;
   adminId: string;
+  postalCode: string;
 }): Promise<{ success: boolean; message: string }> {
   try {
-    const { name, email, password, description, image, adminId } = brandData;
+    const { name, email, password, description, image, adminId, postalCode } =
+      brandData;
 
     // Initialize Firebase Auth and create user
     const auth = getAuth();
@@ -47,6 +49,7 @@ export async function saveBrand(brandData: {
       salt, // Save salt for validation
       createdAt: new Date().toISOString(),
       type: "brand", // type brand for when brand is try to login , so this type field will help in there
+      postalCode,
     };
 
     // Save brand data to Firestore
