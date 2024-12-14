@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Edit, Trash2 } from "lucide-react";
 import { Brand } from "./types";
+import { useRouter } from "next/navigation";
 
 interface BrandListProps {
   brands: Brand[];
@@ -17,6 +18,7 @@ const BrandList: React.FC<BrandListProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const router = useRouter();
   if (loading) {
     return <div className="text-center text-lg">Loading brands...</div>;
   }
@@ -31,10 +33,17 @@ const BrandList: React.FC<BrandListProps> = ({
       {brands.map((brand) => (
         <Card
           key={brand.id}
-          className="bg-gray-800 text-gray-200 shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl"
+          className="bg-gray-800 text-gray-200 shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl "
         >
           <CardHeader>
-            <CardTitle>{brand.name}</CardTitle>
+            <CardTitle
+              onClick={() =>
+                router.push(`/admin/brand/${brand.id}/admin-store`)
+              }
+              className=" hover:cursor-pointer"
+            >
+              {brand.name}
+            </CardTitle>
             <p>{brand.email}</p>
           </CardHeader>
           <CardContent>
