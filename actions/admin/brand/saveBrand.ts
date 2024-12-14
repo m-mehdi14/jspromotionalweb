@@ -11,6 +11,16 @@ const hashPassword = (password: string, salt: string): string => {
   return crypto.createHash("sha256").update(saltedPassword).digest("hex");
 };
 
+interface FirebaseError {
+  code?: string;
+  message: string;
+  response?: {
+    data: {
+      message?: string;
+    };
+  };
+}
+
 // Action to save a brand
 export async function saveBrand(brandData: {
   name: string;
@@ -21,6 +31,7 @@ export async function saveBrand(brandData: {
   adminId: string;
   postalCode: string;
 }): Promise<{ success: boolean; message: string }> {
+  console.log("🚀 ~ brandData in Save Brand ------ >", brandData);
   try {
     const { name, email, password, description, image, adminId, postalCode } =
       brandData;
@@ -48,7 +59,7 @@ export async function saveBrand(brandData: {
       hashedPassword, // Save hashed password
       salt, // Save salt for validation
       createdAt: new Date().toISOString(),
-      type: "brand", // type brand for when brand is try to login , so this type field will help in there
+      type: "brand", // type brand for when brand is try to login, so this type field will help there
       postalCode,
     };
 
@@ -60,11 +71,35 @@ export async function saveBrand(brandData: {
       success: true,
       message: `Brand '${name}' has been successfully created with login credentials.`,
     };
-  } catch (error) {
-    console.error("Error creating brand:", error);
+  } catch (error: FirebaseError | unknown) {
+    const err = error as FirebaseError;
+    console.error("Error creating brand:", err);
+
+    let message = "An error occurred while creating the brand.";
+    if (err.code) {
+      switch (err.code) {
+        case "auth/email-already-in-use":
+          message = "The email address is already in use by another account.";
+          break;
+        case "auth/invalid-email":
+          message = "The email address is not valid.";
+          break;
+        case "auth/weak-password":
+          message =
+            "The password is too weak. Please choose a stronger password.";
+          break;
+        case "auth/operation-not-allowed":
+          message =
+            "Email/password accounts are not enabled. Please contact support.";
+          break;
+        default:
+          message = "An unknown error occurred. Please try again later.";
+      }
+    }
+
     return {
       success: false,
-      message: "An error occurred while creating the brand.",
+      message,
     };
   }
 }
