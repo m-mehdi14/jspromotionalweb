@@ -12,11 +12,13 @@ const DeleteConfirmationDialog = ({
   onClose,
   onConfirm,
   itemName,
+  isloading,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   itemName: string;
+  isloading: boolean;
 }) => (
   <Dialog open={isOpen} onOpenChange={onClose}>
     <DialogContent>
@@ -26,7 +28,7 @@ const DeleteConfirmationDialog = ({
         <Button onClick={onClose} variant="ghost">
           Cancel
         </Button>
-        <Button onClick={onConfirm} variant="destructive">
+        <Button onClick={onConfirm} variant="destructive" disabled={isloading}>
           Confirm
         </Button>
       </DialogFooter>

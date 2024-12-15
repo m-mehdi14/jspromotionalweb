@@ -37,7 +37,7 @@ const StoreForm = ({
   };
 
   const handleSubmit = () => {
-    onSave({ name, email, password, description, image });
+    onSave({ name, email, password, description, image, postalCode });
   };
 
   return (

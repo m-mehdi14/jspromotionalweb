@@ -1,5 +1,16 @@
 "use server";
 
+import axios from "axios";
+
+interface ErrorType {
+  response?: {
+    data: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
+
 export async function deleteStore({
   brandId,
   storeId,
@@ -9,35 +20,25 @@ export async function deleteStore({
 }): Promise<{ success: boolean; message: string }> {
   try {
     // Make a DELETE request to the API endpoint
-    const response = await fetch(
+    const response = await axios.delete(
       `${process.env.BACKEND_URL}/admin/store/delete`,
       {
-        method: "DELETE",
-        // headers: {
-        //   "Content-Type": "application/json",
-        // },
-        body: JSON.stringify({ brandId, storeId }),
+        data: { brandId, storeId }, // Pass data in the `data` field for DELETE requests in axios
       }
     );
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      return {
-        success: false,
-        message: result?.message || "Failed to delete the store.",
-      };
-    }
-
     return {
       success: true,
-      message: result?.message || "Store successfully deleted.",
+      message: response.data?.message || "Store successfully deleted.",
     };
-  } catch (error) {
-    console.error("Error deleting store:", error);
+  } catch (error: ErrorType | unknown) {
+    const err = error as ErrorType;
+    console.error("Error deleting store:", err);
     return {
       success: false,
-      message: "An error occurred while deleting the store.",
+      message:
+        err?.response?.data?.message ||
+        "An error occurred while deleting the store.",
     };
   }
 }

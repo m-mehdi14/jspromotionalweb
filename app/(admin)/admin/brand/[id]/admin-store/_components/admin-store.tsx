@@ -9,10 +9,13 @@ import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import { saveStore } from "@/actions/admin/brand/store/save-store";
 import { fetchStoresByBrand } from "@/actions/admin/brand/store/fetch-stores";
 import { deleteStore } from "@/actions/admin/brand/store/delete-store";
+import { editStore } from "@/actions/admin/brand/store/edit-store";
+import { Store } from "./types";
 
 export const AdminStore = ({ brandId }: { brandId: string }) => {
-  const [stores, setStores] = useState([]);
-  const [editingStore, setEditingStore] = useState<any | null>(null);
+  const [stores, setStores] = useState<Store[]>([]);
+  console.log("🚀 ~ AdminStore ~ stores:", stores);
+  const [editingStore, setEditingStore] = useState<Store | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
@@ -26,23 +29,36 @@ export const AdminStore = ({ brandId }: { brandId: string }) => {
     setLoading(true);
     try {
       const data = await fetchStoresByBrand(brandId);
-      setStores(data || []);
+      setStores((data as Store[]) || []);
     } catch (error) {
+      console.error("Error fetching stores:", error);
       toast.error("Failed to fetch stores.");
     } finally {
       setLoading(false);
     }
   }, [brandId]);
 
-  const handleSaveStore = async (storeData: any) => {
+  const handleSaveStore = async (
+    storeData: Omit<Store, "id" | "brandId"> & { password: string }
+  ) => {
     try {
       setIsSubmitting(true);
       const response = editingStore
-        ? await fetch(`/api/stores/${editingStore.id}`, {
-            method: "PUT",
-            body: JSON.stringify({ ...storeData, brandId }),
+        ? await editStore({
+            storeId: editingStore.id,
+            brandId,
+            name: storeData.name,
+            email: storeData.email,
+            password: storeData.password,
+            description: storeData.description,
+            image: storeData.image || undefined,
+            postalCode: storeData.postalCode,
           })
-        : await saveStore({ ...storeData, brandId });
+        : await saveStore({
+            ...storeData,
+            brandId,
+            image: storeData.image || "",
+          });
 
       if (response.success) {
         toast.success(response.message);
@@ -53,14 +69,15 @@ export const AdminStore = ({ brandId }: { brandId: string }) => {
         toast.error(response.message);
       }
     } catch (error) {
+      console.error("Error saving store:", error);
       toast.error("An unexpected error occurred while saving the store.");
-      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteStore = async () => {
+    setLoading(true);
     if (!selectedStoreId) return;
 
     try {
@@ -76,8 +93,10 @@ export const AdminStore = ({ brandId }: { brandId: string }) => {
         toast.error(response.message);
       }
     } catch (error) {
+      console.error("Error deleting store:", error);
       toast.error("An error occurred while deleting the store.");
     } finally {
+      setLoading(false);
       setIsDeleteDialogOpen(false);
       setSelectedStoreId(null);
       setSelectedStoreName(null);
@@ -102,6 +121,7 @@ export const AdminStore = ({ brandId }: { brandId: string }) => {
         stores={stores}
         loading={loading}
         onEdit={(store) => {
+          console.log("🚀 ~ Store selected for editing:", store);
           setEditingStore(store);
           setIsDialogOpen(true);
         }}
@@ -132,6 +152,7 @@ export const AdminStore = ({ brandId }: { brandId: string }) => {
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleDeleteStore}
         itemName={selectedStoreName || "this store"}
+        isloading={loading}
       />
     </>
   );
