@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 
 import React, {
@@ -15,20 +14,19 @@ import {
   User as FirebaseUser,
 } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
-import Cookies from "js-cookie"; // Import js-cookie
+import Cookies from "js-cookie";
 import { app, db } from "@/config/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { MoonLoader } from "react-spinners";
 
 // Define user roles
 type UserRole = "admin" | "brand" | "store";
 
 // Extend FirebaseUser to include additional fields from Firestore
-// @ts-expect-error
 interface ExtendedUser extends FirebaseUser {
   role?: UserRole | null;
   name?: string;
-  email?: string;
+  email: string;
 }
 
 // Context interface
@@ -47,13 +45,55 @@ interface AuthProviderProps {
 
 const auth = getAuth(app);
 
-// Helper function to fetch user data from Firestore
-const fetchUserData = async (userId: string) => {
-  const userDocRef = doc(db, "users", userId); // Use the 'users' collection
-  const userDoc = await getDoc(userDocRef);
-  return userDoc.exists() ? userDoc.data() : null;
+// Helper function to fetch user data by role
+interface UserData {
+  email: string;
+  name: string;
+  role: UserRole;
+  type: string;
+}
+
+const fetchUserDataByRole = async (
+  email: string,
+  role: UserRole
+): Promise<UserData | null> => {
+  try {
+    let collectionName = "";
+
+    // Map role to Firestore collection
+    switch (role) {
+      case "admin":
+        collectionName = "users";
+        break;
+      case "brand":
+        collectionName = "brands";
+        break;
+      case "store":
+        collectionName = "stores";
+        break;
+      default:
+        console.warn("Invalid role provided:", role);
+        return null;
+    }
+
+    const userCollectionRef = collection(db, collectionName);
+    const q = query(userCollectionRef, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      console.warn(`User not found in the '${collectionName}' collection.`);
+      return null;
+    }
+
+    // Return first matching document's data
+    return querySnapshot.docs[0].data() as UserData;
+  } catch (error) {
+    console.error("Error fetching user data by role:", error);
+    return null;
+  }
 };
 
+// Public routes that do not require authentication
 const publicRoutes = [
   "/",
   "/admin-auth/login",
@@ -65,7 +105,7 @@ const publicRoutes = [
   "/store-auth",
   "/store-auth/login",
   "/store-auth/sign-up",
-]; // Add all public routes here
+];
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<ExtendedUser | null>(null);
@@ -78,25 +118,61 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(true);
 
       if (currentUser) {
-        const userData = await fetchUserData(currentUser.uid);
+        let role = Cookies.get("role") as UserRole | undefined;
+
+        if (!role) {
+          // Dynamically determine role from Firestore if not cached in cookies
+          const email = currentUser.email || "";
+
+          const adminData = await fetchUserDataByRole(email, "admin");
+          if (adminData) {
+            role = "admin";
+          } else {
+            const brandData = await fetchUserDataByRole(email, "brand");
+            if (brandData) {
+              role = "brand";
+            } else {
+              const storeData = await fetchUserDataByRole(email, "store");
+              if (storeData) {
+                role = "store";
+              }
+            }
+          }
+        }
+
+        if (!role) {
+          console.warn("Role not determined. User may not be authorized.");
+          setUser(null);
+          Cookies.remove("session");
+          Cookies.remove("role");
+
+          if (!publicRoutes.includes(pathname || "")) {
+            router.push("/");
+          }
+          setLoading(false);
+          return;
+        }
+
+        // Fetch user data from the appropriate collection based on the determined role
+        const userData = await fetchUserDataByRole(
+          currentUser.email || "",
+          role
+        );
+
         if (userData) {
           const extendedUser: ExtendedUser = {
             ...currentUser,
-            role: userData.role as UserRole,
+            role,
             name: userData.name,
             email: userData.email,
           };
           setUser(extendedUser);
 
           // Set cookies for session persistence
-          // secure: true
           Cookies.set("session", currentUser.uid, { expires: 1 });
-          Cookies.set("role", userData.role || "", {
-            expires: 1,
-          });
-          // secure: true,
+          Cookies.set("role", role, { expires: 1 });
         } else {
-          console.warn("User not found in the 'users' collection.");
+          console.warn(`User not found in the '${role}' collection.`);
           setUser(null);
 
           // Clear cookies if user not found
