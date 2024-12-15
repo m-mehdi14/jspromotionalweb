@@ -36,8 +36,11 @@ export const BrandDashboard = () => {
 
       {/* Action Buttons */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Link href="/brand/stores">
-          <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-6 py-4 rounded-lg shadow-lg w-full text-white font-bold text-lg">
+        <Link href={`/brand/${user?.uid}/stores`}>
+          <button
+            disabled={!user?.uid}
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-6 py-4 rounded-lg shadow-lg w-full text-white font-bold text-lg"
+          >
             Manage Stores
           </button>
         </Link>
