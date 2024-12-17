@@ -82,7 +82,7 @@ export const StoreMainPage = () => {
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex items-center space-x-2 text-gray-300 hover:text-white"
+                className="flex items-center space-x-2 text-gray-300 transition-all duration-300 ease-in-out"
                 title="View Store Details"
               >
                 <User className="w-6 h-6" />
