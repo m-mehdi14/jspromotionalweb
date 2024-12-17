@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/AuthContext/authContext";
 import Link from "next/link";
 
 export const BrandDashboard = () => {
-  const { user } = useAuth();
+  const { user, handleLogout } = useAuth();
 
   return (
     <div className="space-y-8">
@@ -49,6 +49,15 @@ export const BrandDashboard = () => {
             View Analytics
           </button>
         </Link>
+      </section>
+      {/* Add Logout button */}
+      <section>
+        <button
+          onClick={handleLogout}
+          className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 px-6 py-4 rounded-lg shadow-lg w-full text-white font-bold text-lg"
+        >
+          Logout
+        </button>
       </section>
     </div>
   );
