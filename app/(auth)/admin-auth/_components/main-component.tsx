@@ -7,28 +7,28 @@ const AdminAuthComponent = () => {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-tr from-blue-900 via-purple-800 to-blue-600 text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white p-6">
       {/* Heading */}
-      <div className="text-center">
-        <h1 className="text-4xl font-extrabold mb-4">
+      <div className="text-center mb-8">
+        <h1 className="text-5xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
           Welcome to the Admin Portal
         </h1>
-        <p className="text-lg font-medium mb-8">
+        <p className="text-lg font-medium text-gray-300">
           Manage brands, stores, flyers, and more effortlessly.
         </p>
       </div>
 
       {/* Buttons */}
-      <div className="flex space-x-4">
+      <div className="flex flex-wrap gap-6 justify-center">
         <Button
           onClick={() => router.push("/admin-auth/sign-up")}
-          className="px-6 py-3 bg-white text-purple-600 rounded-lg shadow-lg font-semibold hover:bg-gray-100 transition-all hover:bg-opacity-70"
+          className="px-8 py-4 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl font-bold shadow-xl transform transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50"
         >
           Sign Up
         </Button>
         <Button
           onClick={() => router.push("/admin-auth/login")}
-          className="px-6 py-3 bg-white text-pink-600 rounded-lg shadow-lg font-semibold hover:bg-gray-100 transition-all hover:bg-opacity-70"
+          className="px-8 py-4 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-xl font-bold shadow-xl transform transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-pink-500 focus:ring-opacity-50"
         >
           Login
         </Button>

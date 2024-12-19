@@ -56,8 +56,8 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364]">
-      <SidebarContent className="bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364]">
+    <Sidebar className="bg-slate-900">
+      <SidebarContent className="bg-slate-900">
         {/* Sidebar Group for Main Items */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-white">

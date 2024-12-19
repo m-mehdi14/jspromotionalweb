@@ -10,7 +10,7 @@ export const AdminPageComponent = () => {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
+    <div className="min-h-screen flex flex-col items-center bg-slate-900 text-white">
       {/* Header Section */}
       <header className="w-full flex items-center justify-between p-6 bg-gray-900 shadow-lg">
         <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>

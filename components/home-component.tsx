@@ -7,7 +7,7 @@ export const HomeComponent = () => {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white">
       {/* Main Heading */}
       <h1 className="text-4xl font-bold mb-6 text-center">
         Welcome to Our Platform
@@ -18,7 +18,7 @@ export const HomeComponent = () => {
       </p>
 
       {/* Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl">
         {/* Admin Section */}
         <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
           <h2 className="text-2xl font-semibold mb-4">Admin</h2>
