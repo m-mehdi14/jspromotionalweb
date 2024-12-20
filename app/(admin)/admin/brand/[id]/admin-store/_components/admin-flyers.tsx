@@ -14,6 +14,7 @@ const AdminFlyers = ({ brandId }: { brandId: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingFlyer, setEditingFlyer] = useState<Flyer | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for form submission
 
   const fetchFlyers = useCallback(async () => {
     setIsLoading(true);
@@ -29,6 +30,7 @@ const AdminFlyers = ({ brandId }: { brandId: string }) => {
   }, [brandId]);
 
   const handleSaveFlyer = async (flyerData: Omit<Flyer, "id">) => {
+    setIsSubmitting(true); // Set submitting state
     try {
       await saveFlyer(flyerData);
       toast.success(
@@ -36,12 +38,14 @@ const AdminFlyers = ({ brandId }: { brandId: string }) => {
           ? "Flyer updated successfully!"
           : "Flyer created successfully!"
       );
-      fetchFlyers();
-      setIsDialogOpen(false);
-      setEditingFlyer(null);
+      await fetchFlyers(); // Fetch latest data without refreshing
+      setIsDialogOpen(false); // Close dialog
+      setEditingFlyer(null); // Reset editing flyer
     } catch (error) {
       console.error("Error saving flyer:", error);
       toast.error("An unexpected error occurred.");
+    } finally {
+      setIsSubmitting(false); // Reset submitting state
     }
   };
 
@@ -85,6 +89,7 @@ const AdminFlyers = ({ brandId }: { brandId: string }) => {
         onSave={handleSaveFlyer}
         flyer={editingFlyer}
         brandId={brandId}
+        isSubmitting={isSubmitting} // Pass submitting state to dialog
       />
     </div>
   );

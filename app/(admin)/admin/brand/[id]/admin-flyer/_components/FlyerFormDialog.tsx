@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Flyer } from "../../admin-store/_components/types";
+import { toast } from "sonner";
 
 export const FlyerFormDialog = ({
   isOpen,
@@ -13,12 +14,14 @@ export const FlyerFormDialog = ({
   onSave,
   flyer,
   brandId,
+  isSubmitting,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: Omit<Flyer, "id">) => void;
   flyer: Flyer | null;
   brandId: string;
+  isSubmitting: boolean;
 }) => {
   const [formData, setFormData] = useState<Omit<Flyer, "id">>({
     title: "",
@@ -58,6 +61,10 @@ export const FlyerFormDialog = ({
   };
 
   const handleSubmit = () => {
+    if (!formData.title || !formData.validFrom || !formData.validTo) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
     onSave(formData);
   };
 
@@ -102,8 +109,12 @@ export const FlyerFormDialog = ({
               setFormData((prev) => ({ ...prev, validTo: e.target.value }))
             }
           />
-          <Button onClick={handleSubmit}>
-            {flyer ? "Save Changes" : "Create Flyer"}
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting
+              ? "Saving..."
+              : flyer
+              ? "Save Changes"
+              : "Create Flyer"}
           </Button>
         </form>
       </DialogContent>
