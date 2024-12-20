@@ -1,5 +1,6 @@
 import React from "react";
 import { AdminStore } from "./_components/admin-store";
+import AdminFlyers from "./_components/admin-flyers";
 
 interface AdminStorePageProps {
   params: {
@@ -16,6 +17,7 @@ const AdminStorePage = async ({ params }: AdminStorePageProps) => {
         Admin Store Page for Brand ID: {id}
       </h1>
       <AdminStore brandId={id} />
+      <AdminFlyers brandId={id} />
     </div>
   );
 };
