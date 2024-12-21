@@ -18,4 +18,6 @@ export interface Flyer {
   storeIds?: string[]; // Optional for targeting specific stores
   validFrom: string; // Start date of the flyer
   validTo: string; // End date of the flyer
+  createdAt: string;
+  updatedAt?: string;
 }

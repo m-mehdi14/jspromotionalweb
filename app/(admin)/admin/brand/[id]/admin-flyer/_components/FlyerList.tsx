@@ -1,17 +1,21 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { Flyer } from "../../admin-store/_components/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Flyer } from "../../admin-store/_components/types";
 
 export const FlyerList = ({
   flyers,
   isLoading,
   onEdit,
+  isDeleting,
+  onDelete,
 }: {
   flyers: Flyer[];
   isLoading: boolean;
   onEdit: (flyer: Flyer) => void;
+  onDelete: (flyerId: string) => void;
+  isDeleting: string;
 }) => {
   if (isLoading) {
     return (
@@ -75,16 +79,23 @@ export const FlyerList = ({
                 day: "numeric",
                 hour: "2-digit",
                 minute: "2-digit",
-              }).format(new Date(flyer.createdAt))}
+              }).format(
+                new Date(flyer.updatedAt ? flyer.updatedAt : flyer.createdAt)
+              )}
             </span>
 
-            <Button
-              variant="secondary"
-              className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-all"
-              onClick={() => onEdit(flyer)}
-            >
-              Edit
-            </Button>
+            <div className="mt-4 flex justify-between">
+              <Button variant="secondary" onClick={() => onEdit(flyer)}>
+                Edit
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => onDelete(flyer.id)}
+                disabled={isDeleting === flyer.id}
+              >
+                {isDeleting === flyer.id ? "Deleting..." : "Delete"}
+              </Button>
+            </div>
           </div>
         </div>
       ))}

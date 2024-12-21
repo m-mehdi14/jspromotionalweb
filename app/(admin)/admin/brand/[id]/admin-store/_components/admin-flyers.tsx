@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Flyer } from "./types";
 import { fetchFlyersByBrand } from "@/actions/admin/brand/flyers/fetch-flyers";
 import { saveFlyer } from "@/actions/admin/brand/flyers/save-flyer";
+import { editFlyer } from "@/actions/admin/brand/flyers/edit-flyers";
+import { deleteFlyer } from "@/actions/admin/brand/flyers/delete-flyer";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { FlyerList } from "../../admin-flyer/_components/FlyerList";
@@ -14,7 +16,8 @@ const AdminFlyers = ({ brandId }: { brandId: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingFlyer, setEditingFlyer] = useState<Flyer | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); // New state for form submission
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null); // Track deletion status
 
   const fetchFlyers = useCallback(async () => {
     setIsLoading(true);
@@ -30,15 +33,24 @@ const AdminFlyers = ({ brandId }: { brandId: string }) => {
   }, [brandId]);
 
   const handleSaveFlyer = async (flyerData: Omit<Flyer, "id">) => {
-    setIsSubmitting(true); // Set submitting state
+    setIsSubmitting(true);
     try {
-      await saveFlyer(flyerData);
-      toast.success(
-        editingFlyer
-          ? "Flyer updated successfully!"
-          : "Flyer created successfully!"
-      );
-      await fetchFlyers(); // Fetch latest data without refreshing
+      if (editingFlyer) {
+        // If editing, call editFlyer
+        const response = await editFlyer(editingFlyer.id, flyerData);
+        if (response.success) {
+          toast.success("Flyer updated successfully!");
+        } else {
+          toast.error(response.message);
+          return;
+        }
+      } else {
+        // If creating, call saveFlyer
+        await saveFlyer(flyerData);
+        toast.success("Flyer created successfully!");
+      }
+
+      await fetchFlyers(); // Fetch latest data
       setIsDialogOpen(false); // Close dialog
       setEditingFlyer(null); // Reset editing flyer
     } catch (error) {
@@ -46,6 +58,24 @@ const AdminFlyers = ({ brandId }: { brandId: string }) => {
       toast.error("An unexpected error occurred.");
     } finally {
       setIsSubmitting(false); // Reset submitting state
+    }
+  };
+
+  const handleDeleteFlyer = async (flyerId: string) => {
+    setIsDeleting(flyerId); // Indicate that the flyer is being deleted
+    try {
+      const response = await deleteFlyer(flyerId);
+      if (response.success) {
+        toast.success("Flyer deleted successfully!");
+        setFlyers((prev) => prev.filter((flyer) => flyer.id !== flyerId)); // Update UI
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.error("Error deleting flyer:", error);
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setIsDeleting(null); // Reset deleting state
     }
   };
 
@@ -79,7 +109,9 @@ const AdminFlyers = ({ brandId }: { brandId: string }) => {
       <FlyerList
         flyers={flyers}
         isLoading={isLoading}
+        isDeleting={isDeleting as string} // Pass deleting state as boolean
         onEdit={handleEditFlyer}
+        onDelete={handleDeleteFlyer} // Pass delete handler
       />
 
       {/* Add/Edit Flyer Dialog */}

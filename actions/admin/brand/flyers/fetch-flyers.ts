@@ -2,18 +2,19 @@
 
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase";
+import { Flyer } from "@/app/(admin)/admin/brand/[id]/admin-store/_components/types";
 
 // Define the Flyer interface for type safety
-export interface Flyer {
-  id: string;
-  title: string;
-  description: string;
-  image: string | null;
-  brandId: string;
-  storeIds?: string[];
-  validFrom: string;
-  validTo: string;
-}
+// export interface Flyer {
+//   id: string;
+//   title: string;
+//   description: string;
+//   image: string | null;
+//   brandId: string;
+//   storeIds?: string[];
+//   validFrom: string;
+//   validTo: string;
+// }
 
 // Fetch flyers by brand
 export async function fetchFlyersByBrand(brandId: string): Promise<Flyer[]> {

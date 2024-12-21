@@ -1,14 +1,18 @@
 "use server";
 
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/config/firebase";
-import { Flyer } from "@/app/(admin)/admin/brand/[id]/admin-store/_components/types";
+import axios, { AxiosError } from "axios";
 
 export async function editFlyer(
   flyerId: string,
-  updatedData: Partial<Flyer>
+  updatedData: Partial<{
+    title: string;
+    description: string;
+    imageUrl: string;
+    [key: string]: unknown; // Allows for additional fields
+  }>
 ): Promise<{ success: boolean; message: string }> {
   try {
+    // Validate inputs
     if (!flyerId) {
       return {
         success: false,
@@ -23,31 +27,50 @@ export async function editFlyer(
       };
     }
 
-    // Reference the specific flyer document in Firestore
-    const flyerDocRef = doc(db, "flyers", flyerId);
-
-    // Update the flyer document with the new data
-    await updateDoc(flyerDocRef, updatedData);
-
-    return {
-      success: true,
-      message: "Flyer has been successfully updated.",
+    const dataa = {
+      ...updatedData,
+      updatedAt: new Date().toISOString(),
     };
-  } catch (error) {
-    console.error("Error updating flyer:", error);
+    // Make a PUT request to the /flyer/edit endpoint
+    const response = await axios.put<{ message: string }>(
+      `${process.env.BACKEND_URL}/admin/flyer/edit`,
+      { flyerId, updatedData: dataa }
+    );
 
-    let errorMessage = "Failed to update the flyer. Please try again.";
-    if (error instanceof Error) {
-      if (error.message.includes("permission-denied")) {
-        errorMessage = "You do not have permission to perform this action.";
-      } else {
-        errorMessage = error.message;
-      }
+    // Handle success response
+    if (response.status === 200) {
+      return {
+        success: true,
+        message:
+          response.data.message || "Flyer has been successfully updated.",
+      };
     }
 
+    // Handle unexpected status codes
     return {
       success: false,
-      message: errorMessage,
+      message: response.data.message || "Failed to update the flyer.",
+    };
+  } catch (error: unknown) {
+    console.error("Error updating flyer:", error);
+
+    if (axios.isAxiosError(error)) {
+      // Handle Axios-specific errors
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "An error occurred while updating the flyer.";
+
+      return {
+        success: false,
+        message: errorMessage,
+      };
+    }
+
+    // Handle unexpected non-Axios errors
+    return {
+      success: false,
+      message: "An unknown error occurred.",
     };
   }
 }
