@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,17 @@ export const CouponGiftFormDialog = ({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form submission default behavior
     onSave(formData);
+    // after saving form data should be empty
+    setFormData({
+      name: "",
+      code: "",
+      discount: "",
+      image: null,
+      brandId,
+      startDate: "",
+      endDate: "",
+      usageLimit: 0,
+    });
   };
 
   return (
@@ -111,12 +123,15 @@ export const CouponGiftFormDialog = ({
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
           {formData.image && (
-            <img
+            <Image
               src={formData.image}
               alt="Preview"
+              width={128}
+              height={128}
               className="w-32 h-auto mt-4 rounded-md"
             />
           )}
+
           <Input
             type="date"
             value={formData.startDate}

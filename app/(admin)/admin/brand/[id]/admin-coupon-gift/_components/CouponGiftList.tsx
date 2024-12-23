@@ -33,9 +33,11 @@ export const CouponGiftList = ({
       {coupons.map((coupon) => (
         <div
           key={coupon.id}
-          className="bg-gray-800 rounded-lg p-4 shadow hover:shadow-lg"
+          className="bg-gray-600 rounded-lg p-4 shadow hover:shadow-lg"
         >
-          <h2 className="text-lg font-bold mb-2">{coupon.name}</h2>
+          <h2 className="text-lg font-bold mb-2 text-neutral-200">
+            {coupon.name}
+          </h2>
           <p className="text-sm text-gray-400">Code: {coupon.code}</p>
           <p className="text-sm text-gray-400">Discount: {coupon.discount}%</p>
           <p className="text-sm text-gray-400">
