@@ -1,20 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const StoreList = ({
   stores,
   loading,
   onEdit,
   onDelete,
+  brandId,
 }: {
+  // @ts-ignore
   stores: any[];
   loading: boolean;
   onEdit: (store: any) => void;
   onDelete: (id: string, name: string) => void;
+  brandId: string;
 }) => {
+  const router = useRouter();
   if (loading) {
     return <div>Loading stores...</div>;
   }
@@ -31,7 +38,14 @@ const StoreList = ({
           className="bg-gray-800 text-gray-200 shadow-lg transform hover:scale-105"
         >
           <CardHeader>
-            <CardTitle>{store.name}</CardTitle>
+            <CardTitle
+              onClick={() => {
+                router.push(`/admin/brand/${brandId}/admin-store/${store.id}`);
+              }}
+              className=" hover:cursor-pointer transition-all ease-in-out duration-300"
+            >
+              {store.name}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p>{store.description}</p>

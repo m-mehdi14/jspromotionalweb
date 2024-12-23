@@ -130,6 +130,7 @@ export const AdminStore = ({ brandId }: { brandId: string }) => {
           setSelectedStoreName(name);
           setIsDeleteDialogOpen(true);
         }}
+        brandId={brandId}
       />
 
       {/* Add/Edit Store Dialog */}

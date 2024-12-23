@@ -1,55 +1,89 @@
 "use client";
 
-// import { useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { Fullscreen, Users, UserCircle } from "lucide-react";
+import {
+  Fullscreen,
+  Users,
+  UserCircle,
+  Store,
+  Gift,
+  Settings,
+} from "lucide-react";
 import { NavItem, NavItemSkeleton } from "./nav-item";
 import { useAuth } from "@/lib/AuthContext/authContext";
 
 export const Navigation = () => {
   const pathname = usePathname();
-  // const user = currentUser();
   const { user } = useAuth();
 
-  // Extract the dynamic brand ID from the pathname
-  const brandId = pathname.split("/")[3]; // Fallback to a default ID if not present
+  // Extract the dynamic IDs from the pathname
+  const segments = pathname.split("/");
+  const brandId = segments[3]; // Extract the brand ID
+  const storeId = segments[5]; // Extract the store ID if present
 
-  const routes = [
-    {
-      label: "Home",
-      href: `/`,
-      icon: Fullscreen,
-    },
-    {
-      label: "Brand Stores",
-      href: `/admin/brand/${brandId}/admin-store`,
-      icon: UserCircle,
-    },
-    {
-      label: "Brand Flyers",
-      href: `/admin/brand/${brandId}/admin-flyer`,
-      icon: UserCircle,
-    },
-    {
-      label: "Brand Special Events",
-      href: `/admin/brand/${brandId}/admin-special-events`,
-      icon: UserCircle,
-    },
-    {
-      label: "Brand Coupon Gifts",
-      href: `/admin/brand/${brandId}/admin-coupon-gift`,
-      icon: UserCircle,
-    },
-    {
-      label: "Setting",
-      href: `/admin/setting`,
-      icon: Users,
-    },
-  ];
+  // Define routes conditionally based on the path
+  const routes =
+    storeId &&
+    pathname.includes(`/admin/brand/${brandId}/admin-store/${storeId}`)
+      ? [
+          {
+            label: "Store Dashboard",
+            href: `/admin/brand/${brandId}/admin-store/${storeId}`,
+            icon: Store,
+          },
+          {
+            label: "Store Flyers",
+            href: `/admin/brand/${brandId}/admin-store/${storeId}/flyers`,
+            icon: UserCircle,
+          },
+          {
+            label: "Store Orders",
+            href: `/admin/brand/${brandId}/admin-store/${storeId}/orders`,
+            icon: Users,
+          },
+          {
+            label: "Store Settings",
+            href: `/admin/brand/${brandId}/admin-store/${storeId}/settings`,
+            icon: Settings,
+          },
+        ]
+      : [
+          {
+            label: "Home",
+            href: `/`,
+            icon: Fullscreen,
+          },
+          {
+            label: "Brand Stores",
+            href: `/admin/brand/${brandId}/admin-store`,
+            icon: UserCircle,
+          },
+          {
+            label: "Brand Flyers",
+            href: `/admin/brand/${brandId}/admin-flyer`,
+            icon: UserCircle,
+          },
+          {
+            label: "Brand Special Events",
+            href: `/admin/brand/${brandId}/admin-special-events`,
+            icon: UserCircle,
+          },
+          {
+            label: "Brand Coupon Gifts",
+            href: `/admin/brand/${brandId}/admin-coupon-gift`,
+            icon: Gift,
+          },
+          {
+            label: "Setting",
+            href: `/admin/setting`,
+            icon: Users,
+          },
+        ];
 
+  // Show skeletons while user data is loading
   if (!user?.name) {
     return (
-      <ul className=" space-y-2">
+      <ul className="space-y-2">
         {[...Array(4)].map((_, i) => (
           <NavItemSkeleton key={i} />
         ))}
@@ -57,8 +91,9 @@ export const Navigation = () => {
     );
   }
 
+  // Render the navigation items
   return (
-    <ul className=" space-y-2 px-2 pt-4 lg:pt-0">
+    <ul className="space-y-2 px-2 pt-4 lg:pt-0">
       {routes.map((route) => (
         <NavItem
           key={route.href}
