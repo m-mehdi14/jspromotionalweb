@@ -37,8 +37,8 @@ export const Navigation = () => {
             icon: UserCircle,
           },
           {
-            label: "Store Orders",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}/orders`,
+            label: "Store Special Events",
+            href: `/admin/brand/${brandId}/admin-store/${storeId}/special-events`,
             icon: Users,
           },
           {
