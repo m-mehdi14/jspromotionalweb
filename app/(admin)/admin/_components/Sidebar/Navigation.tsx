@@ -36,6 +36,11 @@ export const Navigation = () => {
       icon: UserCircle,
     },
     {
+      label: "Brand Coupon Gifts",
+      href: `/admin/brand/${brandId}/admin-coupon-gift`,
+      icon: UserCircle,
+    },
+    {
       label: "Setting",
       href: `/admin/setting`,
       icon: Users,
