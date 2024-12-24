@@ -42,6 +42,11 @@ export const Navigation = () => {
             icon: Users,
           },
           {
+            label: "Store Coupon Events",
+            href: `/admin/brand/${brandId}/admin-store/${storeId}/coupon-gifts`,
+            icon: Users,
+          },
+          {
             label: "Store Settings",
             href: `/admin/brand/${brandId}/admin-store/${storeId}/settings`,
             icon: Settings,
