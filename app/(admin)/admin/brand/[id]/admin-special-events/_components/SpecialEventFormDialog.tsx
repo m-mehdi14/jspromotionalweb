@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SpecialEvent } from "./types";
+import Image from "next/image";
 
 export const SpecialEventFormDialog = ({
   isOpen,
@@ -82,9 +83,11 @@ export const SpecialEventFormDialog = ({
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
           {formData.image && (
-            <img
+            <Image
               src={formData.image}
               alt="Preview"
+              width={128}
+              height={128}
               className="w-32 h-auto mt-4 rounded-md"
             />
           )}

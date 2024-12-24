@@ -33,7 +33,8 @@ export const AdminPageComponent = () => {
         </p>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* md:grid-cols-3 */}
+        <div className="grid grid-cols-1  gap-8">
           {/* Manage Brands */}
           <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
             <h3 className="text-xl font-semibold mb-4">Manage Brands</h3>
@@ -49,7 +50,7 @@ export const AdminPageComponent = () => {
           </div>
 
           {/* Manage Stores */}
-          <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
+          {/* <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
             <h3 className="text-xl font-semibold mb-4">Manage Stores</h3>
             <p className="text-gray-400 mb-6">
               Oversee all stores under registered brands.
@@ -60,10 +61,10 @@ export const AdminPageComponent = () => {
             >
               Manage Stores
             </Button>
-          </div>
+          </div> */}
 
           {/* Generate Reports */}
-          <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
+          {/* <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
             <h3 className="text-xl font-semibold mb-4">Generate Reports</h3>
             <p className="text-gray-400 mb-6">
               Generate comprehensive reports for analytics.
@@ -74,7 +75,7 @@ export const AdminPageComponent = () => {
             >
               Generate Reports
             </Button>
-          </div>
+          </div> */}
         </div>
       </main>
 

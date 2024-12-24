@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export const FlyerFormDialog = ({
   isOpen,
@@ -72,9 +73,11 @@ export const FlyerFormDialog = ({
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
           {formData.image && (
-            <img
+            <Image
               src={formData.image}
               alt="Flyer"
+              width={128}
+              height={128}
               className="w-32 h-auto mt-4 rounded-md"
             />
           )}

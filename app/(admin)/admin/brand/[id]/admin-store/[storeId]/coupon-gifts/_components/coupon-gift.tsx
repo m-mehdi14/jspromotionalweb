@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { fetchCouponGiftsByStore } from "@/actions/admin/brand/specific-store/coupon-gifts/fetch-coupon";
@@ -19,13 +19,13 @@ const AdminStoreCouponGifts = ({
   brandId,
   storeId,
 }: AdminStoreCouponGiftsProps) => {
-  const [couponGifts, setCouponGifts] = useState([]);
+  const [couponGifts, setCouponGifts] = useState<{ id: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchCouponGifts = async () => {
+  const fetchCouponGifts = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await fetchCouponGiftsByStore(brandId, storeId);
@@ -36,7 +36,7 @@ const AdminStoreCouponGifts = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [brandId, storeId]);
 
   const handleSaveCouponGift = async (couponData) => {
     setIsSubmitting(true);
@@ -74,7 +74,7 @@ const AdminStoreCouponGifts = ({
     if (brandId && storeId) {
       fetchCouponGifts();
     }
-  }, [brandId, storeId]);
+  }, [brandId, storeId, fetchCouponGifts]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">

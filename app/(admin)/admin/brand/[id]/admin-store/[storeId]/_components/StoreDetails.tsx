@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { Store } from "./type";
 
 export const StoreDetails = ({
@@ -20,9 +21,11 @@ export const StoreDetails = ({
       <p>
         <strong>Description:</strong> {store.description}
       </p>
-      <img
+      <Image
         src={store.image}
         alt={store.name}
+        width={128} // Adjust the width as needed
+        height={128} // Adjust the height as needed
         className="w-32 h-auto mt-4 rounded-md"
       />
 

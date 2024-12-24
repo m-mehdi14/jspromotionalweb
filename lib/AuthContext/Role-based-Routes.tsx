@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { MoonLoader } from "react-spinners"; // Make sure react-spinners is installed
 import { useAuth } from "./authContext";
 
-type UserRole = "admin" | "brand" | "store";
+export type UserRole = "admin" | "brand" | "store";
 
 interface RoleBasedRouteProps {
   allowedRoles: UserRole[];

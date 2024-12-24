@@ -10,8 +10,21 @@ const StoreForm = ({
   onSave,
   isSubmitting,
 }: {
-  initialData: any;
-  onSave: (data: any) => void;
+  initialData: {
+    name?: string;
+    email?: string;
+    description?: string;
+    image?: string;
+    postalCode?: string;
+  };
+  onSave: (data: {
+    name: string;
+    email: string;
+    password: string;
+    description: string;
+    image: string | null;
+    postalCode: string | null;
+  }) => void;
   isSubmitting: boolean;
 }) => {
   const [name, setName] = useState(initialData?.name || "");

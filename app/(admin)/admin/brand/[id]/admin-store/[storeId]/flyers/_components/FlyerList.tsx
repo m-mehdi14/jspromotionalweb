@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export const FlyerList = ({ flyers, isLoading, onEdit, onDelete }) => {
   if (isLoading) {
@@ -22,13 +23,14 @@ export const FlyerList = ({ flyers, isLoading, onEdit, onDelete }) => {
         <div key={flyer.id} className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold">{flyer.title}</h2>
           <p>{flyer.description}</p>
-          {flyer.image && (
-            <img
-              src={flyer.image}
-              alt={flyer.title}
-              className="mt-4 w-full rounded-md"
-            />
-          )}
+          <Image
+            src={flyer.image}
+            alt={flyer.title}
+            className="mt-4 w-full rounded-md"
+            layout="responsive"
+            width={700}
+            height={475}
+          />
           <p>
             <strong>Valid From:</strong> {flyer.validFrom}
           </p>

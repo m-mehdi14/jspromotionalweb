@@ -23,12 +23,12 @@ export const StoreAuthComponent = () => {
           >
             Login
           </Button>
-          <Button
+          {/* <Button
             className="bg-green-600 hover:bg-green-700 text-white"
             onClick={() => router.push("/store-auth/sign-up")}
           >
             Sign Up
-          </Button>
+          </Button> */}
         </div>
       </div>
     </div>

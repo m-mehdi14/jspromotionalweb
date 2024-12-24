@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 export const SpecialEventList = ({ events, isLoading, onEdit, onDelete }) => {
@@ -22,13 +23,14 @@ export const SpecialEventList = ({ events, isLoading, onEdit, onDelete }) => {
         <div key={event.id} className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold">{event.name}</h2>
           <p>{event.description}</p>
-          {event.image && (
-            <img
-              src={event.image}
-              alt={event.name}
-              className="mt-4 w-full rounded-md"
-            />
-          )}
+          <Image
+            src={event.image}
+            alt={event.name}
+            className="mt-4 w-full rounded-md"
+            width={500}
+            height={300}
+            layout="responsive"
+          />
           <p>
             <strong>Start Date:</strong> {event.startDate}
           </p>

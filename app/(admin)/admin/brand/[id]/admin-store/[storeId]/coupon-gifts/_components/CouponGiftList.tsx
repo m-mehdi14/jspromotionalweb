@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 export const CouponGiftList = ({ coupons, isLoading, onEdit, onDelete }) => {
@@ -23,13 +24,13 @@ export const CouponGiftList = ({ coupons, isLoading, onEdit, onDelete }) => {
           <h2 className="text-xl font-semibold">{coupon.name}</h2>
           <p>Code: {coupon.code}</p>
           <p>Discount: {coupon.discount}%</p>
-          {coupon.image && (
-            <img
-              src={coupon.image}
-              alt={coupon.name}
-              className="mt-4 w-full rounded-md"
-            />
-          )}
+          <Image
+            src={coupon.image}
+            alt={coupon.name}
+            width={500}
+            height={300}
+            className="mt-4 w-full rounded-md"
+          />
           <p>
             <strong>Start Date:</strong> {coupon.startDate}
           </p>

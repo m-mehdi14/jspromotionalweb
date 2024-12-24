@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -14,10 +12,9 @@ const StoreList = ({
   onDelete,
   brandId,
 }: {
-  // @ts-ignore
-  stores: any[];
+  stores: { id: string; name: string; description: string }[];
   loading: boolean;
-  onEdit: (store: any) => void;
+  onEdit: (store: { id: string; name: string; description: string }) => void;
   onDelete: (id: string, name: string) => void;
   brandId: string;
 }) => {
