@@ -70,12 +70,12 @@ export const Navigation = () => {
           },
           {
             label: "Brand Special Events",
-            href: `/admin/brand/${brandId}/admin-special-events`,
+            href: `/brand/${brandId}/special-events`,
             icon: UserCircle,
           },
           {
             label: "Brand Coupon Gifts",
-            href: `/admin/brand/${brandId}/admin-coupon-gift`,
+            href: `/brand/${brandId}/coupon-gifts`,
             icon: Gift,
           },
           {
