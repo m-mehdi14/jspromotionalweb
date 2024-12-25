@@ -76,12 +76,12 @@ export const Navigation = () => {
           },
           {
             label: "Store Coupon Gifts",
-            href: `/brand/${brandId}/coupon-gifts`,
+            href: `/store/coupon-gifts`,
             icon: Gift,
           },
           {
             label: "Setting",
-            href: `/brand/${brandId}/settings`,
+            href: `/store/settings`,
             icon: Users,
           },
         ];
