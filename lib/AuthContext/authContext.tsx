@@ -84,7 +84,6 @@ const fetchUserDataByRole = async (
       console.warn(`User not found in the '${collectionName}' collection.`);
       return null;
     }
-
     // Return first matching document's data
     return querySnapshot.docs[0].data() as UserData;
   } catch (error) {

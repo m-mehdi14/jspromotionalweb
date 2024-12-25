@@ -19,7 +19,7 @@ export async function signInStoreUser(
     const userId = userCredential.user.uid;
 
     // Fetch user data from Firestore
-    const userDocRef = doc(db, "users", userId);
+    const userDocRef = doc(db, "stores", userId);
     const userDoc = await getDoc(userDocRef);
 
     if (!userDoc.exists()) {
@@ -29,7 +29,7 @@ export async function signInStoreUser(
     const userData = userDoc.data();
 
     // Ensure the user is a store
-    if (userData.role !== "store") {
+    if (userData.type !== "store") {
       return { success: "", error: "User is not authorized as a store." };
     }
 

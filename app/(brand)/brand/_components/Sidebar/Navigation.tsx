@@ -80,7 +80,7 @@ export const Navigation = () => {
           },
           {
             label: "Setting",
-            href: `/admin/setting`,
+            href: `/brand/${brandId}/settings`,
             icon: Users,
           },
         ];
