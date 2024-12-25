@@ -50,18 +50,18 @@ export const AdminPageComponent = () => {
           </div>
 
           {/* Manage Stores */}
-          {/* <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
-            <h3 className="text-xl font-semibold mb-4">Manage Stores</h3>
+          <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
+            <h3 className="text-xl font-semibold mb-4">Manage Settings</h3>
             <p className="text-gray-400 mb-6">
-              Oversee all stores under registered brands.
+              Manage your Admins and their settings.
             </p>
             <Button
               className="bg-green-600 hover:bg-green-700 w-full"
-              onClick={() => alert("Navigate to Manage Stores Page")}
+              onClick={() => router.push("/admin/settings")}
             >
-              Manage Stores
+              Manage Settings
             </Button>
-          </div> */}
+          </div>
 
           {/* Generate Reports */}
           {/* <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
