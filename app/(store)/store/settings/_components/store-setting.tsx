@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { fetchStoreSettings } from "@/actions/store/settings/fetch-store-settings";
 import { saveStoreSettings } from "@/actions/store/settings/save-store-settings";
 import { updateStorePassword } from "@/actions/store/settings/update-store-settings"; // New action for updating password
+import Image from "next/image";
 
 const StoreSettings = () => {
   const { user } = useAuth();
@@ -16,7 +17,7 @@ const StoreSettings = () => {
   const [settings, setSettings] = useState({
     name: "",
     description: "",
-    logo: null,
+    logo: null as string | null,
     address: "",
     postalCode: "",
   });
@@ -29,18 +30,24 @@ const StoreSettings = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
 
-  const fetchSettings = async () => {
+  const fetchSettings = React.useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await fetchStoreSettings(storeId as string);
-      setSettings(data);
+      setSettings({
+        name: data.name || "",
+        description: data.description || "",
+        logo: data.logo || null,
+        address: data.address || "",
+        postalCode: data.postalCode || "",
+      });
     } catch (error) {
       console.error("Error fetching store settings:", error);
       toast.error("Failed to fetch store settings.");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [storeId]);
 
   const handleSaveSettings = async () => {
     setIsSubmitting(true);
@@ -89,12 +96,12 @@ const StoreSettings = () => {
     }
   };
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSettings((prev) => ({ ...prev, logo: reader.result }));
+        setSettings((prev) => ({ ...prev, logo: reader.result as string }));
       };
       reader.readAsDataURL(file);
     }
@@ -104,7 +111,7 @@ const StoreSettings = () => {
     if (storeId) {
       fetchSettings();
     }
-  }, [storeId]);
+  }, [storeId, fetchSettings]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -149,9 +156,11 @@ const StoreSettings = () => {
                 onChange={handleImageUpload}
               />
               {settings.logo && (
-                <img
+                <Image
                   src={settings.logo}
                   alt="Store Logo"
+                  width={128}
+                  height={128}
                   className="w-32 h-32 mt-4 rounded-md"
                 />
               )}

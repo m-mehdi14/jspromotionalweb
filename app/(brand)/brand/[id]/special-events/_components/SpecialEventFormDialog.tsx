@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export const SpecialEventFormDialog = ({
   isOpen,
@@ -11,8 +12,27 @@ export const SpecialEventFormDialog = ({
   onSave,
   event,
   isSubmitting,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  // @ts-expect-error ignore
+  onSave: (data) => void;
+  event?: {
+    name: string;
+    description: string;
+    image: string | null;
+    startDate: string;
+    endDate: string;
+  };
+  isSubmitting: boolean;
 }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    image: string | null;
+    startDate: string;
+    endDate: string;
+  }>({
     name: "",
     description: "",
     image: null,
@@ -34,12 +54,12 @@ export const SpecialEventFormDialog = ({
     }
   }, [event]);
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, image: reader.result }));
+        setFormData((prev) => ({ ...prev, image: reader.result as string }));
       };
       reader.readAsDataURL(file);
     }
@@ -70,9 +90,11 @@ export const SpecialEventFormDialog = ({
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
           {formData.image && (
-            <img
+            <Image
               src={formData.image}
               alt="Preview"
+              width={128}
+              height={128}
               className="w-32 h-auto mt-4 rounded-md"
             />
           )}

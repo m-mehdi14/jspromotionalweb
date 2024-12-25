@@ -1,9 +1,28 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
-export const CouponGiftList = ({
+interface CouponGift {
+  id: string;
+  name: string;
+  code: string;
+  discount: number;
+  image?: string;
+  startDate: string;
+  endDate: string;
+  usageLimit: number;
+}
+
+interface CouponGiftListProps {
+  couponGifts: CouponGift[];
+  isLoading: boolean;
+  onEdit: (coupon: CouponGift) => void;
+  onDelete: (id: string) => void;
+}
+
+export const CouponGiftList: React.FC<CouponGiftListProps> = ({
   couponGifts,
   isLoading,
   onEdit,
@@ -32,13 +51,14 @@ export const CouponGiftList = ({
           <p>
             <strong>Discount:</strong> {coupon.discount}%
           </p>
-          {coupon.image && (
-            <img
-              src={coupon.image}
-              alt={coupon.name}
-              className="mt-4 w-full rounded-md"
-            />
-          )}
+          <Image
+            src={(coupon.image as string) || "https://via.placeholder.com/128"}
+            alt={coupon.name}
+            className="mt-4 w-full rounded-md"
+            layout="responsive"
+            width={500}
+            height={300}
+          />
           <p>
             <strong>Start Date:</strong> {coupon.startDate}
           </p>

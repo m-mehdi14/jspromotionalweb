@@ -57,6 +57,7 @@ export const BrandStore: React.FC<BrandStoreProps> = ({ brandId }) => {
             ...storeData,
             brandId,
             image: storeData.image || "",
+            password: storeData.password || "",
           });
 
       if (response.success) {
@@ -153,7 +154,8 @@ export const BrandStore: React.FC<BrandStoreProps> = ({ brandId }) => {
             {editingStore ? "Edit Store" : "Add New Store"}
           </DialogTitle>
           <StoreForm
-            initialData={editingStore}
+            // @ts-expect-error ignore
+            initialData={editingStore || undefined}
             onSave={handleSaveStore}
             isSubmitting={isSubmitting}
           />

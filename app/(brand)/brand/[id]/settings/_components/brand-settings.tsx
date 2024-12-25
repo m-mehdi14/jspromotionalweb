@@ -14,7 +14,7 @@ const BrandSettings = ({ brandId }: { brandId: string }) => {
     name: "",
     description: "",
     email: "",
-    logo: null,
+    image: null as string | null,
     notifications: true,
   });
   const [passwords, setPasswords] = useState({
@@ -24,22 +24,29 @@ const BrandSettings = ({ brandId }: { brandId: string }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchSettings = async () => {
+  const fetchSettings = React.useCallback(async () => {
     try {
       const data = await fetchBrandSettings(brandId);
-      setSettings(data);
+      setSettings({
+        name: data.name || "",
+        description: data.description || "",
+        email: data.email || "",
+        image: data.image || null,
+        notifications:
+          data.notifications !== undefined ? data.notifications : true,
+      });
     } catch (error) {
       console.error("Error fetching settings:", error);
       toast.error("Failed to load settings.");
     }
-  };
+  }, [brandId]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSettings((prev) => ({ ...prev, logo: reader.result as string }));
+        setSettings((prev) => ({ ...prev, image: reader.result as string }));
       };
       reader.readAsDataURL(file);
     }
@@ -81,7 +88,7 @@ const BrandSettings = ({ brandId }: { brandId: string }) => {
 
   useEffect(() => {
     fetchSettings();
-  }, [brandId]);
+  }, [brandId, fetchSettings]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -120,9 +127,9 @@ const BrandSettings = ({ brandId }: { brandId: string }) => {
             onChange={handleImageUpload}
             className="mt-4"
           />
-          {settings.logo ? (
+          {settings.image ? (
             <Image
-              src={settings.logo}
+              src={settings.image}
               alt="Brand Logo"
               width={128}
               height={128}

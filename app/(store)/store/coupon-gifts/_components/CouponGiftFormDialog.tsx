@@ -1,11 +1,32 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export const CouponGiftFormDialog = ({
+interface Coupon {
+  name: string;
+  code: string;
+  discount: string;
+  image: string | null;
+  startDate: string;
+  endDate: string;
+  usageLimit: number;
+  storeId: string;
+}
+
+interface CouponGiftFormDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (formData: Coupon) => void;
+  coupon?: Coupon;
+  isSubmitting: boolean;
+  storeId: string;
+}
+
+export const CouponGiftFormDialog: React.FC<CouponGiftFormDialogProps> = ({
   isOpen,
   onClose,
   onSave,
@@ -13,7 +34,16 @@ export const CouponGiftFormDialog = ({
   isSubmitting,
   storeId,
 }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    code: string;
+    discount: string;
+    image: string | null;
+    startDate: string;
+    endDate: string;
+    usageLimit: number;
+    storeId: string;
+  }>({
     name: "",
     code: "",
     discount: "",
@@ -41,12 +71,12 @@ export const CouponGiftFormDialog = ({
     }
   }, [coupon, storeId]);
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, image: reader.result }));
+        setFormData((prev) => ({ ...prev, image: reader.result as string }));
       };
       reader.readAsDataURL(file);
     }
@@ -99,13 +129,13 @@ export const CouponGiftFormDialog = ({
             }
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
-          {formData.image && (
-            <img
-              src={formData.image}
-              alt="Coupon"
-              className="w-32 h-auto mt-4 rounded-md"
-            />
-          )}
+          <Image
+            src={formData.image || "https://via.placeholder.com/128"}
+            alt="Coupon"
+            width={128}
+            height={128}
+            className="w-32 h-auto mt-4 rounded-md"
+          />
           <Input
             type="date"
             value={formData.startDate}

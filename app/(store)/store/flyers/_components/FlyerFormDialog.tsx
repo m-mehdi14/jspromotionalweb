@@ -1,12 +1,31 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
-export const FlyerFormDialog = ({
+interface Flyer {
+  title: string;
+  description: string;
+  image: string | null;
+  validFrom: string;
+  validTo: string;
+  storeId: string;
+}
+
+interface FlyerFormDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (formData: Flyer) => void;
+  flyer?: Flyer;
+  isSubmitting: boolean;
+  storeId: string;
+}
+
+export const FlyerFormDialog: React.FC<FlyerFormDialogProps> = ({
   isOpen,
   onClose,
   onSave,
@@ -14,7 +33,7 @@ export const FlyerFormDialog = ({
   isSubmitting,
   storeId,
 }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Flyer>({
     title: "",
     description: "",
     image: null,
@@ -38,12 +57,15 @@ export const FlyerFormDialog = ({
     }
   }, [flyer, storeId]);
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, image: reader.result }));
+        setFormData((prev) => ({
+          ...prev,
+          image: reader.result as string | null,
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -74,9 +96,11 @@ export const FlyerFormDialog = ({
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
           {formData.image && (
-            <img
+            <Image
               src={formData.image}
               alt="Preview"
+              width={128}
+              height={128}
               className="w-32 h-auto mt-4 rounded-md"
             />
           )}

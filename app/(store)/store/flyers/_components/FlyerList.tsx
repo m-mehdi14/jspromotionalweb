@@ -1,9 +1,31 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
-export const FlyerList = ({ flyers, isLoading, onEdit, onDelete }) => {
+interface Flyer {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+  validFrom: string;
+  validTo: string;
+}
+
+interface FlyerListProps {
+  flyers: Flyer[];
+  isLoading: boolean;
+  onEdit: (flyer: Flyer) => void;
+  onDelete: (id: string) => void;
+}
+
+export const FlyerList: React.FC<FlyerListProps> = ({
+  flyers,
+  isLoading,
+  onEdit,
+  onDelete,
+}) => {
   if (isLoading) {
     return <div className="text-center">Loading flyers...</div>;
   }
@@ -18,13 +40,14 @@ export const FlyerList = ({ flyers, isLoading, onEdit, onDelete }) => {
         <div key={flyer.id} className="bg-white p-4 rounded-lg shadow">
           <h2 className="text-xl font-semibold">{flyer.title}</h2>
           <p>{flyer.description}</p>
-          {flyer.image && (
-            <img
-              src={flyer.image}
-              alt={flyer.title}
-              className="w-full rounded-md mt-4"
-            />
-          )}
+          <Image
+            src={flyer.image || "https://via.placeholder.com/128"}
+            alt={flyer.title}
+            className="w-full rounded-md mt-4"
+            layout="responsive"
+            width={700}
+            height={475}
+          />
           <p>
             <strong>Valid From:</strong> {flyer.validFrom}
           </p>

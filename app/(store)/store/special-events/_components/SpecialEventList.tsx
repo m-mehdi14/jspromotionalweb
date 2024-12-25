@@ -1,9 +1,31 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
-export const SpecialEventList = ({ events, isLoading, onEdit, onDelete }) => {
+interface SpecialEvent {
+  id: string;
+  name: string;
+  description: string;
+  image?: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface SpecialEventListProps {
+  events: SpecialEvent[];
+  isLoading: boolean;
+  onEdit: (event: SpecialEvent) => void;
+  onDelete: (id: string) => void;
+}
+
+export const SpecialEventList: React.FC<SpecialEventListProps> = ({
+  events,
+  isLoading,
+  onEdit,
+  onDelete,
+}) => {
   if (isLoading) {
     return <div className="text-center">Loading events...</div>;
   }
@@ -18,13 +40,13 @@ export const SpecialEventList = ({ events, isLoading, onEdit, onDelete }) => {
         <div key={event.id} className="bg-white p-4 rounded-lg shadow">
           <h2 className="text-xl font-semibold">{event.name}</h2>
           <p>{event.description}</p>
-          {event.image && (
-            <img
-              src={event.image}
-              alt={event.name}
-              className="w-full rounded-md mt-4"
-            />
-          )}
+          <Image
+            src={event.image || "https://via.placeholder.com/128"}
+            alt={event.name}
+            width={500}
+            height={300}
+            className="w-full rounded-md mt-4"
+          />
           <p>
             <strong>Start Date:</strong> {event.startDate}
           </p>

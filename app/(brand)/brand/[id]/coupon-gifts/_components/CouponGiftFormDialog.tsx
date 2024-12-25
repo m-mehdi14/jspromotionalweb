@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export const CouponGiftFormDialog = ({
   isOpen,
@@ -11,8 +12,38 @@ export const CouponGiftFormDialog = ({
   onSave,
   coupon,
   isSubmitting,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (formData: {
+    name: string;
+    code: string;
+    discount: string;
+    image: string | null;
+    startDate: string;
+    endDate: string;
+    usageLimit: number;
+  }) => void;
+  coupon?: {
+    name: string;
+    code: string;
+    discount: string;
+    image: string | null;
+    startDate: string;
+    endDate: string;
+    usageLimit: number;
+  };
+  isSubmitting: boolean;
 }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    code: string;
+    discount: string;
+    image: string | null;
+    startDate: string;
+    endDate: string;
+    usageLimit: number;
+  }>({
     name: "",
     code: "",
     discount: "",
@@ -38,12 +69,15 @@ export const CouponGiftFormDialog = ({
     }
   }, [coupon]);
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, image: reader.result }));
+        setFormData((prev) => ({
+          ...prev,
+          image: reader.result as string | null,
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -96,9 +130,11 @@ export const CouponGiftFormDialog = ({
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
           {formData.image && (
-            <img
+            <Image
               src={formData.image}
               alt="Coupon"
+              width={128}
+              height={128}
               className="w-32 h-auto mt-4 rounded-md"
             />
           )}

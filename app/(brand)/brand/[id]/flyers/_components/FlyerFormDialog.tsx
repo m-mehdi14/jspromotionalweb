@@ -4,15 +4,42 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
-export const FlyerFormDialog = ({
+interface FlyerFormDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (formData: {
+    title: string;
+    description: string;
+    image: string | null;
+    validFrom: string;
+    validTo: string;
+  }) => void;
+  flyer?: {
+    title: string;
+    description: string;
+    image: string | null;
+    validFrom: string;
+    validTo: string;
+  };
+  isSubmitting: boolean;
+}
+
+export const FlyerFormDialog: React.FC<FlyerFormDialogProps> = ({
   isOpen,
   onClose,
   onSave,
   flyer,
   isSubmitting,
 }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    description: string;
+    image: string | null;
+    validFrom: string;
+    validTo: string;
+  }>({
     title: "",
     description: "",
     image: null,
@@ -34,12 +61,15 @@ export const FlyerFormDialog = ({
     }
   }, [flyer]);
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, image: reader.result }));
+        setFormData((prev) => ({
+          ...prev,
+          image: reader.result as string | null,
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -70,9 +100,11 @@ export const FlyerFormDialog = ({
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
           {formData.image && (
-            <img
+            <Image
               src={formData.image}
               alt="Preview"
+              width={128}
+              height={128}
               className="w-32 h-auto mt-4 rounded-md"
             />
           )}

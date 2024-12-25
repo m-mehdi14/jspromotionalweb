@@ -4,7 +4,30 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-export const CouponGiftList = ({ coupons, isLoading, onEdit, onDelete }) => {
+interface Coupon {
+  id: string;
+  name: string;
+  description: string;
+  image?: string;
+  code: string;
+  discount: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface CouponGiftListProps {
+  coupons: Coupon[];
+  isLoading: boolean;
+  onEdit: (coupon: Coupon) => void;
+  onDelete: (id: string) => void;
+}
+
+export const CouponGiftList: React.FC<CouponGiftListProps> = ({
+  coupons,
+  isLoading,
+  onEdit,
+  onDelete,
+}) => {
   if (isLoading) {
     return <div className="text-center">Loading coupon gifts...</div>;
   }
