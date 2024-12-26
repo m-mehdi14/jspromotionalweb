@@ -1,60 +1,62 @@
 "use client";
-import React from "react";
+
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext/authContext";
+import { fetchStoresByBrand } from "@/actions/admin/brand/store/fetch-stores";
 import Link from "next/link";
 
 export const BrandDashboard = () => {
   const { user, handleLogout } = useAuth();
+  const [totalStores, setTotalStores] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchTotalStores = async () => {
+      if (user?.uid) {
+        try {
+          const stores = await fetchStoresByBrand(user.uid);
+          setTotalStores(stores.length);
+        } catch (error) {
+          console.error("Failed to fetch total stores:", error);
+        }
+      }
+    };
+
+    fetchTotalStores();
+  }, [user?.uid]);
 
   return (
-    <div className="space-y-8">
+    <div className="bg-white min-h-screen p-6 text-black">
       {/* Welcome Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-6 shadow-lg">
-        <h1 className="text-4xl font-bold text-white">
+      <header className="p-4 border-b border-gray-300">
+        <h1 className="text-2xl font-semibold">
           Welcome, {user?.name || "Brand"}!
         </h1>
-        <p className="text-gray-100 mt-2">
-          Manage your stores, view analytics, and keep everything organized.
+        <p className="text-gray-600 text-sm">
+          Manage your stores effortlessly with our minimalistic dashboard.
         </p>
       </header>
 
       {/* KPI Section */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold text-gray-400">Total Stores</h2>
-          <p className="text-5xl font-extrabold text-white mt-2">12</p>
-        </div>
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold text-gray-400">Revenue</h2>
-          <p className="text-5xl font-extrabold text-green-500 mt-2">$25,000</p>
-        </div>
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold text-gray-400">Active Stores</h2>
-          <p className="text-5xl font-extrabold text-blue-500 mt-2">8</p>
+      <section className="mt-6">
+        <div className="bg-gray-100 p-4 rounded border border-gray-300">
+          <h2 className="text-sm text-gray-500">Total Stores</h2>
+          <p className="text-3xl font-bold">{totalStores}</p>
         </div>
       </section>
 
       {/* Action Buttons */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section className="mt-6 space-y-4">
         <Link href={`/brand/${user?.uid}/stores`}>
           <button
             disabled={!user?.uid}
-            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-6 py-4 rounded-lg shadow-lg w-full text-white font-bold text-lg"
+            className="w-full px-4 py-2 text-sm font-medium bg-black text-white rounded hover:bg-gray-800"
           >
             Manage Stores
           </button>
         </Link>
-        <Link href="/brand/analytics">
-          <button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 px-6 py-4 rounded-lg shadow-lg w-full text-white font-bold text-lg">
-            View Analytics
-          </button>
-        </Link>
-      </section>
-      {/* Add Logout button */}
-      <section>
         <button
           onClick={handleLogout}
-          className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 px-6 py-4 rounded-lg shadow-lg w-full text-white font-bold text-lg"
+          className="w-full px-4 py-2 text-sm font-medium bg-gray-800 text-white rounded hover:bg-gray-700"
         >
           Logout
         </button>

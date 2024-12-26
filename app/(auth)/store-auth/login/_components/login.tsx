@@ -61,7 +61,7 @@ const StoreAuthLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
+    <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
       <Card className="w-full max-w-md p-6 shadow-lg">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold text-gray-600">

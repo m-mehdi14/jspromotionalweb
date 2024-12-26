@@ -6,7 +6,7 @@ const BrandPage = () => {
   return (
     <>
       <RoleBasedRoute allowedRoles={["brand"]}>
-        <div className="min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white p-8">
+        <div className="min-h-screen bg-white text-white p-8">
           <BrandDashboard />
         </div>
       </RoleBasedRoute>

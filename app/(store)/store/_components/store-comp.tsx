@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from "@/lib/AuthContext/authContext";
 import DashboardMetrics from "./DashboardMetrics";
-import RecentOrders from "./RecentOrders";
+//import RecentOrders from "./RecentOrders";
 import { fetchStoreMetrics } from "@/actions/store/fetch-stores";
 import DashboardHeader from "./header";
 import EditStoreDetails from "./EditStoreDetails";
@@ -42,12 +42,12 @@ export const StoreMainPage = () => {
     // @ts-expect-error
     lastLogin: user?.metadata?.lastLoginAt
       ? // @ts-expect-error
-        new Date(parseInt(user.metadata.lastLoginAt)).toLocaleString()
+      new Date(parseInt(user.metadata.lastLoginAt)).toLocaleString()
       : "N/A",
     // @ts-expect-error
     createdAt: user?.metadata?.createdAt
       ? // @ts-expect-error
-        new Date(parseInt(user.metadata.createdAt)).toLocaleString()
+      new Date(parseInt(user.metadata.createdAt)).toLocaleString()
       : "N/A",
   };
 
@@ -71,9 +71,9 @@ export const StoreMainPage = () => {
   }, [storeId]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white p-8">
+    <div className="min-h-screen bg-white text-white p-8">
       {/* Dashboard Header with User Icon */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between text-black items-center mb-6">
         <DashboardHeader title="Store Dashboard" />
 
         {/* User Icon to Open Store Details */}
@@ -86,7 +86,7 @@ export const StoreMainPage = () => {
                 title="View Store Details"
               >
                 <User className="w-6 h-6" />
-                <span className="text-sm">Store Info</span>
+                <span className="text-sm text-black">Store Info</span>
               </Button>
             </DialogTrigger>
 
@@ -122,18 +122,10 @@ export const StoreMainPage = () => {
         </div>
       </div>
 
-      {/* Logout Button */}
-      <div className="flex justify-end mb-6">
-        <Button
-          onClick={handleLogout}
-          className="bg-red-600 hover:bg-red-700 transition duration-300"
-        >
-          Logout
-        </Button>
-      </div>
 
       {/* Metrics Section */}
-      {loading ? (
+
+      {/* {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[...Array(3)].map((_, index) => (
             <Skeleton
@@ -148,17 +140,51 @@ export const StoreMainPage = () => {
         <div className="text-center text-gray-300 py-8">
           No metrics available.
         </div>
-      )}
+      )} */}
 
-      {/* Recent Orders */}
-      <div className="mt-10">
-        <h2 className="text-2xl font-semibold mb-4 text-gray-200">
-          Recent Orders
+
+      {/* Info Section */}
+      <div className="bg-gray-100 p-6 rounded-lg shadow-md">
+        <h2 className="text-xl text-black font-bold mb-4 border-b border-gray-300 pb-2">
+          Store Information
         </h2>
-        <div className="bg-gray-800 rounded-lg shadow-lg p-6">
-          <RecentOrders storeId={storeId || ""} />
+        <div className="space-y-4 text-gray-800">
+          <div className="flex items-center">
+            <span className="font-medium w-32">Name:</span>
+            <span className="text-gray-600">{storeDetails.name}</span>
+          </div>
+          <div className="flex items-center">
+            <span className="font-medium w-32">Email:</span>
+            <span className="text-gray-600">{storeDetails.email}</span>
+          </div>
+          <div className="flex items-center">
+            <span className="font-medium w-32">Role:</span>
+            <span className="text-gray-600">{storeDetails.role}</span>
+          </div>
+          <div className="flex items-center">
+            <span className="font-medium w-32">Created At:</span>
+            <span className="text-gray-600">{storeDetails.createdAt}</span>
+          </div>
+          <div className="flex items-center">
+            <span className="font-medium w-32">Last Login:</span>
+            <span className="text-gray-600">{storeDetails.lastLogin}</span>
+          </div>
         </div>
       </div>
+
+      {/* Logout Button */}
+      <div className="flex mt-20 justify-end mb-6">
+        <Button
+          onClick={handleLogout}
+          className="bg-red-600 hover:bg-red-700 transition duration-300"
+        >
+          Logout
+        </Button>
+      </div>
+
+
+      {/* Recent Orders Section */}
+      {/* <RecentOrders storeId={storeId} /> */}
     </div>
   );
 };

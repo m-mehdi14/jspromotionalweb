@@ -54,19 +54,19 @@ const AdminBrand = () => {
       setIsSubmitting(true);
       const response = editingBrand
         ? await editBrand({
-            brandId: editingBrand.id,
-            adminId: user.uid,
-            name: brandData.name,
-            email: brandData.email,
-            description: brandData.description,
-            image: brandData.image || undefined,
-            postalCode: brandData.postalCode,
-          })
+          brandId: editingBrand.id,
+          adminId: user.uid,
+          name: brandData.name,
+          email: brandData.email,
+          description: brandData.description,
+          image: brandData.image || undefined,
+          postalCode: brandData.postalCode,
+        })
         : await saveBrand({
-            ...brandData,
-            adminId: user.uid,
-            image: brandData.image || "",
-          });
+          ...brandData,
+          adminId: user.uid,
+          image: brandData.image || "",
+        });
 
       if (response.success === true) {
         toast.success(response.message);
@@ -113,7 +113,7 @@ const AdminBrand = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white p-8">
+    <div className="min-h-screen bg-white text-black p-8">
       <Dialog open={isAddEditDialogOpen} onOpenChange={setIsAddEditDialogOpen}>
         {/* Header */}
         <DialogTrigger asChild>

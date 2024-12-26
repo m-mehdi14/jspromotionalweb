@@ -48,17 +48,17 @@ export const BrandStore: React.FC<BrandStoreProps> = ({ brandId }) => {
     try {
       const response = editingStore
         ? await editStore({
-            ...storeData,
-            storeId: editingStore.id as string,
-            brandId,
-            image: storeData.image || editingStore.image || "",
-          })
+          ...storeData,
+          storeId: editingStore.id as string,
+          brandId,
+          image: storeData.image || editingStore.image || "",
+        })
         : await saveStore({
-            ...storeData,
-            brandId,
-            image: storeData.image || "",
-            password: storeData.password || "",
-          });
+          ...storeData,
+          brandId,
+          image: storeData.image || "",
+          password: storeData.password || "",
+        });
 
       if (response.success) {
         toast.success(response.message);
@@ -70,8 +70,7 @@ export const BrandStore: React.FC<BrandStoreProps> = ({ brandId }) => {
       }
     } catch (error) {
       toast.error(
-        `An error occurred while ${
-          editingStore ? "updating" : "saving"
+        `An error occurred while ${editingStore ? "updating" : "saving"
         } the store.`
       );
       console.error(
@@ -128,7 +127,7 @@ export const BrandStore: React.FC<BrandStoreProps> = ({ brandId }) => {
   }, [fetchStores]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white p-8">
+    <div className="min-h-screen bg-white text-white p-8">
       {/* Header */}
       <Header
         onAddStore={() => {

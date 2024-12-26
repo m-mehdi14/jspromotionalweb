@@ -7,7 +7,7 @@ export const StoreAuthComponent = () => {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
+    <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
       <div className="text-center space-y-6">
         {/* Heading */}
         <h1 className="text-4xl font-bold">Welcome to Store Portal</h1>

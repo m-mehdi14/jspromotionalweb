@@ -10,15 +10,15 @@ export const AdminPageComponent = () => {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-slate-900 text-white">
+    <div className="min-h-screen flex flex-col bg-white text-black">
       {/* Header Section */}
-      <header className="w-full flex items-center justify-between p-6 bg-gray-900 shadow-lg">
-        <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
+      <header className="w-full flex items-center justify-between p-6 bg-gray-100 shadow-md">
+        <h1 className="text-2xl font-bold text-black">Admin Dashboard</h1>
         <div className="flex items-center space-x-4">
-          <p className="text-gray-300">Logged in as: {user?.email}</p>
+          <p className="text-gray-600">Logged in as: {user?.email}</p>
           <Button
             onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
           >
             Logout
           </Button>
@@ -26,61 +26,44 @@ export const AdminPageComponent = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center p-8">
-        <h2 className="text-3xl font-bold mb-8">Welcome, Admin!</h2>
-        <p className="text-lg text-gray-300 mb-12 text-center max-w-3xl">
-          Use the options below to manage your platform effectively.
-        </p>
-
-        {/* Action Buttons */}
-        {/* md:grid-cols-3 */}
-        <div className="grid grid-cols-1  gap-8">
+      <main className="flex-1 p-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Manage Brands */}
-          <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
-            <h3 className="text-xl font-semibold mb-4">Manage Brands</h3>
-            <p className="text-gray-400 mb-6">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md">
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              Manage Brands
+            </h3>
+            <p className="text-gray-500 mb-4">
               Create, update, and manage all registered brands.
             </p>
             <Button
-              className="bg-blue-600 hover:bg-blue-700 w-full"
+              className="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 rounded"
               onClick={() => router.push("/admin/brand")}
             >
               Manage Brands
             </Button>
           </div>
 
-          {/* Manage Stores */}
-          <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
-            <h3 className="text-xl font-semibold mb-4">Manage Settings</h3>
-            <p className="text-gray-400 mb-6">
+          {/* Manage Settings */}
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md">
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              Admin Settings
+            </h3>
+            <p className="text-gray-500 mb-4">
               Manage your Admins and their settings.
             </p>
             <Button
-              className="bg-green-600 hover:bg-green-700 w-full"
+              className="bg-green-500 hover:bg-green-600 text-white w-full py-2 rounded"
               onClick={() => router.push("/admin/settings")}
             >
               Manage Settings
             </Button>
           </div>
-
-          {/* Generate Reports */}
-          {/* <div className="bg-gray-800 rounded-lg p-6 text-center shadow-md">
-            <h3 className="text-xl font-semibold mb-4">Generate Reports</h3>
-            <p className="text-gray-400 mb-6">
-              Generate comprehensive reports for analytics.
-            </p>
-            <Button
-              className="bg-yellow-600 hover:bg-yellow-700 w-full"
-              onClick={() => alert("Navigate to Generate Reports Page")}
-            >
-              Generate Reports
-            </Button>
-          </div> */}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="w-full text-center p-4 bg-gray-900 text-gray-400">
+      <footer className="w-full text-center p-4 bg-gray-100 text-gray-600">
         © {new Date().getFullYear()} Your Company. All rights reserved.
       </footer>
     </div>

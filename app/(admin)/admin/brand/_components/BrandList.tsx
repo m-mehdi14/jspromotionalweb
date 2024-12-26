@@ -33,7 +33,7 @@ const BrandList: React.FC<BrandListProps> = ({
       {brands.map((brand) => (
         <Card
           key={brand.id}
-          className="bg-gray-800 text-gray-200 shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl "
+          className="bg-black text-gray-200 shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl "
         >
           <CardHeader>
             <CardTitle

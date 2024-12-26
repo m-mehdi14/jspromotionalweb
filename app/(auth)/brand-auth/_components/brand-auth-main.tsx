@@ -7,10 +7,10 @@ export const BrandAuthMain = () => {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
+    <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
       <div className="text-center max-w-lg p-6 space-y-6">
         <h1 className="text-4xl font-bold">Welcome to the Brand Portal</h1>
-        <p className="text-gray-300">
+        <p className="text-gray-500">
           Manage your stores, flyers, and discount cards with ease. Login or
           sign up to get started!
         </p>
