@@ -13,9 +13,6 @@ const AdminStorePage = async ({ params }: AdminStorePageProps) => {
 
   return (
     <div className="min-h-screen text-black bg-neutral-200 p-8">
-      <h1 className="text-3xl font-bold mb-4">
-        Admin Store Page for Brand ID: {id}
-      </h1>
       <AdminStore brandId={id} />
       {/* <AdminFlyers brandId={id} /> */}
     </div>

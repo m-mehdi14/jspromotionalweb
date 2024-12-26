@@ -111,7 +111,7 @@ export const HomeComponent = () => {
               </p>
               <Button
                 className="bg-green-600 hover:bg-green-700 w-full"
-                onClick={() => router.push("/brand-auth")}
+                onClick={() => router.push("/brand-auth/login")}
               >
                 Go to Brand Portal
               </Button>
@@ -126,14 +126,14 @@ export const HomeComponent = () => {
               </p>
               <Button
                 className="bg-yellow-600 hover:bg-yellow-700 w-full"
-                onClick={() => router.push("/store-auth")}
+                onClick={() => router.push("/store-auth/login")}
               >
                 Go to Store Portal
               </Button>
             </div>
           </div>
           <button
-            className="fixed bottom-28 left-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-full"
+            className="fixed bottom-28 left-4 bg-blue-600 hover:bg-blue-700 text-white py-5 px-4 rounded-full"
             onClick={() => router.push("/admin-auth")}
           >
             Are you an Admin?

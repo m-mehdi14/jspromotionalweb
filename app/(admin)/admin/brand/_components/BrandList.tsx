@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Edit, Trash2 } from "lucide-react";
 import { Brand } from "./types";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface BrandListProps {
   brands: Brand[];
@@ -33,21 +34,33 @@ const BrandList: React.FC<BrandListProps> = ({
       {brands.map((brand) => (
         <Card
           key={brand.id}
-          className="bg-black text-gray-200 shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl "
+          className="bg-white text-gray-800 shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl"
         >
+          {/* Display Brand Image */}
+          {brand.image && (
+            <div className="w-full h-32 bg-gray-100 rounded-t-lg overflow-hidden relative">
+              <Image
+                src={brand.image}
+                alt={`${brand.name} logo`}
+                layout="fill"
+                objectFit="cover"
+                className="rounded-t-lg"
+              />
+            </div>
+          )}
           <CardHeader>
             <CardTitle
               onClick={() =>
                 router.push(`/admin/brand/${brand.id}/admin-store`)
               }
-              className=" hover:cursor-pointer"
+              className="hover:cursor-pointer text-lg font-bold"
             >
               {brand.name}
             </CardTitle>
-            <p>{brand.email}</p>
+            <p className="text-sm text-gray-500">{brand.email}</p>
           </CardHeader>
           <CardContent>
-            <p>{brand.description}</p>
+            <p className="text-sm text-gray-600">{brand.description}</p>
             <div className="flex justify-between mt-4">
               <Button variant="ghost" onClick={() => onEdit(brand)}>
                 <Edit className="w-4 h-4 mr-2" /> Edit

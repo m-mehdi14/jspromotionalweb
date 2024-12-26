@@ -45,20 +45,20 @@ export const AdminStore = ({ brandId }: { brandId: string }) => {
       setIsSubmitting(true);
       const response = editingStore
         ? await editStore({
-            storeId: editingStore.id,
-            brandId,
-            name: storeData.name,
-            email: storeData.email,
-            password: storeData.password,
-            description: storeData.description,
-            image: storeData.image || undefined,
-            postalCode: storeData.postalCode,
-          })
+          storeId: editingStore.id,
+          brandId,
+          name: storeData.name,
+          email: storeData.email,
+          password: storeData.password,
+          description: storeData.description,
+          image: storeData.image || undefined,
+          postalCode: storeData.postalCode,
+        })
         : await saveStore({
-            ...storeData,
-            brandId,
-            image: storeData.image || "",
-          });
+          ...storeData,
+          brandId,
+          image: storeData.image || "",
+        });
 
       if (response.success) {
         toast.success(response.message);

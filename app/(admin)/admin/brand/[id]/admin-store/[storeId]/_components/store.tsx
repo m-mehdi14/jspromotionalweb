@@ -49,8 +49,8 @@ const AdminStore = ({ brandId, storeId }: AdminStoreProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-500 px-6 py-8">
-      <div className="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-white px-6 py-8">
+      <div className="bg-white rounded-lg p-6 max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">
           Store Details
         </h1>
