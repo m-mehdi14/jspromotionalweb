@@ -8,6 +8,7 @@ const Header = ({
   brandId: string;
   onAddStore: () => void;
 }) => {
+  console.log("🚀", brandId);
   return (
     <header className="flex justify-between items-center mb-8">
       <h1 className="text-3xl font-bold">Manage Stores for Brand</h1>

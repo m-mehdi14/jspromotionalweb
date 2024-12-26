@@ -11,6 +11,7 @@ interface DashboardMetricsProps {
 }
 
 const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
+  console.log("🚀 ~ metrics:", metrics);
   return (
     // <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
     //   <div className="p-4 bg-gray-800 rounded-lg shadow">

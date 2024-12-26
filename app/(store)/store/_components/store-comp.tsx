@@ -4,7 +4,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +11,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/lib/AuthContext/authContext";
-import DashboardMetrics from "./DashboardMetrics";
 //import RecentOrders from "./RecentOrders";
 import { fetchStoreMetrics } from "@/actions/store/fetch-stores";
 import DashboardHeader from "./header";
@@ -28,7 +26,9 @@ interface StoreMetrics {
 export const StoreMainPage = () => {
   const { handleLogout, user } = useAuth();
   const [metrics, setMetrics] = useState<StoreMetrics | null>(null);
+  console.log("🚀 ~ StoreMainPage ~ metrics:", metrics);
   const [loading, setLoading] = useState<boolean>(true);
+  console.log("🚀 ~ StoreMainPage ~ loading:", loading);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const storeId: string | undefined = user?.uid; // Store ID
@@ -42,12 +42,12 @@ export const StoreMainPage = () => {
     // @ts-expect-error
     lastLogin: user?.metadata?.lastLoginAt
       ? // @ts-expect-error
-      new Date(parseInt(user.metadata.lastLoginAt)).toLocaleString()
+        new Date(parseInt(user.metadata.lastLoginAt)).toLocaleString()
       : "N/A",
     // @ts-expect-error
     createdAt: user?.metadata?.createdAt
       ? // @ts-expect-error
-      new Date(parseInt(user.metadata.createdAt)).toLocaleString()
+        new Date(parseInt(user.metadata.createdAt)).toLocaleString()
       : "N/A",
   };
 
@@ -122,7 +122,6 @@ export const StoreMainPage = () => {
         </div>
       </div>
 
-
       {/* Metrics Section */}
 
       {/* {loading ? (
@@ -141,7 +140,6 @@ export const StoreMainPage = () => {
           No metrics available.
         </div>
       )} */}
-
 
       {/* Info Section */}
       <div className="bg-gray-100 p-6 rounded-lg shadow-md">
@@ -181,7 +179,6 @@ export const StoreMainPage = () => {
           Logout
         </Button>
       </div>
-
 
       {/* Recent Orders Section */}
       {/* <RecentOrders storeId={storeId} /> */}
