@@ -2,20 +2,41 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/AuthContext/authContext";
-import { useRouter } from "next/navigation";
-import React from "react";
+import {
+  FaHome,
+  FaBoxes,
+  FaUsers,
+  FaUtensils,
+  FaShoppingCart,
+  FaCalendarAlt,
+  FaCheckCircle,
+} from "react-icons/fa";
 
-export const AdminPageComponent = () => {
+interface Metric {
+  value: number | string;
+  label: string;
+}
+
+export const AdminPageComponent = ({ metrics }: { metrics: Metric[] }) => {
   const { handleLogout, user } = useAuth();
-  const router = useRouter();
+
+  const icons = [
+    <FaHome key="home" className="text-3xl text-gray-600" />,
+    <FaBoxes key="boxes" className="text-3xl text-gray-600" />,
+    <FaUsers key="users" className="text-3xl text-gray-600" />,
+    <FaUtensils key="utensils" className="text-3xl text-gray-600" />,
+    <FaShoppingCart key="shopping-cart" className="text-3xl text-gray-600" />,
+    <FaCalendarAlt key="calendar" className="text-3xl text-gray-600" />,
+    <FaCheckCircle key="check-circle" className="text-3xl text-gray-600" />,
+  ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-black">
+    <div className="min-h-screen bg-white text-black">
       {/* Header Section */}
       <header className="w-full flex items-center justify-between p-6 bg-gray-100 shadow-md">
         <h1 className="text-2xl font-bold text-black">Admin Dashboard</h1>
         <div className="flex items-center space-x-4">
-          <p className="text-gray-600">Logged in as: {user?.email}</p>
+          <p className="text-gray-600">Welcome, {user?.email || "Admin"}!</p>
           <Button
             onClick={handleLogout}
             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
@@ -27,47 +48,23 @@ export const AdminPageComponent = () => {
 
       {/* Main Content */}
       <main className="flex-1 p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Manage Brands */}
-          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Manage Brands
-            </h3>
-            <p className="text-gray-500 mb-4">
-              Create, update, and manage all registered brands.
-            </p>
-            <Button
-              className="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 rounded"
-              onClick={() => router.push("/admin/brand")}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {metrics.map((metric, index) => (
+            <div
+              key={index}
+              className="flex items-center bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition"
             >
-              Manage Brands
-            </Button>
-          </div>
-
-          {/* Manage Settings */}
-          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Admin Settings
-            </h3>
-            <p className="text-gray-500 mb-4">
-              Manage your Admins and their settings.
-            </p>
-            <Button
-              className="bg-green-500 hover:bg-green-600 text-white w-full py-2 rounded"
-              onClick={() => router.push("/admin/settings")}
-            >
-              Manage Settings
-            </Button>
-          </div>
+              <div className="mr-4">{icons[index]}</div>
+              <div>
+                <p className="text-2xl font-bold text-gray-800">
+                  {metric.value}
+                </p>
+                <p className="text-gray-500">{metric.label}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="w-full text-center p-4 bg-gray-100 text-gray-600">
-        © {new Date().getFullYear()} Your Company. All rights reserved.
-      </footer>
     </div>
   );
 };
-
-export default AdminPageComponent;

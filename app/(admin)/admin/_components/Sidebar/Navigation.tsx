@@ -22,10 +22,51 @@ export const Navigation = () => {
   const storeId = segments[5]; // Extract the store ID if present
 
   // Define routes conditionally based on the path
+  // Define routes conditionally based on the path
   const routes =
-    storeId &&
-    pathname.includes(`/admin/brand/${brandId}/admin-store/${storeId}`)
+    pathname === "/admin"
       ? [
+          // Navigation for /admin
+          {
+            label: "Admin Dashboard",
+            href: `/admin`,
+            icon: Fullscreen,
+          },
+          {
+            label: "Users",
+            href: `/admin/users`,
+            icon: Users,
+          },
+          {
+            label: "Brands",
+            href: `/admin/brand`,
+            icon: Store,
+          },
+          {
+            label: "Stores",
+            href: `/admin/stores`,
+            icon: UserCircle,
+          },
+          {
+            label: "Flyers",
+            href: `/admin/flyers`,
+            icon: UserCircle,
+          },
+          {
+            label: "Coupon Gifts",
+            href: `/admin/coupon-gifts`,
+            icon: Gift,
+          },
+          {
+            label: "Admin Settings",
+            href: `/admin/settings`,
+            icon: Settings,
+          },
+        ]
+      : storeId &&
+        pathname.includes(`/admin/brand/${brandId}/admin-store/${storeId}`)
+      ? [
+          // Navigation for store-specific routes
           {
             label: "Store Dashboard",
             href: `/admin/brand/${brandId}/admin-store/${storeId}`,
@@ -53,6 +94,7 @@ export const Navigation = () => {
           },
         ]
       : [
+          // Navigation for brand-specific routes
           {
             label: "Home",
             href: `/`,
