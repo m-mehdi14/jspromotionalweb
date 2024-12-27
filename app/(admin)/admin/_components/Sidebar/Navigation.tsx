@@ -24,7 +24,7 @@ export const Navigation = () => {
   // Define routes conditionally based on the path
   // Define routes conditionally based on the path
   const routes =
-    pathname === "/admin"
+    pathname === "/admin" || "/admin/users"
       ? [
           // Navigation for /admin
           {
