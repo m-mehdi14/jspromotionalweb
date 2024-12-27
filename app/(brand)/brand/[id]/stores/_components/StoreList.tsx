@@ -35,52 +35,61 @@ const StoreList: React.FC<StoreListProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {stores.map((store) => (
-        <div
-          key={store.id}
-          className="bg-gray-800 text-gray-200 rounded-lg shadow-md p-4 hover:shadow-lg transition-all duration-300"
-        >
-          <div className="mb-4">
-            <h2 className="text-xl font-bold truncate">{store.name}</h2>
-            <p className="text-sm text-gray-400 truncate">{store.email}</p>
-          </div>
-
-          <div className="text-gray-300 text-sm mb-4 truncate">
-            {store.description || "No description provided."}
-          </div>
-
-          {store.image && (
-            <Image
-              src={store.image}
-              alt={store.name}
-              className="w-full h-32 object-cover rounded-md mb-4 border border-gray-700"
-              height={128}
-              width={200}
-            />
-          )}
-
-          <div className="flex justify-between items-center">
-            {/* Edit Button */}
-            <Button
-              variant="ghost"
-              className="text-green-500 hover:text-green-600 flex items-center"
-              onClick={() => onEdit(store)}
+    <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+      <table className="min-w-full border-collapse border border-gray-200">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="px-4 py-2 text-left text-gray-600 font-medium">Name</th>
+            <th className="px-4 py-2 text-left text-gray-600 font-medium">Email</th>
+            <th className="px-4 py-2 text-left text-gray-600 font-medium">Description</th>
+            <th className="px-4 py-2 text-left text-gray-600 font-medium">Image</th>
+            <th className="px-4 py-2 text-center text-gray-600 font-medium">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stores.map((store, index) => (
+            <tr
+              key={store.id}
+              className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
             >
-              <Edit className="w-4 h-4 mr-2" /> Edit
-            </Button>
-
-            {/* Delete Button */}
-            <Button
-              variant="ghost"
-              className="text-red-500 hover:text-red-600 flex items-center"
-              onClick={() => onDelete(store.id as string, store.name)}
-            >
-              <Trash2 className="w-4 h-4 mr-2" /> Delete
-            </Button>
-          </div>
-        </div>
-      ))}
+              <td className="px-4 py-2 text-black">{store.name}</td>
+              <td className="px-4 py-2 text-black">{store.email}</td>
+              <td className="px-4 py-2 text-black truncate max-w-xs">
+                {store.description || "No description provided."}
+              </td>
+              <td className="px-4 py-2">
+                {store.image ? (
+                  <Image
+                    src={store.image}
+                    alt={store.name}
+                    className="w-16 h-16 object-cover rounded"
+                    height={64}
+                    width={64}
+                  />
+                ) : (
+                  "No Image"
+                )}
+              </td>
+              <td className="px-4 py-2 flex justify-center space-x-2">
+                <Button
+                  variant="ghost"
+                  className="text-black bg-red-500 hover:text-green-600 flex items-center"
+                  onClick={() => onEdit(store)}
+                >
+                  <Edit className="w-4 h-4 mr-1" /> Edit
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="text-black bg-green-500 hover:text-red-600 flex items-center"
+                  onClick={() => onDelete(store.id as string, store.name)}
+                >
+                  <Trash2 className="w-4 h-4 mr-1" /> Delete
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
