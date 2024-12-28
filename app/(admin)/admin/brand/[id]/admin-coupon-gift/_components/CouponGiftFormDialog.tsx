@@ -111,7 +111,7 @@ export const CouponGiftFormDialog = ({
             </Button>
           </div>
           <Input
-            placeholder="Discount (%)"
+            placeholder="Discount in numbers like 20"
             type="text"
             value={formData.discount}
             onChange={(e) =>

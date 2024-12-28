@@ -116,11 +116,11 @@ export const Navigation = () => {
           href: `/admin/brand/${brandId}/admin-coupon-gift`,
           icon: Gift,
         },
-        {
-          label: "Brand Settings",
-          href: `/admin/brand/${brandId}/settings`,
-          icon: Settings,
-        },
+        // {
+        //   label: "Brand Settings",
+        //   href: `/admin/brand/${brandId}/settings`,
+        //   icon: Settings,
+        // },
       ];
     } else if (["/admin/brand"].includes(pathname)) {
       routes = [

@@ -1,5 +1,17 @@
+"use client";
+
 import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Edit, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { CouponGift } from "./types";
 
@@ -17,7 +29,13 @@ export const CouponGiftList = ({
   onDelete: (couponId: string) => void;
 }) => {
   if (isLoading) {
-    return <div className="text-center">Loading coupons...</div>;
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, index) => (
+          <Skeleton key={index} className="h-12 w-full" />
+        ))}
+      </div>
+    );
   }
 
   if (coupons.length === 0) {
@@ -29,45 +47,86 @@ export const CouponGiftList = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {coupons.map((coupon) => (
-        <div
-          key={coupon.id}
-          className="bg-gray-600 rounded-lg p-4 shadow hover:shadow-lg"
-        >
-          <h2 className="text-lg font-bold mb-2 text-neutral-200">
-            {coupon.name}
-          </h2>
-          <p className="text-sm text-gray-400">Code: {coupon.code}</p>
-          <p className="text-sm text-gray-400">Discount: {coupon.discount}%</p>
-          <p className="text-sm text-gray-400">
-            {coupon.startDate} - {coupon.endDate}
-          </p>
-          {coupon.image && (
-            <div className="relative w-full h-48 mt-4 rounded-md overflow-hidden">
-              <Image
-                src={coupon.image}
-                alt={coupon.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            </div>
-          )}
-          <div className="mt-4 flex justify-between">
-            <Button variant="secondary" onClick={() => onEdit(coupon)}>
-              Edit
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => onDelete(coupon.id)}
-              disabled={isDeleting === coupon.id}
-            >
-              {isDeleting === coupon.id ? "Deleting..." : "Delete"}
-            </Button>
-          </div>
-        </div>
-      ))}
+    <div className="w-full">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Image</TableHead>
+            <TableHead>Title</TableHead>
+            <TableHead>Code</TableHead>
+            <TableHead>Discount</TableHead>
+            <TableHead>Valid From</TableHead>
+            <TableHead>Valid To</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {coupons.map((coupon) => (
+            <TableRow key={coupon.id}>
+              {/* Coupon Image */}
+              <TableCell className="w-20">
+                {coupon.image ? (
+                  <Image
+                    src={coupon.image}
+                    alt={coupon.name}
+                    width={40}
+                    height={40}
+                    className="rounded-md"
+                  />
+                ) : (
+                  <div className="h-10 w-10 bg-gray-200 rounded-md"></div>
+                )}
+              </TableCell>
+
+              {/* Coupon Title */}
+              <TableCell className="text-gray-800">{coupon.name}</TableCell>
+
+              {/* Coupon Code */}
+              <TableCell className="text-gray-800">{coupon.code}</TableCell>
+
+              {/* Discount */}
+              <TableCell className="text-gray-800">
+                {coupon.discount}%
+              </TableCell>
+
+              {/* Valid From */}
+              <TableCell className="text-gray-700">
+                {new Date(coupon.startDate).toLocaleDateString()}
+              </TableCell>
+
+              {/* Valid To */}
+              <TableCell className="text-gray-700">
+                {new Date(coupon.endDate).toLocaleDateString()}
+              </TableCell>
+
+              {/* Actions */}
+              <TableCell>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEdit(coupon)}
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => onDelete(coupon.id)}
+                    disabled={isDeleting === coupon.id}
+                  >
+                    {isDeleting === coupon.id ? (
+                      "Deleting..."
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

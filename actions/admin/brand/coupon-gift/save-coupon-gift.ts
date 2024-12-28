@@ -19,57 +19,22 @@ export async function saveCouponGift(
   >
 ): Promise<{ success: boolean; message: string }> {
   try {
+    console.log("Received couponData for save:", couponData);
+
     // Validate required fields
     if (!couponData.name || !couponData.code || !couponData.brandId) {
-      return {
-        success: false,
-        message: "Name, Code, and Brand ID are required fields.",
-      };
-    }
-
-    if (couponData.discount.trim() === "") {
-      return {
-        success: false,
-        message: "Discount is required.",
-      };
+      throw new Error("Name, Code, and Brand ID are required.");
     }
 
     const discountValue = Number(couponData.discount);
     if (isNaN(discountValue) || discountValue <= 0 || discountValue > 100) {
-      return {
-        success: false,
-        message: "Discount must be a valid number between 1 and 100.",
-      };
-    }
-
-    if (!couponData.startDate || !couponData.endDate) {
-      return {
-        success: false,
-        message: "Start Date and End Date are required.",
-      };
+      throw new Error("Discount must be a valid number between 1 and 100.");
     }
 
     const startDate = new Date(couponData.startDate);
     const endDate = new Date(couponData.endDate);
     if (startDate > endDate) {
-      return {
-        success: false,
-        message: "Start Date cannot be after End Date.",
-      };
-    }
-
-    if (!couponData.usageLimit || couponData.usageLimit <= 0) {
-      return {
-        success: false,
-        message: "Usage Limit must be a positive number.",
-      };
-    }
-
-    if (couponData.image && typeof couponData.image !== "string") {
-      return {
-        success: false,
-        message: "Image must be a valid string URL.",
-      };
+      throw new Error("Start Date cannot be after End Date.");
     }
 
     // Reference the 'couponGifts' collection in Firestore
@@ -78,7 +43,8 @@ export async function saveCouponGift(
     // Add the new coupon document
     await addDoc(couponsCollection, {
       ...couponData,
-      discount: discountValue.toString(), // Ensure discount is stored as a string
+      discount: discountValue.toString(), // Store discount as a string
+      createdAt: new Date().toISOString(),
     });
 
     return {
@@ -86,11 +52,16 @@ export async function saveCouponGift(
       message: "Coupon created successfully.",
     };
   } catch (error) {
-    console.error("Error creating coupon gift:", error);
-
+    if (error instanceof Error) {
+      console.error("Error saving coupon gift:", error.message);
+    } else {
+      console.error("Error saving coupon gift:", error);
+    }
     return {
       success: false,
-      message: "An error occurred while creating the coupon.",
+      message:
+        (error as Error).message ||
+        "An error occurred while saving the coupon.",
     };
   }
 }

@@ -1,66 +1,169 @@
 "use client";
+
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Edit, Trash2, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useRouter } from "next/navigation";
 
+interface Store {
+  id: string;
+  name: string;
+  description: string;
+  email: string;
+  image?: string;
+  postalCode: string;
+  type: string;
+  createdAt: string;
+}
+
 const StoreList = ({
-  stores,
+  stores = [],
   loading,
   onEdit,
   onDelete,
   brandId,
 }: {
-  stores: { id: string; name: string; description: string }[];
+  stores?: Store[];
   loading: boolean;
-  onEdit: (store: { id: string; name: string; description: string }) => void;
+  onEdit: (store: Store) => void;
   onDelete: (id: string, name: string) => void;
   brandId: string;
 }) => {
   const router = useRouter();
+
   if (loading) {
-    return <div>Loading stores...</div>;
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, index) => (
+          <Skeleton key={index} className="h-12 w-full" />
+        ))}
+      </div>
+    );
   }
 
   if (stores.length === 0) {
-    return <div>No stores found. Add a new store to get started!</div>;
+    return (
+      <div className="text-center text-gray-400">
+        No stores found. Add a new store to get started!
+      </div>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {stores.map((store) => (
-        <Card
-          key={store.id}
-          className="bg-gray-800 text-gray-200 shadow-lg transform hover:scale-105"
-        >
-          <CardHeader>
-            <CardTitle
-              onClick={() => {
-                router.push(`/admin/brand/${brandId}/admin-store/${store.id}`);
-              }}
-              className=" hover:cursor-pointer transition-all ease-in-out duration-300"
+    <div className="w-full p-4 bg-white shadow-md rounded-lg">
+      <Table className="rounded-lg border border-gray-200">
+        <TableHeader>
+          <TableRow className="bg-gray-100 text-gray-700 rounded-t-lg">
+            <TableHead className="py-4">Logo</TableHead>
+            <TableHead className="py-4">Store Name</TableHead>
+            <TableHead className="py-4">Description</TableHead>
+            <TableHead className="py-4">Email</TableHead>
+            <TableHead className="py-4">Postal Code</TableHead>
+            <TableHead className="py-4">Type</TableHead>
+            <TableHead className="py-4">Created At</TableHead>
+            <TableHead className="py-4 text-center">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {stores.map((store) => (
+            <TableRow
+              key={store.id}
+              className="hover:bg-gray-50 transition duration-200"
             >
-              {store.name}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>{store.description}</p>
-            <div className="flex justify-between mt-4">
-              <Button variant="ghost" onClick={() => onEdit(store)}>
-                <Edit className="w-4 h-4" /> Edit
-              </Button>
-              <Button
-                variant="ghost"
-                className="text-red-500"
-                onClick={() => onDelete(store.id, store.name)}
-              >
-                <Trash2 className="w-4 h-4" /> Delete
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+              <TableCell className="text-center">
+                {store.image ? (
+                  <Image
+                    src={store.image}
+                    alt={store.name}
+                    width={40}
+                    height={40}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <div className="h-10 w-10 bg-gray-200 rounded-full mx-auto"></div>
+                )}
+              </TableCell>
+              <TableCell className="text-gray-800 font-medium">
+                {store.name}
+              </TableCell>
+              <TableCell className="text-gray-600">
+                {store.description || "No description available"}
+              </TableCell>
+              <TableCell className="text-gray-600">{store.email}</TableCell>
+              <TableCell className="text-gray-600">
+                {store.postalCode}
+              </TableCell>
+              <TableCell className="text-gray-600">{store.type}</TableCell>
+              <TableCell className="text-gray-600">
+                {new Intl.DateTimeFormat("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }).format(new Date(store.createdAt))}
+              </TableCell>
+              <TableCell className="flex justify-center items-center space-x-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(store);
+                  }}
+                  className="text-gray-600 hover:text-blue-600"
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(store.id, store.name);
+                  }}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <ArrowRight
+                        className="w-4 h-4 text-blue-500 cursor-pointer hover:text-blue-700"
+                        onClick={() =>
+                          router.push(
+                            `/admin/brand/${brandId}/admin-store/${store.id}`
+                          )
+                        }
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Go to store details</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

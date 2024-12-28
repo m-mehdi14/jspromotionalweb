@@ -44,30 +44,28 @@ export async function editCouponGift(
   }>
 ): Promise<{ success: boolean; message: string }> {
   try {
-    // Validate inputs
     if (!couponId) {
-      return { success: false, message: "Coupon ID is required." };
+      throw new Error("Coupon ID is required.");
     }
 
     if (Object.keys(updatedData).length === 0) {
-      return { success: false, message: "No data provided for update." };
+      throw new Error("No data provided for update.");
     }
 
     let compressedImage: string | undefined;
 
-    // If an image is provided, compress it using the helper function
     if (updatedData.image) {
       compressedImage = await compressBase64Image(updatedData.image);
     }
 
-    // Add updatedAt timestamp and replace image with compressedImage
     const payload = {
       ...updatedData,
-      image: compressedImage || updatedData.image, // Use compressed image if provided
+      image: compressedImage || updatedData.image, // Use compressed image if available
       updatedAt: new Date().toISOString(),
     };
 
-    // Make a PUT request to the backend endpoint
+    console.log("Payload for edit API:", payload);
+
     const response = await axios.put<{ message: string }>(
       `${process.env.BACKEND_URL}/admin/coupon-gifts/edit`,
       { couponId, ...payload }
@@ -81,8 +79,8 @@ export async function editCouponGift(
     }
 
     return { success: false, message: "Failed to update coupon." };
-  } catch (error: unknown) {
-    console.error("Error updating coupon gift:", error);
+  } catch (error) {
+    console.error("Error editing coupon gift:", error);
 
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError<{ message: string }>;
@@ -94,9 +92,6 @@ export async function editCouponGift(
       };
     }
 
-    return {
-      success: false,
-      message: "An unknown error occurred.",
-    };
+    return { success: false, message: "An unknown error occurred." };
   }
 }
