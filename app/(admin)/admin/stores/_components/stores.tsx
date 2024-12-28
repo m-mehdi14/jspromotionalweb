@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 
 interface Store {
   id: string;
@@ -77,10 +78,12 @@ export const Stores: React.FC<StoresTableProps> = ({ stores }) => {
             filteredStores.map((store) => (
               <TableRow key={store.id}>
                 <TableCell>
-                  <img
+                  <Image
                     src={store.image || "https://via.placeholder.com/50"}
                     alt={store.name}
-                    className="w-10 h-10 rounded-full"
+                    width={40}
+                    height={40}
+                    className="rounded-full"
                   />
                 </TableCell>
                 <TableCell>{store.name || "N/A"}</TableCell>
