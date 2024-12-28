@@ -1,18 +1,25 @@
+"use client";
+
 import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
+import { Pencil, Trash } from "lucide-react";
 
 export interface SpecialEvent {
   id: string;
-
   name: string;
-
   description: string;
-
   image?: string;
-
   startDate: string;
-
   endDate: string;
 }
 
@@ -30,56 +37,104 @@ export const SpecialEventList = ({
   onDelete: (eventId: string) => void;
 }) => {
   if (isLoading) {
-    return <div className="text-center">Loading events...</div>;
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, index) => (
+          <Skeleton key={index} className="w-full h-12 rounded-md" />
+        ))}
+      </div>
+    );
   }
 
   if (events.length === 0) {
     return (
-      <div className="text-center text-gray-400">
-        No events found. Add a new event to get started!
+      <div className="text-center mt-8">
+        <p className="text-2xl font-bold text-gray-300">No Events Found</p>
+        <p className="text-gray-400 mt-2">Add a new event to get started!</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {events.map((event) => (
-        <div
-          key={event.id}
-          className="bg-gray-600 rounded-lg p-4 shadow hover:shadow-lg"
-        >
-          <h2 className="text-lg font-bold mb-2 text-neutral-200">
-            {event.name}
-          </h2>
-          <p className="text-sm text-gray-400">{event.description}</p>
-          <p className="text-sm text-gray-400">
-            {event.startDate} - {event.endDate}
-          </p>
-          {event.image && (
-            <div className="relative w-full h-48 mt-4 rounded-md overflow-hidden">
-              <Image
-                src={event.image}
-                alt={event.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            </div>
-          )}
-          <div className="mt-4 flex justify-between">
-            <Button variant="secondary" onClick={() => onEdit(event)}>
-              Edit
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => onDelete(event.id)}
-              disabled={isDeleting === event.id}
-            >
-              {isDeleting === event.id ? "Deleting..." : "Delete"}
-            </Button>
-          </div>
-        </div>
-      ))}
+    <div className="w-full">
+      <Table className=" rounded-lg shadow">
+        <TableHeader className="bg-gray-50">
+          <TableRow>
+            <TableHead className="text-left">Image</TableHead>
+            <TableHead className="text-left">Name</TableHead>
+            <TableHead className="text-left">Description</TableHead>
+            <TableHead className="text-left">Start Date</TableHead>
+            <TableHead className="text-left">End Date</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {events.map((event) => (
+            <TableRow key={event.id} className="hover:bg-gray-50">
+              <TableCell className="w-24">
+                {event.image ? (
+                  <Image
+                    src={event.image}
+                    alt={event.name}
+                    width={50}
+                    height={50}
+                    className="rounded-md object-cover"
+                  />
+                ) : (
+                  <div className="h-12 w-12 bg-gray-200 rounded-md"></div>
+                )}
+              </TableCell>
+              <TableCell className="font-medium text-gray-800">
+                {event.name}
+              </TableCell>
+              <TableCell className="text-gray-600 line-clamp-2">
+                {event.description || "No description available"}
+              </TableCell>
+              {/* <TableCell className="text-gray-700">{event.startDate}</TableCell>
+              <TableCell className="text-gray-700">{event.endDate}</TableCell> */}
+              <TableCell className="text-gray-700">
+                {new Date(event.startDate).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </TableCell>
+              <TableCell className="text-gray-700">
+                {new Date(event.endDate).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </TableCell>
+              <TableCell className="flex justify-end space-x-2">
+                <Button
+                  variant="ghost"
+                  className="text-blue-500 hover:bg-blue-100"
+                  onClick={() => onEdit(event)}
+                >
+                  <Pencil className="w-4 h-4" />
+                  {/* Edit */}
+                </Button>
+                <Button
+                  variant="destructive"
+                  className=" hover:bg-red-200"
+                  onClick={() => onDelete(event.id)}
+                  disabled={isDeleting === event.id}
+                >
+                  {/* <Trash className="w-4 h-4" /> */}
+                  <Trash
+                    className={` w-4 h-4 ${
+                      isDeleting === event.id &&
+                      " disabled:opacity-0 disabled:cursor-not-allowed"
+                    }`}
+                  />
+                  {/* {isDeleting === event.id ? "Deleting..." : "Delete"} */}
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

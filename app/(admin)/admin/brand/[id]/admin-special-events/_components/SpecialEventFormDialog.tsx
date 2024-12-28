@@ -81,7 +81,23 @@ export const SpecialEventFormDialog = ({
               setFormData((prev) => ({ ...prev, description: e.target.value }))
             }
           />
-          <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          {/* <Input type="file" accept="image/*" onChange={handleImageUpload} />
+           */}
+          <Button
+            onClick={(event) => {
+              event.preventDefault();
+              document.getElementById("imageUpload")?.click();
+            }}
+          >
+            Upload Image
+          </Button>
+          <Input
+            id="imageUpload"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
           {formData.image && (
             <Image
               src={formData.image}
