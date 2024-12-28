@@ -54,19 +54,19 @@ const AdminBrand = () => {
       setIsSubmitting(true);
       const response = editingBrand
         ? await editBrand({
-          brandId: editingBrand.id,
-          adminId: user.uid,
-          name: brandData.name,
-          email: brandData.email,
-          description: brandData.description,
-          image: brandData.image || undefined,
-          postalCode: brandData.postalCode,
-        })
+            brandId: editingBrand.id,
+            adminId: user.uid,
+            name: brandData.name,
+            email: brandData.email,
+            description: brandData.description,
+            image: brandData.image || undefined,
+            postalCode: brandData.postalCode,
+          })
         : await saveBrand({
-          ...brandData,
-          adminId: user.uid,
-          image: brandData.image || "",
-        });
+            ...brandData,
+            adminId: user.uid,
+            image: brandData.image || "",
+          });
 
       if (response.success === true) {
         toast.success(response.message);
@@ -143,6 +143,7 @@ const AdminBrand = () => {
         brands={brands}
         loading={loading}
         onEdit={(brand) => {
+          // @ts-expect-error ignore
           setEditingBrand(brand);
           setIsAddEditDialogOpen(true);
         }}

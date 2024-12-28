@@ -88,7 +88,7 @@ export const Navigation = () => {
           icon: Settings,
         },
       ];
-    } else if (brandId || ["/admin/brand"].includes(pathname)) {
+    } else if (brandId) {
       // Brand-Specific Navigation
       routes = [
         {
@@ -120,6 +120,19 @@ export const Navigation = () => {
           label: "Brand Settings",
           href: `/admin/brand/${brandId}/settings`,
           icon: Settings,
+        },
+      ];
+    } else if (["/admin/brand"].includes(pathname)) {
+      routes = [
+        {
+          label: "Brand Dashboard",
+          href: `/admin/brand`,
+          icon: Fullscreen,
+        },
+        {
+          label: "Admin Dashboard",
+          href: `/admin`,
+          icon: Fullscreen,
         },
       ];
     }
