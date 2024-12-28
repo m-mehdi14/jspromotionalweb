@@ -16,116 +16,114 @@ export const Navigation = () => {
   const pathname = usePathname();
   const { user } = useAuth();
 
-  // Extract the dynamic IDs from the pathname
+  // Extract dynamic IDs from the pathname
   const segments = pathname.split("/");
   const brandId = segments[3]; // Extract the brand ID
   const storeId = segments[5]; // Extract the store ID if present
+  // @ts-expect-error ignore
+  let routes = [];
 
-  // Define routes conditionally based on the path
-  // Define routes conditionally based on the path
-  const routes =
-    pathname === "/admin" || "/admin/users"
-      ? [
-          // Navigation for /admin
-          {
-            label: "Admin Dashboard",
-            href: `/admin`,
-            icon: Fullscreen,
-          },
-          {
-            label: "Users",
-            href: `/admin/users`,
-            icon: Users,
-          },
-          {
-            label: "Brands",
-            href: `/admin/brand`,
-            icon: Store,
-          },
-          {
-            label: "Stores",
-            href: `/admin/stores`,
-            icon: UserCircle,
-          },
-          {
-            label: "Flyers",
-            href: `/admin/flyers`,
-            icon: UserCircle,
-          },
-          {
-            label: "Coupon Gifts",
-            href: `/admin/coupon-gifts`,
-            icon: Gift,
-          },
-          {
-            label: "Admin Settings",
-            href: `/admin/settings`,
-            icon: Settings,
-          },
-        ]
-      : storeId &&
-        pathname.includes(`/admin/brand/${brandId}/admin-store/${storeId}`)
-      ? [
-          // Navigation for store-specific routes
-          {
-            label: "Store Dashboard",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}`,
-            icon: Store,
-          },
-          {
-            label: "Store Flyers",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}/flyers`,
-            icon: UserCircle,
-          },
-          {
-            label: "Store Special Events",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}/special-events`,
-            icon: Users,
-          },
-          {
-            label: "Store Coupon Events",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}/coupon-gifts`,
-            icon: Users,
-          },
-          {
-            label: "Store Settings",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}/settings`,
-            icon: Settings,
-          },
-        ]
-      : [
-          // Navigation for brand-specific routes
-          {
-            label: "Home",
-            href: `/`,
-            icon: Fullscreen,
-          },
-          {
-            label: "Brand Stores",
-            href: `/admin/brand/${brandId}/admin-store`,
-            icon: UserCircle,
-          },
-          {
-            label: "Brand Flyers",
-            href: `/admin/brand/${brandId}/admin-flyer`,
-            icon: UserCircle,
-          },
-          {
-            label: "Brand Special Events",
-            href: `/admin/brand/${brandId}/admin-special-events`,
-            icon: UserCircle,
-          },
-          {
-            label: "Brand Coupon Gifts",
-            href: `/admin/brand/${brandId}/admin-coupon-gift`,
-            icon: Gift,
-          },
-          {
-            label: "Setting",
-            href: `/admin/setting`,
-            icon: Users,
-          },
-        ];
+  if (pathname.startsWith("/admin")) {
+    if (pathname === "/admin") {
+      // Admin Dashboard Navigation
+      routes = [
+        { label: "Admin Dashboard", href: `/admin`, icon: Fullscreen },
+        { label: "Users", href: `/admin/users`, icon: Users },
+        { label: "Brands", href: `/admin/brand`, icon: Store },
+        { label: "Stores", href: `/admin/stores`, icon: UserCircle },
+        { label: "Flyers", href: `/admin/flyers`, icon: UserCircle },
+        { label: "Coupon Gifts", href: `/admin/coupon-gifts`, icon: Gift },
+        { label: "Admin Settings", href: `/admin/settings`, icon: Settings },
+      ];
+    } else if (
+      [
+        "/admin/users",
+        "/admin/coupon-gifts",
+        "/admin/flyers",
+        "/admin/stores",
+        "/admin/categories",
+        "/admin/settings",
+      ].includes(pathname)
+    ) {
+      // Admin-Specific Routes
+      routes = [
+        { label: "Admin Dashboard", href: `/admin`, icon: Fullscreen },
+        { label: "Users", href: `/admin/users`, icon: Users },
+        { label: "Brands", href: `/admin/brand`, icon: Store },
+        { label: "Stores", href: `/admin/stores`, icon: UserCircle },
+        { label: "Flyers", href: `/admin/flyers`, icon: UserCircle },
+        { label: "Coupon Gifts", href: `/admin/coupon-gifts`, icon: Gift },
+        { label: "Categories", href: `/admin/categories`, icon: Store },
+        { label: "Admin Settings", href: `/admin/settings`, icon: Settings },
+      ];
+    } else if (
+      storeId &&
+      pathname.includes(`/admin/brand/${brandId}/admin-store/${storeId}`)
+    ) {
+      // Store-Specific Navigation
+      routes = [
+        {
+          label: "Store Dashboard",
+          href: `/admin/brand/${brandId}/admin-store/${storeId}`,
+          icon: Store,
+        },
+        {
+          label: "Store Flyers",
+          href: `/admin/brand/${brandId}/admin-store/${storeId}/flyers`,
+          icon: UserCircle,
+        },
+        {
+          label: "Store Special Events",
+          href: `/admin/brand/${brandId}/admin-store/${storeId}/special-events`,
+          icon: Users,
+        },
+        {
+          label: "Store Coupon Events",
+          href: `/admin/brand/${brandId}/admin-store/${storeId}/coupon-gifts`,
+          icon: Gift,
+        },
+        {
+          label: "Store Settings",
+          href: `/admin/brand/${brandId}/admin-store/${storeId}/settings`,
+          icon: Settings,
+        },
+      ];
+    } else if (brandId || ["/admin/brand"].includes(pathname)) {
+      // Brand-Specific Navigation
+      routes = [
+        {
+          label: "Brand Dashboard",
+          href: `/admin/brand/${brandId}`,
+          icon: Fullscreen,
+        },
+        {
+          label: "Brand Stores",
+          href: `/admin/brand/${brandId}/admin-store`,
+          icon: UserCircle,
+        },
+        {
+          label: "Brand Flyers",
+          href: `/admin/brand/${brandId}/admin-flyer`,
+          icon: UserCircle,
+        },
+        {
+          label: "Brand Special Events",
+          href: `/admin/brand/${brandId}/admin-special-events`,
+          icon: UserCircle,
+        },
+        {
+          label: "Brand Coupon Gifts",
+          href: `/admin/brand/${brandId}/admin-coupon-gift`,
+          icon: Gift,
+        },
+        {
+          label: "Brand Settings",
+          href: `/admin/brand/${brandId}/settings`,
+          icon: Settings,
+        },
+      ];
+    }
+  }
 
   // Show skeletons while user data is loading
   if (!user?.name) {
@@ -141,15 +139,18 @@ export const Navigation = () => {
   // Render the navigation items
   return (
     <ul className="space-y-2 px-2 pt-4 lg:pt-0">
-      {routes.map((route) => (
-        <NavItem
-          key={route.href}
-          label={route.label}
-          icon={route.icon}
-          href={route.href}
-          isActive={pathname === route.href}
-        />
-      ))}
+      {
+        // @ts-expect-error ignore
+        routes.map((route) => (
+          <NavItem
+            key={route.href}
+            label={route.label}
+            icon={route.icon}
+            href={route.href}
+            isActive={pathname === route.href}
+          />
+        ))
+      }
     </ul>
   );
 };
