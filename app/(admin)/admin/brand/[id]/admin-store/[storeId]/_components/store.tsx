@@ -18,7 +18,8 @@ const AdminStore = ({ brandId, storeId }: AdminStoreProps) => {
       if (brandId && storeId) {
         try {
           const data = await fetchStoreDetails(brandId, storeId);
-          setStoreDetails(data.data);
+          // @ts-expect-error ignore
+          setStoreDetails(data?.data);
         } catch (error) {
           console.error("Error fetching store details:", error);
         } finally {
@@ -31,7 +32,7 @@ const AdminStore = ({ brandId, storeId }: AdminStoreProps) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="text-center">
           <div className="loader border-t-4 border-blue-500 rounded-full w-12 h-12 animate-spin mx-auto mb-4"></div>
           <p className="text-lg text-gray-600">Loading store details...</p>
@@ -42,20 +43,15 @@ const AdminStore = ({ brandId, storeId }: AdminStoreProps) => {
 
   if (!storeDetails) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <p className="text-lg text-red-500">Store not found!</p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <p className="text-lg text-red-500 font-semibold">Store not found!</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white px-6 py-8">
-      <div className="bg-white rounded-lg p-6 max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">
-          Store Details
-        </h1>
-        <StoreDetails store={storeDetails} brandId={brandId} />
-      </div>
+    <div className="min-h-screen bg-gray-50 px-6 py-8">
+      <StoreDetails store={storeDetails} brandId={brandId} />
     </div>
   );
 };
