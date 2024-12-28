@@ -1,7 +1,16 @@
 "use client";
 
 import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Edit2, Trash2 } from "lucide-react"; // Vector icons
 
 interface Category {
   id: string;
@@ -25,37 +34,78 @@ export const CategoryList: React.FC<CategoryListProps> = ({
   onDelete,
 }) => {
   if (isLoading) {
-    return <div>Loading categories...</div>;
+    return (
+      <div className="text-center text-gray-600">Loading categories...</div>
+    );
   }
 
   if (!categories.length) {
-    return <div>No categories found. Add a new category to get started!</div>;
+    return (
+      <div className="text-center text-gray-400">
+        No categories found. Add a new category to get started!
+      </div>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {categories.map((category) => (
-        <div key={category.id} className="bg-gray-200 p-4 rounded shadow-md">
-          <h2 className="text-lg font-bold">{category.name}</h2>
-          <p>{category.description}</p>
-          {category.createdAt && (
-            <p className="text-gray-500 text-sm">
-              Created At: {new Date(category.createdAt).toLocaleString()}
-            </p>
-          )}
-          {category.updatedAt && (
-            <p className="text-gray-500 text-sm">
-              Updated At: {new Date(category.updatedAt).toLocaleString()}
-            </p>
-          )}
-          <div className="flex justify-end mt-4 space-x-2">
-            <Button onClick={() => onEdit(category)}>Edit</Button>
-            <Button onClick={() => onDelete(category.id)} variant="destructive">
-              Delete
-            </Button>
-          </div>
-        </div>
-      ))}
+    <div className="w-full p-4">
+      <Table className="rounded-md shadow-md border border-gray-200">
+        <TableHeader>
+          <TableRow className="bg-gray-100">
+            <TableHead className="font-bold">Name</TableHead>
+            <TableHead className="font-bold">Created At</TableHead>
+            <TableHead className="font-bold">Updated At</TableHead>
+            <TableHead className="font-bold">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {categories.map((category) => (
+            <TableRow key={category.id} className="hover:bg-gray-50">
+              <TableCell>{category.name}</TableCell>
+              <TableCell>
+                {category.createdAt
+                  ? new Intl.DateTimeFormat("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }).format(new Date(category.createdAt))
+                  : "N/A"}
+              </TableCell>
+              <TableCell>
+                {category.updatedAt
+                  ? new Intl.DateTimeFormat("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }).format(new Date(category.updatedAt))
+                  : "N/A"}
+              </TableCell>
+              <TableCell className="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => onEdit(category)}
+                  className="text-blue-500 flex items-center space-x-1"
+                >
+                  <Edit2 className="w-4 h-4" />
+                  {/* <span>Edit</span> */}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => onDelete(category.id)}
+                  className="text-red-500 flex items-center space-x-1"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {/* <span>Delete</span> */}
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };
