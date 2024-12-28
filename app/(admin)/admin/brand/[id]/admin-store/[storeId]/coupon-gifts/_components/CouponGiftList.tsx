@@ -1,12 +1,54 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Edit, Trash2 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-export const CouponGiftList = ({ coupons, isLoading, onEdit, onDelete }) => {
+export const CouponGiftList = ({
+  coupons,
+  isLoading,
+  onEdit,
+  onDelete,
+}: {
+  coupons: {
+    id: string;
+    name: string;
+    code: string;
+    discount: string;
+    image?: string;
+    startDate: string;
+    endDate: string;
+    usageLimit: number;
+  }[];
+  isLoading: boolean;
+  // @ts-expect-error ignore
+  onEdit: (coupon) => void;
+  onDelete: (couponId: string) => void;
+}) => {
   if (isLoading) {
-    return <div className="text-center">Loading coupon gifts...</div>;
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, index) => (
+          <Skeleton key={index} className="h-12 w-full rounded-lg" />
+        ))}
+      </div>
+    );
   }
 
   if (coupons.length === 0) {
@@ -18,38 +60,111 @@ export const CouponGiftList = ({ coupons, isLoading, onEdit, onDelete }) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {coupons.map((coupon) => (
-        <div key={coupon.id} className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold">{coupon.name}</h2>
-          <p>Code: {coupon.code}</p>
-          <p>Discount: {coupon.discount}%</p>
-          <Image
-            src={coupon.image}
-            alt={coupon.name}
-            width={500}
-            height={300}
-            className="mt-4 w-full rounded-md"
-          />
-          <p>
-            <strong>Start Date:</strong> {coupon.startDate}
-          </p>
-          <p>
-            <strong>End Date:</strong> {coupon.endDate}
-          </p>
-          <p>
-            <strong>Usage Limit:</strong> {coupon.usageLimit}
-          </p>
-          <div className="flex justify-end mt-4">
-            <Button variant="secondary" onClick={() => onEdit(coupon)}>
-              Edit
-            </Button>
-            <Button variant="destructive" onClick={() => onDelete(coupon.id)}>
-              Delete
-            </Button>
-          </div>
-        </div>
-      ))}
+    <div className="w-full overflow-x-auto">
+      <Table className="rounded-lg border border-gray-200 shadow-md">
+        <TableHeader>
+          <TableRow className="bg-gray-100 text-blue-900">
+            <TableHead className="py-4 px-6">Image</TableHead>
+            <TableHead className="py-4 px-6">Name</TableHead>
+            <TableHead className="py-4 px-6">Code</TableHead>
+            <TableHead className="py-4 px-6">Discount</TableHead>
+            <TableHead className="py-4 px-6">Start Date</TableHead>
+            <TableHead className="py-4 px-6">End Date</TableHead>
+            <TableHead className="py-4 px-6">Usage Limit</TableHead>
+            <TableHead className="py-4 px-6 text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {coupons.map((coupon) => (
+            <TableRow
+              key={coupon.id}
+              className="hover:bg-gray-50 transition duration-300"
+            >
+              <TableCell className="py-4 px-6">
+                {coupon.image ? (
+                  <Image
+                    src={coupon.image}
+                    alt={coupon.name}
+                    width={60}
+                    height={60}
+                    className="rounded-md shadow-sm"
+                  />
+                ) : (
+                  <div className="h-10 w-10 bg-gray-200 rounded-md"></div>
+                )}
+              </TableCell>
+              <TableCell className="py-4 px-6 font-medium text-gray-700">
+                {coupon.name}
+              </TableCell>
+              <TableCell className="py-4 px-6 text-gray-600">
+                {coupon.code}
+              </TableCell>
+              <TableCell className="py-4 px-6 text-gray-600">
+                {coupon.discount}%
+              </TableCell>
+              <TableCell className="py-4 px-6 text-gray-600">
+                {new Intl.DateTimeFormat("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                }).format(new Date(coupon.startDate))}
+              </TableCell>
+              <TableCell className="py-4 px-6 text-gray-600">
+                {new Intl.DateTimeFormat("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                }).format(new Date(coupon.endDate))}
+              </TableCell>
+              <TableCell className="py-4 px-6 text-gray-600">
+                {coupon.usageLimit}
+              </TableCell>
+              <TableCell className="py-4 px-6 text-right">
+                <div className="flex items-center justify-end space-x-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(coupon);
+                          }}
+                          className="p-2 hover:bg-gray-100"
+                        >
+                          <Edit className="w-5 h-5 text-blue-500" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Edit Coupon</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(coupon.id);
+                          }}
+                          className="p-2 hover:bg-red-100"
+                        >
+                          <Trash2 className="w-5 h-5 text-red-500" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete Coupon</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

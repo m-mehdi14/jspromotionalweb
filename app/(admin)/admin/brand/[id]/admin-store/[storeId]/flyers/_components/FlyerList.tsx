@@ -1,12 +1,52 @@
 "use client";
 
 import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Edit, Trash2 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-export const FlyerList = ({ flyers, isLoading, onEdit, onDelete }) => {
+export const FlyerList = ({
+  flyers,
+  isLoading,
+  onEdit,
+  onDelete,
+}: {
+  flyers: {
+    id: string;
+    title: string;
+    description: string;
+    image: string;
+    validFrom: string;
+    validTo: string;
+  }[];
+  isLoading: boolean;
+  // @ts-expect-error ignore
+  onEdit: (flyer) => void;
+  onDelete: (flyerId: string) => void;
+}) => {
   if (isLoading) {
-    return <div className="text-center">Loading flyers...</div>;
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, index) => (
+          <Skeleton key={index} className="h-12 w-full rounded-lg" />
+        ))}
+      </div>
+    );
   }
 
   if (flyers.length === 0) {
@@ -18,35 +58,103 @@ export const FlyerList = ({ flyers, isLoading, onEdit, onDelete }) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {flyers.map((flyer) => (
-        <div key={flyer.id} className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold">{flyer.title}</h2>
-          <p>{flyer.description}</p>
-          <Image
-            src={flyer.image}
-            alt={flyer.title}
-            className="mt-4 w-full rounded-md"
-            layout="responsive"
-            width={700}
-            height={475}
-          />
-          <p>
-            <strong>Valid From:</strong> {flyer.validFrom}
-          </p>
-          <p>
-            <strong>Valid To:</strong> {flyer.validTo}
-          </p>
-          <div className="flex justify-end mt-4">
-            <Button variant="secondary" onClick={() => onEdit(flyer)}>
-              Edit
-            </Button>
-            <Button variant="destructive" onClick={() => onDelete(flyer.id)}>
-              Delete
-            </Button>
-          </div>
-        </div>
-      ))}
+    <div className="w-full overflow-x-auto">
+      <Table className="rounded-lg border border-gray-200 shadow-md">
+        <TableHeader>
+          <TableRow className="bg-gray-100 text-blue-900">
+            <TableHead className="py-4 px-6">Image</TableHead>
+            <TableHead className="py-4 px-6">Title</TableHead>
+            <TableHead className="py-4 px-6">Description</TableHead>
+            <TableHead className="py-4 px-6">Valid From</TableHead>
+            <TableHead className="py-4 px-6">Valid To</TableHead>
+            <TableHead className="py-4 px-6 text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {flyers.map((flyer) => (
+            <TableRow
+              key={flyer.id}
+              className="hover:bg-gray-50 transition duration-300"
+            >
+              <TableCell className="py-4 px-6">
+                {flyer.image ? (
+                  <Image
+                    src={flyer.image}
+                    alt={flyer.title}
+                    width={60}
+                    height={60}
+                    className="rounded-md shadow-sm"
+                  />
+                ) : (
+                  <div className="h-10 w-10 bg-gray-200 rounded-md"></div>
+                )}
+              </TableCell>
+              <TableCell className="py-4 px-6 font-medium text-gray-700">
+                {flyer.title}
+              </TableCell>
+              <TableCell className="py-4 px-6 text-gray-500 truncate max-w-xs">
+                {flyer.description || "No description available"}
+              </TableCell>
+              <TableCell className="py-4 px-6 text-gray-600">
+                {new Intl.DateTimeFormat("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                }).format(new Date(flyer.validFrom))}
+              </TableCell>
+              <TableCell className="py-4 px-6 text-gray-600">
+                {new Intl.DateTimeFormat("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                }).format(new Date(flyer.validTo))}
+              </TableCell>
+              <TableCell className="py-4 px-6 text-right">
+                <div className="flex items-center justify-end space-x-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(flyer);
+                          }}
+                          className="p-2 hover:bg-gray-100"
+                        >
+                          <Edit className="w-5 h-5 text-blue-500" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Edit Flyer</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(flyer.id);
+                          }}
+                          className="p-2 hover:bg-red-100"
+                        >
+                          <Trash2 className="w-5 h-5 text-red-500" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete Flyer</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

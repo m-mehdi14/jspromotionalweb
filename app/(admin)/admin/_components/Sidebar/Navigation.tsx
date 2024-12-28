@@ -82,11 +82,11 @@ export const Navigation = () => {
           href: `/admin/brand/${brandId}/admin-store/${storeId}/coupon-gifts`,
           icon: Gift,
         },
-        {
-          label: "Store Settings",
-          href: `/admin/brand/${brandId}/admin-store/${storeId}/settings`,
-          icon: Settings,
-        },
+        // {
+        //   label: "Store Settings",
+        //   href: `/admin/brand/${brandId}/admin-store/${storeId}/settings`,
+        //   icon: Settings,
+        // },
       ];
     } else if (brandId) {
       // Brand-Specific Navigation
