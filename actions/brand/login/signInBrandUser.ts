@@ -68,7 +68,7 @@ const validatePassword = (
 export async function signInBrandUser(
   email: string,
   password: string
-): Promise<{ success: boolean; message: string }> {
+): Promise<{ success: boolean; message: string; id: string }> {
   const auth = getAuth(app);
 
   try {
@@ -76,7 +76,7 @@ export async function signInBrandUser(
     const { isValid, userData, error } = await validateBrandUser(email);
 
     if (!isValid || !userData) {
-      return { success: false, message: error || "Validation failed." };
+      return { success: false, message: error || "Validation failed.", id: "" };
     }
 
     // Step 2: Validate password
@@ -87,7 +87,7 @@ export async function signInBrandUser(
     );
 
     if (!isPasswordValid) {
-      return { success: false, message: "Invalid password." };
+      return { success: false, message: "Invalid password.", id: "" };
     }
 
     // Step 3: Authenticate user with Firebase Auth
@@ -99,14 +99,18 @@ export async function signInBrandUser(
 
     console.log("Authenticated User ID:", userCredential.user.uid);
 
-    return { success: true, message: "Logged in successfully!" };
+    return {
+      success: true,
+      message: "Logged in successfully!",
+      id: userCredential.user.uid,
+    };
   } catch (error: unknown) {
     console.error("Error during sign-in:", error);
 
     if (error instanceof Error) {
-      return { success: false, message: error.message };
+      return { success: false, message: error.message, id: "" };
     }
 
-    return { success: false, message: "An unknown error occurred." };
+    return { success: false, message: "An unknown error occurred.", id: "" };
   }
 }

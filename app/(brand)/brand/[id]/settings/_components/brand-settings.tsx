@@ -8,8 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { updateBrandSettings } from "@/actions/brand/settings/update-settings";
 import { fetchBrandSettings } from "@/actions/brand/settings/fetch-settings";
 import Image from "next/image";
+import { useAuth } from "@/lib/AuthContext/authContext";
 
 const BrandSettings = ({ brandId }: { brandId: string }) => {
+  const { handleLogout } = useAuth();
   const [settings, setSettings] = useState({
     name: "",
     description: "",
@@ -193,6 +195,18 @@ const BrandSettings = ({ brandId }: { brandId: string }) => {
             className="bg-green-600 hover:bg-green-700"
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
+          </Button>
+        </div>
+        {/* Add logout Button */}
+        <div>
+          <Button
+            onClick={handleLogout}
+            // onClick={handleSaveSettings}
+            disabled={isSubmitting}
+            // className="bg-green-600 hover:bg-green-700"
+            variant={"destructive"}
+          >
+            {isSubmitting ? "" : "Logout"}
           </Button>
         </div>
       </div>
