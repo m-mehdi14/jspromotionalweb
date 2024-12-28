@@ -8,6 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Flyer } from "../../admin-store/_components/types";
 import { toast } from "sonner";
 import Image from "next/image";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { fetchCategories } from "@/actions/admin/categories/fetch-categories"; // Import the fetchCategories server action
 
 export const FlyerFormDialog = ({
   isOpen,
@@ -32,11 +40,35 @@ export const FlyerFormDialog = ({
     storeIds: [],
     validFrom: "",
     validTo: "",
+    createdAt: new Date().toISOString(),
   });
+
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const categoriesData = (await fetchCategories()) as {
+          id: string;
+          name: string;
+        }[];
+        setCategories(categoriesData); // Populate categories
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load categories.");
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     if (flyer) {
       setFormData({ ...flyer, brandId });
+      setSelectedCategory(flyer.id || ""); // Assuming flyer has a categoryId field
     } else {
       setFormData({
         title: "",
@@ -46,7 +78,9 @@ export const FlyerFormDialog = ({
         storeIds: [],
         validFrom: "",
         validTo: "",
+        createdAt: new Date().toISOString(),
       });
+      setSelectedCategory("");
     }
   }, [flyer, brandId]);
 
@@ -66,7 +100,14 @@ export const FlyerFormDialog = ({
       toast.error("Please fill in all required fields.");
       return;
     }
-    onSave(formData);
+
+    if (!selectedCategory) {
+      toast.error("Please select a category.");
+      return;
+    }
+
+    // @ts-expect-error ignore
+    onSave({ ...formData, categoryId: selectedCategory });
   };
 
   return (
@@ -89,6 +130,21 @@ export const FlyerFormDialog = ({
             }
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          <Button
+            onClick={(event) => {
+              event.preventDefault();
+              document.getElementById("imageUpload")?.click();
+            }}
+          >
+            Upload Image
+          </Button>
+          <Input
+            id="imageUpload"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
           {formData.image && (
             <Image
               src={formData.image}
@@ -98,6 +154,31 @@ export const FlyerFormDialog = ({
               className="w-32 h-auto mt-4 rounded-md"
             />
           )}
+
+          {/* Category Select Field */}
+          <Select
+            onValueChange={(value) => setSelectedCategory(value)}
+            value={selectedCategory}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue
+                placeholder="Select a Category"
+                defaultValue={selectedCategory}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem
+                  key={category.id}
+                  value={category.name}
+                  className=" hover:bg-gray-100 transition-all duration-300 ease-in-out"
+                >
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <Input
             type="date"
             value={formData.validFrom}
@@ -112,6 +193,7 @@ export const FlyerFormDialog = ({
               setFormData((prev) => ({ ...prev, validTo: e.target.value }))
             }
           />
+
           <Button onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting
               ? "Saving..."

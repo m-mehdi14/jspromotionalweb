@@ -91,9 +91,7 @@ const AdminFlyers = ({ brandId }: { brandId: string }) => {
   return (
     <div>
       <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">
-          Manage Flyers for Brand #{brandId}
-        </h1>
+        <h1 className="text-3xl font-bold">Manage Flyers for Brand</h1>
         <Button
           className="bg-blue-600 hover:bg-blue-700 text-white"
           onClick={() => {
