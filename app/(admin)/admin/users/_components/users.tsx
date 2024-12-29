@@ -20,7 +20,8 @@ import {
 import { toast } from "sonner";
 import { createAdminUser } from "@/actions/admin/sign-up/createAdminUser";
 import { updateAdmin } from "@/actions/admin/sign-up/update-admin";
-import { PencilIcon } from "lucide-react";
+import { deleteAdmin } from "@/actions/admin/sign-up/delete-adminUser";
+import { PencilIcon, TrashIcon } from "lucide-react";
 
 interface User {
   uid: string;
@@ -38,6 +39,10 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  // Pagination States
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 8;
+
   // Dialog States
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -51,13 +56,20 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
 
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
-  // Filter users based on the search query
+  // Filter and Paginate Users
   const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.role.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredUsers.length / rowsPerPage);
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
   );
 
   const handleCreateAdmin = async () => {
@@ -75,11 +87,10 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
       );
       if (response.success) {
         toast.success("Admin user created successfully!");
-        // Update the users list dynamically
         setUsers((prevUsers) => [
           ...prevUsers,
           {
-            uid: crypto.randomUUID(), // Generate a temporary UID
+            uid: crypto.randomUUID(),
             name: newAdmin.name,
             email: newAdmin.email,
             role: "admin",
@@ -129,13 +140,32 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
     }
   };
 
+  const handleDeleteAdmin = async (adminId: string) => {
+    setIsDeleting(adminId);
+    try {
+      const response = await deleteAdmin(adminId);
+      if (response.success) {
+        toast.success("Admin user deleted successfully!");
+        setUsers((prevUsers) =>
+          prevUsers.filter((user) => user.uid !== adminId)
+        );
+      } else {
+        toast.error(response.message || "Failed to delete admin user.");
+      }
+    } catch (error) {
+      console.error("Error deleting admin user:", error);
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setIsDeleting(null);
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-50 rounded-lg shadow">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold text-gray-800">Users</h2>
         <div className="flex items-center space-x-4">
-          {/* Search Input */}
           <Input
             type="text"
             placeholder="Search by name, email, or role"
@@ -143,7 +173,6 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-64"
           />
-          {/* Add Admin Button */}
           <Button onClick={() => setIsCreateDialogOpen(true)}>
             Add Admin User
           </Button>
@@ -163,43 +192,41 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
+          {paginatedUsers.length > 0 ? (
+            paginatedUsers.map((user) => (
               <TableRow key={user.uid}>
-                <TableCell className="truncate max-w-xs">{user.uid}</TableCell>
+                <TableCell>{user.uid}</TableCell>
                 <TableCell>{user.name}</TableCell>
-                <TableCell className="truncate max-w-xs">
-                  {user.email}
-                </TableCell>
-                <TableCell className="capitalize">{user.role}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.role}</TableCell>
                 <TableCell>
-                  {new Date(user.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
+                  {new Date(user.createdAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setSelectedUser(user);
-                      setIsEditDialogOpen(true);
-                    }}
-                    className="hover:bg-blue-200 transition-all duration-300 ease-in-out"
-                  >
-                    {/* Edit */}
-                    <PencilIcon className=" w-4 h-4 " />
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setIsEditDialogOpen(true);
+                      }}
+                    >
+                      <PencilIcon className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleDeleteAdmin(user.uid)}
+                      disabled={isDeleting === user.uid}
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell
-                colSpan={6}
-                className="text-center text-gray-500 font-medium py-4"
-              >
+              <TableCell colSpan={6} className="text-center">
                 No users found.
               </TableCell>
             </TableRow>
@@ -207,7 +234,28 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
         </TableBody>
       </Table>
 
-      {/* Dialog for Adding Admin User */}
+      {/* Pagination Controls */}
+      <div className="flex justify-center items-center space-x-4 mt-4">
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
+
+      {/* Create Admin Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -245,7 +293,7 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog for Editing Admin User */}
+      {/* Edit Admin Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
