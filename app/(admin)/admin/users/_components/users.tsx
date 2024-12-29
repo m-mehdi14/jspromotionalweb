@@ -10,6 +10,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { createAdminUser } from "@/actions/admin/sign-up/createAdminUser";
+import { updateAdmin } from "@/actions/admin/sign-up/update-admin";
+import { PencilIcon } from "lucide-react";
 
 interface User {
   uid: string;
@@ -20,11 +31,26 @@ interface User {
 }
 
 interface UsersTableProps {
-  users: User[];
+  initialUsers: User[];
 }
 
-export const Users: React.FC<UsersTableProps> = ({ users }) => {
+export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
+  const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchQuery, setSearchQuery] = useState<string>("");
+
+  // Dialog States
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  const [newAdmin, setNewAdmin] = useState({
+    email: "",
+    password: "",
+    name: "",
+  });
+
+  const [isCreating, setIsCreating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // Filter users based on the search query
   const filteredUsers = users.filter(
@@ -34,19 +60,94 @@ export const Users: React.FC<UsersTableProps> = ({ users }) => {
       user.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleCreateAdmin = async () => {
+    if (!newAdmin.email || !newAdmin.password || !newAdmin.name) {
+      toast.error("Please fill out all fields.");
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      const response = await createAdminUser(
+        newAdmin.email,
+        newAdmin.password,
+        newAdmin.name
+      );
+      if (response.success) {
+        toast.success("Admin user created successfully!");
+        // Update the users list dynamically
+        setUsers((prevUsers) => [
+          ...prevUsers,
+          {
+            uid: crypto.randomUUID(), // Generate a temporary UID
+            name: newAdmin.name,
+            email: newAdmin.email,
+            role: "admin",
+            createdAt: new Date().toISOString(),
+          },
+        ]);
+        setIsCreateDialogOpen(false);
+        setNewAdmin({ email: "", password: "", name: "" });
+      } else {
+        toast.error(response.error || "Failed to create admin user.");
+      }
+    } catch (error) {
+      console.error("Error creating admin user:", error);
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleEditAdmin = async () => {
+    if (!selectedUser) return;
+
+    setIsUpdating(true);
+    try {
+      const response = await updateAdmin(selectedUser.uid, {
+        email: selectedUser.email,
+        name: selectedUser.name,
+      });
+
+      if (response.success) {
+        toast.success("Admin user updated successfully!");
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.uid === selectedUser.uid ? { ...selectedUser } : user
+          )
+        );
+        setIsEditDialogOpen(false);
+        setSelectedUser(null);
+      } else {
+        toast.error(response.message || "Failed to update admin user.");
+      }
+    } catch (error) {
+      console.error("Error updating admin user:", error);
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-50 rounded-lg shadow">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold text-gray-800">Users</h2>
-        {/* Search Input */}
-        <Input
-          type="text"
-          placeholder="Search by name, email, or role"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-64"
-        />
+        <div className="flex items-center space-x-4">
+          {/* Search Input */}
+          <Input
+            type="text"
+            placeholder="Search by name, email, or role"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-64"
+          />
+          {/* Add Admin Button */}
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            Add Admin User
+          </Button>
+        </div>
       </div>
 
       {/* Table Section */}
@@ -58,6 +159,7 @@ export const Users: React.FC<UsersTableProps> = ({ users }) => {
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Created At</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -77,12 +179,25 @@ export const Users: React.FC<UsersTableProps> = ({ users }) => {
                     day: "numeric",
                   })}
                 </TableCell>
+                <TableCell>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setSelectedUser(user);
+                      setIsEditDialogOpen(true);
+                    }}
+                    className="hover:bg-blue-200 transition-all duration-300 ease-in-out"
+                  >
+                    {/* Edit */}
+                    <PencilIcon className=" w-4 h-4 " />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
               <TableCell
-                colSpan={5}
+                colSpan={6}
                 className="text-center text-gray-500 font-medium py-4"
               >
                 No users found.
@@ -91,6 +206,76 @@ export const Users: React.FC<UsersTableProps> = ({ users }) => {
           )}
         </TableBody>
       </Table>
+
+      {/* Dialog for Adding Admin User */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Admin User</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              type="text"
+              placeholder="Name"
+              value={newAdmin.name}
+              onChange={(e) =>
+                setNewAdmin({ ...newAdmin, name: e.target.value })
+              }
+            />
+            <Input
+              type="email"
+              placeholder="Email"
+              value={newAdmin.email}
+              onChange={(e) =>
+                setNewAdmin({ ...newAdmin, email: e.target.value })
+              }
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={newAdmin.password}
+              onChange={(e) =>
+                setNewAdmin({ ...newAdmin, password: e.target.value })
+              }
+            />
+            <Button onClick={handleCreateAdmin} disabled={isCreating}>
+              {isCreating ? "Creating..." : "Create Admin"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Editing Admin User */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Admin User</DialogTitle>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="space-y-4">
+              <Input
+                type="text"
+                placeholder="Name"
+                value={selectedUser.name}
+                onChange={(e) =>
+                  setSelectedUser({ ...selectedUser, name: e.target.value })
+                }
+              />
+              <Input
+                type="email"
+                placeholder="Email"
+                value={selectedUser.email}
+                onChange={(e) =>
+                  setSelectedUser({ ...selectedUser, email: e.target.value })
+                }
+              />
+              <Button onClick={handleEditAdmin} disabled={isUpdating}>
+                {isUpdating ? "Updating..." : "Update Admin"}
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
