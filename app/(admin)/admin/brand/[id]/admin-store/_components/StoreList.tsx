@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -47,10 +47,20 @@ const StoreList = ({
 }) => {
   const router = useRouter();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+  // Paginate stores
+  const totalPages = Math.ceil(stores.length / itemsPerPage);
+  const paginatedStores = stores.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   if (loading) {
     return (
       <div className="space-y-4">
-        {[...Array(5)].map((_, index) => (
+        {[...Array(itemsPerPage)].map((_, index) => (
           <Skeleton key={index} className="h-12 w-full" />
         ))}
       </div>
@@ -81,7 +91,7 @@ const StoreList = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {stores.map((store) => (
+          {paginatedStores.map((store) => (
             <TableRow
               key={store.id}
               className="hover:bg-gray-50 transition duration-200"
@@ -164,6 +174,29 @@ const StoreList = ({
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination Section */}
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          variant="secondary"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span className="text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

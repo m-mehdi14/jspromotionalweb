@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -27,10 +27,20 @@ export const FlyerList = ({
   onDelete: (flyerId: string) => void;
   isDeleting: string;
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+  const totalPages = Math.ceil(flyers.length / itemsPerPage);
+
+  const paginatedFlyers = flyers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   if (isLoading) {
     return (
       <div className="space-y-4">
-        {[...Array(5)].map((_, index) => (
+        {[...Array(itemsPerPage)].map((_, index) => (
           <div
             key={index}
             className="w-full h-12 bg-gray-200 rounded-md animate-pulse"
@@ -51,8 +61,8 @@ export const FlyerList = ({
 
   return (
     <div className="w-full">
-      <Table className=" rounded-lg shadow-2xl p-2">
-        <TableHeader className=" bg-white">
+      <Table className="rounded-lg shadow-2xl p-2">
+        <TableHeader className="bg-white">
           <TableRow>
             <TableHead className="text-left">Image</TableHead>
             <TableHead className="text-left">Title</TableHead>
@@ -63,8 +73,8 @@ export const FlyerList = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {flyers.map((flyer) => (
-            <TableRow key={flyer.id} className="  bg-white">
+          {paginatedFlyers.map((flyer) => (
+            <TableRow key={flyer.id} className="bg-white">
               <TableCell className="w-24">
                 {flyer.image ? (
                   <Image
@@ -93,26 +103,47 @@ export const FlyerList = ({
                   onClick={() => onEdit(flyer)}
                 >
                   <Pencil className="w-4 h-4" />
-                  {/* Edit */}
                 </Button>
                 <Button
                   variant="destructive"
-                  className=" text-white hover:bg-opacity-65"
+                  className="text-white hover:bg-opacity-65"
                   onClick={() => onDelete(flyer.id)}
                   disabled={isDeleting === flyer.id}
                 >
                   <Trash
-                    className={` w-4 h-4 ${
-                      isDeleting === flyer.id && " disabled:cursor-wait"
+                    className={`w-4 h-4 ${
+                      isDeleting === flyer.id && "disabled:cursor-wait"
                     }`}
                   />
-                  {/* {isDeleting === flyer.id ? "Deleting..." : "Delete"} */}
                 </Button>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination Section */}
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          variant="secondary"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span className="text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

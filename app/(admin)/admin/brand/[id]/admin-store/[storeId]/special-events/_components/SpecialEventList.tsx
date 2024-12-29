@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -39,10 +39,19 @@ export const SpecialEventList = ({
   onEdit: (event) => void;
   onDelete: (eventId: string) => void;
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+  const totalPages = Math.ceil(events.length / itemsPerPage);
+  const paginatedEvents = events.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   if (isLoading) {
     return (
       <div className="space-y-4">
-        {[...Array(5)].map((_, index) => (
+        {[...Array(itemsPerPage)].map((_, index) => (
           <Skeleton key={index} className="h-12 w-full rounded-lg" />
         ))}
       </div>
@@ -71,7 +80,7 @@ export const SpecialEventList = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {events.map((event) => (
+          {paginatedEvents.map((event) => (
             <TableRow
               key={event.id}
               className="hover:bg-gray-50 transition duration-300"
@@ -155,6 +164,29 @@ export const SpecialEventList = ({
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          variant="secondary"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span className="text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 };
