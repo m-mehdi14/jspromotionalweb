@@ -17,6 +17,8 @@ import DashboardHeader from "./header";
 import EditStoreDetails from "./EditStoreDetails";
 import { User } from "lucide-react";
 
+
+
 interface StoreMetrics {
   totalOrders: number;
   totalRevenue: number;
@@ -42,12 +44,12 @@ export const StoreMainPage = () => {
     // @ts-expect-error
     lastLogin: user?.metadata?.lastLoginAt
       ? // @ts-expect-error
-        new Date(parseInt(user.metadata.lastLoginAt)).toLocaleString()
+      new Date(parseInt(user.metadata.lastLoginAt)).toLocaleString()
       : "N/A",
     // @ts-expect-error
     createdAt: user?.metadata?.createdAt
       ? // @ts-expect-error
-        new Date(parseInt(user.metadata.createdAt)).toLocaleString()
+      new Date(parseInt(user.metadata.createdAt)).toLocaleString()
       : "N/A",
   };
 
@@ -140,6 +142,10 @@ export const StoreMainPage = () => {
           No metrics available.
         </div>
       )} */}
+
+      <div>
+        CREATE boxes here
+      </div>
 
       {/* Info Section */}
       <div className="bg-gray-100 p-6 rounded-lg shadow-md">
