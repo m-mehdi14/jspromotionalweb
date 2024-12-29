@@ -121,3 +121,53 @@ export async function fetchFlyersCountByBrand(
     return 0;
   }
 }
+
+export async function fetchSpecialEventsCountByStore(
+  storeId: string
+): Promise<number> {
+  try {
+    if (!storeId) {
+      throw new Error("Store ID is required.");
+    }
+
+    const eventsCollection = collection(db, "specialEvents");
+
+    // Query to filter special events by storeId
+    const eventsQuery = query(
+      eventsCollection,
+      where("storeIds", "array-contains", storeId) // Assuming `storeIds` is an array
+    );
+    const snapshot = await getDocs(eventsQuery);
+
+    // Return the count of special events
+    return snapshot.size;
+  } catch (error) {
+    console.error("Error fetching special events count by store ID:", error);
+    return 0;
+  }
+}
+
+export async function fetchFlyersCountByStore(
+  storeId: string
+): Promise<number> {
+  try {
+    if (!storeId) {
+      throw new Error("Store ID is required.");
+    }
+
+    const flyersCollection = collection(db, "storeFlyers");
+
+    // Query to filter flyers by storeId
+    const flyersQuery = query(
+      flyersCollection,
+      where("storeIds", "array-contains", storeId) // Assuming `storeIds` is an array
+    );
+    const snapshot = await getDocs(flyersQuery);
+
+    // Return the count of flyers
+    return snapshot.size;
+  } catch (error) {
+    console.error("Error fetching flyers count by store ID:", error);
+    return 0;
+  }
+}
