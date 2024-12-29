@@ -65,38 +65,74 @@
 //   );
 // };
 
+///////////////////////////////////////////////////////////////
+
 "use client";
 
+import { useState, useEffect } from "react";
+import {
+  fetchFlyersCountByBrand,
+  fetchSpecialEventsCountByBrand,
+  fetchStoresCountByBrand,
+} from "@/actions/brand/count-values";
+import { JSX } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/AuthContext/authContext";
-import { Sidebar } from "lucide-react";
-import {
-  FaHome,
-  FaBoxes,
-  FaUsers,
-  FaUtensils,
-  FaShoppingCart,
-  FaCalendarAlt,
-  FaCheckCircle,
-} from "react-icons/fa";
+import { FaHome, FaCalendarAlt, FaCheckCircle } from "react-icons/fa";
 
-interface Metric {
-  value: number | string;
-  label: string;
-}
-
-export const BrandPageComponent = ({ metrics }: { metrics: Metric[] }) => {
+export const BrandPageComponent = () => {
   const { handleLogout, user } = useAuth();
+  interface Metric {
+    label: string;
+    value: number;
+    icon: JSX.Element;
+  }
 
-  const icons = [
-    <FaHome key="home" className="text-3xl text-gray-600" />,
-    <FaBoxes key="boxes" className="text-3xl text-gray-600" />,
-    <FaUsers key="users" className="text-3xl text-gray-600" />,
-    <FaUtensils key="utensils" className="text-3xl text-gray-600" />,
-    <FaShoppingCart key="shopping-cart" className="text-3xl text-gray-600" />,
-    <FaCalendarAlt key="calendar" className="text-3xl text-gray-600" />,
-    <FaCheckCircle key="check-circle" className="text-3xl text-gray-600" />,
-  ];
+  const [metrics, setMetrics] = useState<Metric[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        // Fetch metrics data
+        const [stores, specialEvents, flyers] = await Promise.all([
+          fetchStoresCountByBrand(user?.uid as string), // Replace "YOUR_BRAND_ID" dynamically
+          fetchSpecialEventsCountByBrand(user?.uid as string),
+          fetchFlyersCountByBrand(user?.uid as string),
+        ]);
+
+        // Set metrics
+        setMetrics([
+          {
+            label: "Stores",
+            value: stores,
+            icon: <FaHome className="text-3xl text-gray-600" />,
+          },
+          {
+            label: "Special Events",
+            value: specialEvents,
+            icon: <FaCalendarAlt className="text-3xl text-gray-600" />,
+          },
+          {
+            label: "Flyers",
+            value: flyers,
+            icon: <FaCheckCircle className="text-3xl text-gray-600" />,
+          },
+        ]);
+      } catch (err) {
+        console.error("Error fetching metrics:", err);
+        setError("Failed to load metrics. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMetrics();
+  }, [user?.uid]);
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -116,24 +152,36 @@ export const BrandPageComponent = ({ metrics }: { metrics: Metric[] }) => {
 
       {/* Main Content */}
       <main className="flex-1 p-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {metrics.map((metric, index) => (
-            <div
-              key={index}
-              className="flex items-center bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition"
-            >
-              <div className="mr-4">{icons[index]}</div>
-              <div>
-                <p className="text-2xl font-bold text-gray-800">
-                  {metric.value}
-                </p>
-                <p className="text-gray-500">{metric.label}</p>
-              </div>
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="loader border-t-4 border-blue-500 rounded-full w-12 h-12 animate-spin mx-auto mb-4"></div>
+              <p className="text-lg text-gray-600">Loading metrics...</p>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center h-64">
+            <p className="text-lg text-red-500">{error}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {metrics.map((metric, index) => (
+              <div
+                key={index}
+                className="flex items-center bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition"
+              >
+                <div className="mr-4">{metric.icon}</div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-800">
+                    {metric.value}
+                  </p>
+                  <p className="text-gray-500">{metric.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
 };
-

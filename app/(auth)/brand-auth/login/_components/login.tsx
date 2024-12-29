@@ -47,7 +47,8 @@ const BrandAuthLogin = () => {
 
       if (result.success) {
         toast.success(result.success);
-        router.push(`/brand/${result?.id}/stores`);
+        // router.push(`/brand/${result?.id}/stores`);
+        router.push(`/brand`);
         // Redirect or perform additional actions after successful login
       } else {
         toast.error(result.message || "Login failed. Please try again.");
