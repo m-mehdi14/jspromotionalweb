@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -36,10 +36,19 @@ export const SpecialEventList = ({
   onEdit: (event: SpecialEvent) => void;
   onDelete: (eventId: string) => void;
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+  const totalPages = Math.ceil(events.length / itemsPerPage);
+  const paginatedEvents = events.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   if (isLoading) {
     return (
       <div className="space-y-4">
-        {[...Array(5)].map((_, index) => (
+        {[...Array(itemsPerPage)].map((_, index) => (
           <Skeleton key={index} className="w-full h-12 rounded-md" />
         ))}
       </div>
@@ -56,8 +65,8 @@ export const SpecialEventList = ({
   }
 
   return (
-    <div className="w-full">
-      <Table className=" rounded-lg shadow">
+    <div className="w-full space-y-4">
+      <Table className="rounded-lg shadow">
         <TableHeader className="bg-gray-50">
           <TableRow>
             <TableHead className="text-left">Image</TableHead>
@@ -69,7 +78,7 @@ export const SpecialEventList = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {events.map((event) => (
+          {paginatedEvents.map((event) => (
             <TableRow key={event.id} className="hover:bg-gray-50">
               <TableCell className="w-24">
                 {event.image ? (
@@ -90,8 +99,6 @@ export const SpecialEventList = ({
               <TableCell className="text-gray-600 line-clamp-2">
                 {event.description || "No description available"}
               </TableCell>
-              {/* <TableCell className="text-gray-700">{event.startDate}</TableCell>
-              <TableCell className="text-gray-700">{event.endDate}</TableCell> */}
               <TableCell className="text-gray-700">
                 {new Date(event.startDate).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -113,28 +120,48 @@ export const SpecialEventList = ({
                   onClick={() => onEdit(event)}
                 >
                   <Pencil className="w-4 h-4" />
-                  {/* Edit */}
                 </Button>
                 <Button
                   variant="destructive"
-                  className=" hover:bg-red-200"
+                  className="hover:bg-red-200"
                   onClick={() => onDelete(event.id)}
                   disabled={isDeleting === event.id}
                 >
-                  {/* <Trash className="w-4 h-4" /> */}
                   <Trash
-                    className={` w-4 h-4 ${
+                    className={`w-4 h-4 ${
                       isDeleting === event.id &&
-                      " disabled:opacity-0 disabled:cursor-not-allowed"
+                      "disabled:opacity-50 disabled:cursor-not-allowed"
                     }`}
                   />
-                  {/* {isDeleting === event.id ? "Deleting..." : "Delete"} */}
                 </Button>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          variant="secondary"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span className="text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 export const FlyersComponent = () => {
@@ -19,16 +20,28 @@ export const FlyersComponent = () => {
   const [storeFlyers, setStoreFlyers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Pagination States for Brand Flyers
+  const [brandFlyersPage, setBrandFlyersPage] = useState(1);
+  const brandFlyersPerPage = 5;
+
+  // Pagination States for Store Flyers
+  const [storeFlyersPage, setStoreFlyersPage] = useState(1);
+  const storeFlyersPerPage = 5;
+
   useEffect(() => {
     const loadFlyers = async () => {
       setLoading(true);
       const response = await fetchAllFlyersAndStoreFlyers();
       if (response.success) {
         const flyers = response.data;
-        // @ts-expect-error ignore
-        setBrandFlyers(flyers?.filter((flyer) => flyer?.type === "flyer"));
-        // @ts-expect-error ignore
-        setStoreFlyers(flyers?.filter((flyer) => flyer?.type === "storeFlyer"));
+        setBrandFlyers(
+          // @ts-expect-error ignore
+          flyers?.filter((flyer) => flyer?.type === "flyer") || []
+        );
+        setStoreFlyers(
+          // @ts-expect-error ignore
+          flyers?.filter((flyer) => flyer?.type === "storeFlyer") || []
+        );
       } else {
         console.error(response.error);
       }
@@ -37,6 +50,14 @@ export const FlyersComponent = () => {
 
     loadFlyers();
   }, []);
+
+  // Pagination Logic
+  // @ts-expect-error ignore
+  const paginateFlyers = (flyers, page, itemsPerPage) => {
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return flyers.slice(startIndex, endIndex);
+  };
   // @ts-expect-error ignore
   const renderTable = (flyers) => (
     <Table>
@@ -52,8 +73,10 @@ export const FlyersComponent = () => {
       </TableHeader>
       <TableBody>
         {flyers.map(
-          // @ts-expect-error ignore
-          (flyer) => (
+          (
+            // @ts-expect-error ignore
+            flyer
+          ) => (
             <TableRow key={flyer.id}>
               <TableCell>
                 <div className="w-16 h-16 rounded overflow-hidden">
@@ -90,29 +113,110 @@ export const FlyersComponent = () => {
 
         {/* Tab Content */}
         {loading ? (
-          <div className="flex flex-col  items-center h-full space-y-3">
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
-            <Skeleton className="w-full h-12" />
+          <div className="flex flex-col items-center h-full space-y-3">
+            {[...Array(6)].map((_, index) => (
+              <Skeleton key={index} className="w-full h-12" />
+            ))}
           </div>
         ) : (
           <>
+            {/* Brand Flyers */}
             <TabsContent value="brandFlyers">
               {brandFlyers.length > 0 ? (
-                renderTable(brandFlyers)
+                <>
+                  {renderTable(
+                    paginateFlyers(
+                      brandFlyers,
+                      brandFlyersPage,
+                      brandFlyersPerPage
+                    )
+                  )}
+                  {/* Pagination */}
+                  <div className="flex justify-between items-center mt-4">
+                    <Button
+                      onClick={() =>
+                        setBrandFlyersPage((prev) => Math.max(prev - 1, 1))
+                      }
+                      disabled={brandFlyersPage === 1}
+                      variant="secondary"
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-gray-700">
+                      Page {brandFlyersPage} of{" "}
+                      {Math.ceil(brandFlyers.length / brandFlyersPerPage)}
+                    </span>
+                    <Button
+                      onClick={() =>
+                        setBrandFlyersPage((prev) =>
+                          Math.min(
+                            prev + 1,
+                            Math.ceil(brandFlyers.length / brandFlyersPerPage)
+                          )
+                        )
+                      }
+                      disabled={
+                        brandFlyersPage ===
+                        Math.ceil(brandFlyers.length / brandFlyersPerPage)
+                      }
+                      variant="secondary"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </>
               ) : (
                 <p className="text-center text-gray-500">
                   No Brand Flyers Found
                 </p>
               )}
             </TabsContent>
+
+            {/* Store Flyers */}
             <TabsContent value="storeFlyers">
               {storeFlyers.length > 0 ? (
-                renderTable(storeFlyers)
+                <>
+                  {renderTable(
+                    paginateFlyers(
+                      storeFlyers,
+                      storeFlyersPage,
+                      storeFlyersPerPage
+                    )
+                  )}
+                  {/* Pagination */}
+                  <div className="flex justify-between items-center mt-4">
+                    <Button
+                      onClick={() =>
+                        setStoreFlyersPage((prev) => Math.max(prev - 1, 1))
+                      }
+                      disabled={storeFlyersPage === 1}
+                      variant="secondary"
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-gray-700">
+                      Page {storeFlyersPage} of{" "}
+                      {Math.ceil(storeFlyers.length / storeFlyersPerPage)}
+                    </span>
+                    <Button
+                      onClick={() =>
+                        setStoreFlyersPage((prev) =>
+                          Math.min(
+                            prev + 1,
+                            Math.ceil(storeFlyers.length / storeFlyersPerPage)
+                          )
+                        )
+                      }
+                      disabled={
+                        storeFlyersPage ===
+                        Math.ceil(storeFlyers.length / storeFlyersPerPage)
+                      }
+                      variant="secondary"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </>
               ) : (
                 <p className="text-center text-gray-500">
                   No Store Flyers Found

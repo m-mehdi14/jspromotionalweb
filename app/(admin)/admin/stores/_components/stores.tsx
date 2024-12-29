@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 interface Store {
@@ -30,6 +31,8 @@ interface StoresTableProps {
 
 export const Stores: React.FC<StoresTableProps> = ({ stores }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   // Filter stores based on the search query
   const filteredStores = stores.filter((store) => {
@@ -43,6 +46,15 @@ export const Stores: React.FC<StoresTableProps> = ({ stores }) => {
       description.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
+
+  // Paginate filtered stores
+  const paginatedStores = filteredStores.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Handle pagination
+  const totalPages = Math.ceil(filteredStores.length / itemsPerPage);
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg shadow">
@@ -74,8 +86,8 @@ export const Stores: React.FC<StoresTableProps> = ({ stores }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredStores.length > 0 ? (
-            filteredStores.map((store) => (
+          {paginatedStores.length > 0 ? (
+            paginatedStores.map((store) => (
               <TableRow key={store.id}>
                 <TableCell>
                   <Image
@@ -115,6 +127,29 @@ export const Stores: React.FC<StoresTableProps> = ({ stores }) => {
           )}
         </TableBody>
       </Table>
+
+      {/* Pagination Section */}
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          variant="secondary"
+        >
+          Previous
+        </Button>
+        <span className="text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+          variant="secondary"
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import {
   Table,
   TableBody,
@@ -12,66 +13,65 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { fetchCouponGifts } from "@/actions/admin/coupon-gifts/fetch-coupons";
+import { fetchSpecialEvents } from "@/actions/admin/special-events/fetch-special-events";
 
-interface Coupon {
+interface SpecialEvent {
   id: string;
-  brandName: string;
-  storeName: string;
-  name?: string;
-  description?: string;
-  code?: string;
-  storeId?: string;
-  brandId?: string;
-  startDate?: string;
-  endDate?: string;
-  usageLimit?: number;
+  name: string;
+  description: string;
+  brandId: string;
+  storeId: string;
+  startDate: string;
+  endDate: string;
+  image: string;
 }
 
-export const CouponGiftsComponent = () => {
-  const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [filteredCoupons, setFilteredCoupons] = useState<Coupon[]>([]);
+export const SpecialEventsComponent = () => {
+  const [events, setEvents] = useState<SpecialEvent[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<SpecialEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Pagination
+  // Pagination States
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; // Items per page
+  const itemsPerPage = 5; // Number of items per page
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const loadCoupons = async () => {
+    const loadEvents = async () => {
       setLoading(true);
-      const response = await fetchCouponGifts();
-      if (response.success) {
-        setCoupons(response.data);
-        setFilteredCoupons(response.data);
-      } else {
-        console.error(response.error);
+      try {
+        const response = await fetchSpecialEvents();
+        if (response) {
+          setEvents(response);
+          setFilteredEvents(response);
+        }
+      } catch (error) {
+        console.error("Error fetching special events:", error);
       }
       setLoading(false);
     };
 
-    loadCoupons();
+    loadEvents();
   }, []);
 
   // Filter Logic
   useEffect(() => {
-    const filtered = coupons.filter(
-      (coupon) =>
-        coupon.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        coupon.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    const filtered = events.filter(
+      (event) =>
+        event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredCoupons(filtered);
-    setCurrentPage(1); // Reset to the first page when filtering
-  }, [searchQuery, coupons]);
+    setFilteredEvents(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
+  }, [searchQuery, events]);
 
   // Pagination Logic
-  const totalPages = Math.ceil(filteredCoupons.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredCoupons.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredEvents.slice(indexOfFirstItem, indexOfLastItem);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -87,7 +87,7 @@ export const CouponGiftsComponent = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">Coupon Gifts</h1>
+      <h1 className="text-2xl font-bold text-gray-800">Special Events</h1>
 
       {/* Search Bar */}
       <div className="flex flex-wrap gap-4">
@@ -108,7 +108,7 @@ export const CouponGiftsComponent = () => {
           ))}
         </div>
       ) : currentItems.length > 0 ? (
-        <>
+        <div>
           <Table>
             <TableHeader>
               <TableRow>
@@ -118,23 +118,23 @@ export const CouponGiftsComponent = () => {
                 <TableHead>Store/Brand ID</TableHead>
                 <TableHead>Start Date</TableHead>
                 <TableHead>End Date</TableHead>
-                <TableHead>Usage Limit</TableHead>
+                <TableHead>Image</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentItems.map((coupon) => (
-                <TableRow key={coupon.id}>
-                  <TableCell>{coupon.id}</TableCell>
+              {currentItems.map((event) => (
+                <TableRow key={event.id}>
+                  <TableCell>{event.id}</TableCell>
                   <TableCell className="font-medium">
-                    {coupon.name || "N/A"}
+                    {event?.name || "N/A"}
                   </TableCell>
-                  <TableCell>{coupon.code || "N/A"}</TableCell>
+                  <TableCell>{event?.description || "N/A"}</TableCell>
                   <TableCell>
-                    {coupon.storeId || coupon.brandId || "N/A"}
+                    {event.storeId || event.brandId || "N/A"}
                   </TableCell>
                   <TableCell>
-                    {coupon.startDate
-                      ? new Date(coupon.startDate).toLocaleDateString("en-US", {
+                    {event.startDate
+                      ? new Date(event.startDate).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
@@ -142,15 +142,23 @@ export const CouponGiftsComponent = () => {
                       : "N/A"}
                   </TableCell>
                   <TableCell>
-                    {coupon.endDate
-                      ? new Date(coupon.endDate).toLocaleDateString("en-US", {
+                    {event.endDate
+                      ? new Date(event.endDate).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
                         })
                       : "N/A"}
                   </TableCell>
-                  <TableCell>{coupon.usageLimit || "Unlimited"}</TableCell>
+                  <TableCell>
+                    <Image
+                      src={event.image || "https://via.placeholder.com/50"}
+                      alt={event.name}
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded"
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -176,9 +184,9 @@ export const CouponGiftsComponent = () => {
               Next
             </Button>
           </div>
-        </>
+        </div>
       ) : (
-        <p className="text-center text-gray-500">No coupon gifts found.</p>
+        <p className="text-center text-gray-500">No special events found.</p>
       )}
     </div>
   );
