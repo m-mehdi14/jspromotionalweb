@@ -43,6 +43,7 @@ export const Navigation = () => {
         "/admin/stores",
         "/admin/categories",
         "/admin/settings",
+        "/admin/special-events",
       ].includes(pathname)
     ) {
       // Admin-Specific Routes
@@ -54,6 +55,7 @@ export const Navigation = () => {
         { label: "Flyers", href: `/admin/flyers`, icon: UserCircle },
         { label: "Coupon Gifts", href: `/admin/coupon-gifts`, icon: Gift },
         { label: "Categories", href: `/admin/categories`, icon: Store },
+        { label: "Special Events", href: `/admin/special-events`, icon: Store },
         { label: "Admin Settings", href: `/admin/settings`, icon: Settings },
       ];
     } else if (
