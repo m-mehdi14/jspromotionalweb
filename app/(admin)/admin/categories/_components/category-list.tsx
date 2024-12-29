@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -33,6 +33,27 @@ export const CategoryList: React.FC<CategoryListProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8; // Number of items per page
+
+  // Pagination Logic
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = categories.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="text-center text-gray-600">Loading categories...</div>
@@ -59,7 +80,7 @@ export const CategoryList: React.FC<CategoryListProps> = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {categories.map((category) => (
+          {currentItems.map((category) => (
             <TableRow key={category.id} className="hover:bg-gray-50">
               <TableCell>{category.name}</TableCell>
               <TableCell>
@@ -91,7 +112,6 @@ export const CategoryList: React.FC<CategoryListProps> = ({
                   className="text-blue-500 flex items-center space-x-1"
                 >
                   <Edit2 className="w-4 h-4" />
-                  {/* <span>Edit</span> */}
                 </Button>
                 <Button
                   variant="ghost"
@@ -99,13 +119,33 @@ export const CategoryList: React.FC<CategoryListProps> = ({
                   className="text-red-500 flex items-center space-x-1"
                 >
                   <Trash2 className="w-4 h-4" />
-                  {/* <span>Delete</span> */}
                 </Button>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          variant="secondary"
+        >
+          Previous
+        </Button>
+        <span className="text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+          variant="secondary"
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

@@ -239,6 +239,7 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
         <Button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
+          variant={"secondary"}
         >
           Previous
         </Button>
@@ -250,6 +251,7 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
           disabled={currentPage === totalPages}
+          variant="secondary"
         >
           Next
         </Button>
