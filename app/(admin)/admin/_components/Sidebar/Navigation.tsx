@@ -33,6 +33,8 @@ export const Navigation = () => {
         { label: "Stores", href: `/admin/stores`, icon: UserCircle },
         { label: "Flyers", href: `/admin/flyers`, icon: UserCircle },
         { label: "Coupon Gifts", href: `/admin/coupon-gifts`, icon: Gift },
+        { label: "Special Events", href: `/admin/special-events`, icon: Store },
+        { label: "Reports", href: `/admin/reports`, icon: Store },
         { label: "Admin Settings", href: `/admin/settings`, icon: Settings },
       ];
     } else if (
@@ -44,6 +46,7 @@ export const Navigation = () => {
         "/admin/categories",
         "/admin/settings",
         "/admin/special-events",
+        "/admin/reports",
       ].includes(pathname)
     ) {
       // Admin-Specific Routes
@@ -56,6 +59,7 @@ export const Navigation = () => {
         { label: "Coupon Gifts", href: `/admin/coupon-gifts`, icon: Gift },
         { label: "Categories", href: `/admin/categories`, icon: Store },
         { label: "Special Events", href: `/admin/special-events`, icon: Store },
+        { label: "Reports", href: `/admin/reports`, icon: Store },
         { label: "Admin Settings", href: `/admin/settings`, icon: Settings },
       ];
     } else if (
