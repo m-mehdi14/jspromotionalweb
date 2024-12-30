@@ -1,5 +1,6 @@
 import React from "react";
 import BrandSettings from "./_components/brand-settings";
+import { RoleBasedRoute } from "@/lib/AuthContext/Role-based-Routes";
 
 interface BrandSettingPageProps {
   params: {
@@ -11,7 +12,9 @@ const BrandSettingPage = async ({ params }: BrandSettingPageProps) => {
   const { id } = await params;
   return (
     <div>
-      <BrandSettings brandId={id} />
+      <RoleBasedRoute allowedRoles={["brand"]}>
+        <BrandSettings brandId={id} />
+      </RoleBasedRoute>
     </div>
   );
 };

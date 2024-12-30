@@ -1,5 +1,6 @@
 import React from "react";
 import { BrandStore } from "./_components/brand-store";
+import { RoleBasedRoute } from "@/lib/AuthContext/Role-based-Routes";
 
 // Page for listing stores under a specific brand
 interface BrandStoresPageProps {
@@ -9,7 +10,9 @@ interface BrandStoresPageProps {
 const BrandStoresPage = ({ params }: BrandStoresPageProps) => {
   return (
     <div className="text-white">
-      <BrandStore brandId={params.id} />
+      <RoleBasedRoute allowedRoles={["brand"]}>
+        <BrandStore brandId={params.id} />
+      </RoleBasedRoute>
     </div>
   );
 };

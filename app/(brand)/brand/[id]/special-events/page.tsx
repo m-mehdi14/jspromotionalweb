@@ -1,5 +1,6 @@
 import React from "react";
 import BrandSpecialEvents from "./_components/brand-special-events";
+import { RoleBasedRoute } from "@/lib/AuthContext/Role-based-Routes";
 
 interface BrandSpecialEventsPageProps {
   params: {
@@ -13,7 +14,9 @@ const BrandSpecialEventsPage = async ({
   const { id } = await params;
   return (
     <div>
-      <BrandSpecialEvents brandId={id} />
+      <RoleBasedRoute allowedRoles={["brand"]}>
+        <BrandSpecialEvents brandId={id} />
+      </RoleBasedRoute>
     </div>
   );
 };
