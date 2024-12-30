@@ -103,7 +103,7 @@ export const FlyersComponent = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Flyers</h1>
+      <h1 className="text-2xl font-bold text-white bg-black rounded-md p-7 mb-6">Flyers</h1>
       <Tabs defaultValue="brandFlyers" className="w-full">
         {/* Tab List */}
         <TabsList className="flex justify-start items-center mb-6 py-6 px-3">

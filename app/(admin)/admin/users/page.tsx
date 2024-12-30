@@ -9,7 +9,7 @@ const AdminUsersPage = async () => {
   return (
     <RoleBasedRoute allowedRoles={["admin"]}>
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Admin Users</h1>
+        <h1 className="text-2xl font-bold mb-4 bg-black p-7 text-white rounded-md">Admin Users</h1>
         <Users initialUsers={initialUsers} /> {/* Pass initial users data */}
       </div>
     </RoleBasedRoute>

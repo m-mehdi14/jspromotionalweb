@@ -87,7 +87,7 @@ export const SpecialEventsComponent = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">Special Events</h1>
+      <h1 className="text-2xl font-bold bg-black p-7 rounded-md  text-white">Special Events</h1>
 
       {/* Search Bar */}
       <div className="flex flex-wrap gap-4">
@@ -135,19 +135,19 @@ export const SpecialEventsComponent = () => {
                   <TableCell>
                     {event.startDate
                       ? new Date(event.startDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
                       : "N/A"}
                   </TableCell>
                   <TableCell>
                     {event.endDate
                       ? new Date(event.endDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
                       : "N/A"}
                   </TableCell>
                   <TableCell>

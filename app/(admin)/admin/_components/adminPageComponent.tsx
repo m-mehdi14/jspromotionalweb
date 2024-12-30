@@ -33,9 +33,9 @@ export const AdminPageComponent = ({ metrics }: { metrics: Metric[] }) => {
   return (
     <div className="min-h-screen bg-white text-black">
       {/* Header Section */}
-      <header className="w-full flex items-center justify-between p-6 bg-gray-100 shadow-md">
-        <h1 className="text-2xl font-bold text-black">Admin Dashboard</h1>
-        <div className="flex items-center space-x-4">
+      <header className="w-full items-center justify-between p-6">
+        <h1 className="text-2xl font-bold text-white bg-black rounded-md p-7 mb-10">Admin Dashboard</h1>
+        <div className="flex items-center space-x-4 ">
           <p className="text-gray-600">Welcome, {user?.email || "Admin"}!</p>
           <Button
             onClick={handleLogout}

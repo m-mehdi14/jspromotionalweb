@@ -10,7 +10,7 @@ export const StoreDetails = ({
   brandId: string;
 }) => {
   return (
-    <div className="max-w-6xl mx-auto bg-white  rounded-lg p-8">
+    <div className=" mx-auto  rounded-lg p-8">
       {/* Header Section */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-extrabold text-gray-800">Store Details</h1>

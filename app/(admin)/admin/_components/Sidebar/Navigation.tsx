@@ -84,6 +84,11 @@ export const Navigation = () => {
           href: `/admin/brand/${brandId}/admin-store/${storeId}/coupon-gifts`,
           icon: Gift,
         },
+        {
+          label: "Back to Admin",
+          href: `/admin/brand`,
+          icon: Fullscreen,
+        },
         // {
         //   label: "Store Settings",
         //   href: `/admin/brand/${brandId}/admin-store/${storeId}/settings`,
@@ -117,6 +122,11 @@ export const Navigation = () => {
           label: "Brand Coupon Gifts",
           href: `/admin/brand/${brandId}/admin-coupon-gift`,
           icon: Gift,
+        },
+        {
+          label: "Back to Admin",
+          href: `/admin/brand`,
+          icon: Fullscreen,
         },
         // {
         //   label: "Brand Settings",

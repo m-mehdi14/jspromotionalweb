@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { fetchAdminSettings } from "@/actions/admin/settings/fetch-admin-settings";
 import { saveAdminSettings } from "@/actions/admin/settings/save-admin-settings";
-import { updateAdminPassword } from "@/actions/admin/settings/update-admin-settings"; // New action for password update
+import { updateAdminPassword } from "@/actions/admin/settings/update-admin-settings";
 import { useAuth } from "@/lib/AuthContext/authContext";
 
 const AdminSettings = () => {
@@ -102,76 +102,81 @@ const AdminSettings = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold mb-8">Admin Settings</h1>
+    <div className="min-h-screen p-8">
+      <h1 className="text-start bg-black p-7 rounded-md text-3xl font-bold mb-6 text-white">
+        Admin Settings
+      </h1>
       {isLoading ? (
-        <div>Loading settings...</div>
+        <div className="text-center text-gray-600">Loading settings...</div>
       ) : (
-        <>
-          <form className="space-y-4 mb-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          <form className="flex-1 space-y-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Profile Settings
+            </h2>
             <div>
-              <label className="block text-sm font-medium mb-2">Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Name
+              </label>
               <Input
                 placeholder="Enter name"
                 value={settings.name}
                 onChange={(e) =>
                   setSettings((prev) => ({ ...prev, name: e.target.value }))
                 }
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
               <Input
                 placeholder="Enter email"
                 value={settings.email}
                 onChange={(e) =>
                   setSettings((prev) => ({ ...prev, email: e.target.value }))
                 }
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Profile Picture
               </label>
               <Input
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
               />
               {typeof settings.image === "string" && (
-                <Image
-                  src={settings.image}
-                  alt="Profile"
-                  width={128}
-                  height={128}
-                  className="w-32 h-32 mt-4 rounded-md"
-                />
-              )}
-              {settings.image instanceof ArrayBuffer && (
-                <Image
-                  src={URL.createObjectURL(new Blob([settings.image]))}
-                  alt="Profile"
-                  width={128}
-                  height={128}
-                  className="w-32 h-32 mt-4 rounded-md"
-                />
+                <div className="mt-4 flex justify-center">
+                  <Image
+                    src={settings.image}
+                    alt="Profile"
+                    width={128}
+                    height={128}
+                    className="w-32 h-32 rounded-full border"
+                  />
+                </div>
               )}
             </div>
             <Button
               onClick={handleSaveSettings}
               disabled={isSubmitting}
-              className={`bg-${
-                isSubmitting ? "gray" : "green"
-              }-600 hover:bg-green-700`}
+              className={`w-full bg-${isSubmitting ? "gray" : "green"}-600 hover:bg-green-700 text-white py-2 rounded-md`}
             >
               {isSubmitting ? "Saving..." : "Save Settings"}
             </Button>
           </form>
 
-          <form className="space-y-4">
-            <h2 className="text-2xl font-bold mb-4">Update Password</h2>
+          <form className="flex-1 space-y-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Update Password
+            </h2>
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Current Password
               </label>
               <Input
@@ -184,10 +189,11 @@ const AdminSettings = () => {
                     currentPassword: e.target.value,
                   }))
                 }
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 New Password
               </label>
               <Input
@@ -200,10 +206,11 @@ const AdminSettings = () => {
                     newPassword: e.target.value,
                   }))
                 }
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Confirm Password
               </label>
               <Input
@@ -216,19 +223,18 @@ const AdminSettings = () => {
                     confirmPassword: e.target.value,
                   }))
                 }
+                className="w-full border border-gray-300 rounded-md px-3 py-2 mb-36"
               />
             </div>
             <Button
               onClick={handleUpdatePassword}
               disabled={isPasswordSubmitting}
-              className={`bg-${
-                isPasswordSubmitting ? "gray" : "blue"
-              }-600 hover:bg-blue-700`}
+              className={`w-full bg-${isPasswordSubmitting ? "gray" : "blue"}-600 hover:bg-blue-700 text-white py-2 rounded-md`}
             >
               {isPasswordSubmitting ? "Updating..." : "Update Password"}
             </Button>
           </form>
-        </>
+        </div>
       )}
     </div>
   );

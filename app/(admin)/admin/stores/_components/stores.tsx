@@ -59,8 +59,11 @@ export const Stores: React.FC<StoresTableProps> = ({ stores }) => {
   return (
     <div className="p-6 bg-gray-50 rounded-lg shadow">
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-gray-800">Stores</h2>
+      <div className=" justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold text-white bg-black p-7 rounded-md">Stores</h2>
+
+      </div>
+      <div>
         {/* Search Input */}
         <Input
           type="text"
@@ -107,10 +110,10 @@ export const Stores: React.FC<StoresTableProps> = ({ stores }) => {
                 <TableCell>
                   {store.createdAt
                     ? new Date(store.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })
                     : "N/A"}
                 </TableCell>
               </TableRow>

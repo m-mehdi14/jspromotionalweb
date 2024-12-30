@@ -87,7 +87,7 @@ export const CouponGiftsComponent = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">Coupon Gifts</h1>
+      <h1 className="text-2xl font-bold text-white bg-black p-7 rounded-md">Coupon Gifts</h1>
 
       {/* Search Bar */}
       <div className="flex flex-wrap gap-4">
@@ -135,19 +135,19 @@ export const CouponGiftsComponent = () => {
                   <TableCell>
                     {coupon.startDate
                       ? new Date(coupon.startDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
                       : "N/A"}
                   </TableCell>
                   <TableCell>
                     {coupon.endDate
                       ? new Date(coupon.endDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
                       : "N/A"}
                   </TableCell>
                   <TableCell>{coupon.usageLimit || "Unlimited"}</TableCell>
