@@ -1,10 +1,13 @@
 import React from "react";
 import { SpecialEventsComponent } from "./_components/special-events";
+import { RoleBasedRoute } from "@/lib/AuthContext/Role-based-Routes";
 
 const AdminSpecialEvents = () => {
   return (
     <div>
-      <SpecialEventsComponent />
+      <RoleBasedRoute allowedRoles={["admin"]}>
+        <SpecialEventsComponent />
+      </RoleBasedRoute>
     </div>
   );
 };

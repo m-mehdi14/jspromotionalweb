@@ -1,10 +1,13 @@
 import React from "react";
 import { AdminCategories } from "./_components/admin-categories";
+import { RoleBasedRoute } from "@/lib/AuthContext/Role-based-Routes";
 
 const AdminCategoriesPage = () => {
   return (
     <div>
-      <AdminCategories />
+      <RoleBasedRoute allowedRoles={["admin"]}>
+        <AdminCategories />
+      </RoleBasedRoute>
     </div>
   );
 };
