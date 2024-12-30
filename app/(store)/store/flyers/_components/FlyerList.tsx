@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PencilIcon, Trash } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface Flyer {
   id: string;
@@ -28,10 +29,17 @@ export const FlyerList: React.FC<FlyerListProps> = ({
   onDelete,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 8;
 
-  const totalPages = Math.ceil(flyers.length / itemsPerPage);
-  const paginatedFlyers = flyers.slice(
+  const filteredFlyers = flyers.filter(
+    (flyer) =>
+      flyer.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      flyer.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredFlyers.length / itemsPerPage);
+  const paginatedFlyers = filteredFlyers.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -40,12 +48,28 @@ export const FlyerList: React.FC<FlyerListProps> = ({
     return <div className="text-center">Loading flyers...</div>;
   }
 
-  if (flyers.length === 0) {
-    return <div className="text-center text-gray-400">No flyers found.</div>;
+  if (filteredFlyers.length === 0) {
+    return (
+      <div className="text-center text-gray-400">
+        No flyers found matching the search query.
+      </div>
+    );
   }
 
   return (
     <div>
+      {/* Search Bar */}
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Search by title or description..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full max-w-md"
+        />
+      </div>
+
+      {/* Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full border-collapse border border-gray-200">
           <thead>
@@ -95,14 +119,12 @@ export const FlyerList: React.FC<FlyerListProps> = ({
                 <td className="px-4 py-2">{flyer.validTo}</td>
                 <td className="px-4 py-2 flex justify-center space-x-2">
                   <Button variant="secondary" onClick={() => onEdit(flyer)}>
-                    {/* Edit */}
                     <PencilIcon />
                   </Button>
                   <Button
                     variant="destructive"
                     onClick={() => onDelete(flyer.id)}
                   >
-                    {/* Delete */}
                     <Trash />
                   </Button>
                 </td>

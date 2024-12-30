@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+// import Image from "next/image";
 
 export const CouponGiftFormDialog = ({
   isOpen,
@@ -69,19 +69,19 @@ export const CouponGiftFormDialog = ({
     }
   }, [coupon]);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({
-          ...prev,
-          image: reader.result as string | null,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         image: reader.result as string | null,
+  //       }));
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   const handleGenerateCode = () => {
     event?.preventDefault();
@@ -128,7 +128,7 @@ export const CouponGiftFormDialog = ({
               setFormData((prev) => ({ ...prev, discount: e.target.value }))
             }
           />
-          <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          {/* <Input type="file" accept="image/*" onChange={handleImageUpload} />
           {formData.image && (
             <Image
               src={formData.image}
@@ -137,7 +137,7 @@ export const CouponGiftFormDialog = ({
               height={128}
               className="w-32 h-auto mt-4 rounded-md"
             />
-          )}
+          )} */}
           <Input
             type="date"
             value={formData.startDate}

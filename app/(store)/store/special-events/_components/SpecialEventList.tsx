@@ -1,77 +1,9 @@
-// "use client";
-
-// import React from "react";
-// import Image from "next/image";
-// import { Button } from "@/components/ui/button";
-
-// interface SpecialEvent {
-//   id: string;
-//   name: string;
-//   description: string;
-//   image?: string;
-//   startDate: string;
-//   endDate: string;
-// }
-
-// interface SpecialEventListProps {
-//   events: SpecialEvent[];
-//   isLoading: boolean;
-//   onEdit: (event: SpecialEvent) => void;
-//   onDelete: (id: string) => void;
-// }
-
-// export const SpecialEventList: React.FC<SpecialEventListProps> = ({
-//   events,
-//   isLoading,
-//   onEdit,
-//   onDelete,
-// }) => {
-//   if (isLoading) {
-//     return <div className="text-center">Loading events...</div>;
-//   }
-
-//   if (events.length === 0) {
-//     return <div className="text-center text-gray-400">No events found.</div>;
-//   }
-
-//   return (
-//     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-//       {events.map((event) => (
-//         <div key={event.id} className="bg-white p-4 rounded-lg shadow">
-//           <h2 className="text-xl font-semibold">{event.name}</h2>
-//           <p>{event.description}</p>
-//           <Image
-//             src={event.image || "https://via.placeholder.com/128"}
-//             alt={event.name}
-//             width={500}
-//             height={300}
-//             className="w-full rounded-md mt-4"
-//           />
-//           <p>
-//             <strong>Start Date:</strong> {event.startDate}
-//           </p>
-//           <p>
-//             <strong>End Date:</strong> {event.endDate}
-//           </p>
-//           <div className="flex justify-end space-x-4 mt-4">
-//             <Button variant="secondary" onClick={() => onEdit(event)}>
-//               Edit
-//             </Button>
-//             <Button variant="destructive" onClick={() => onDelete(event.id)}>
-//               Delete
-//             </Button>
-//           </div>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
 "use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface SpecialEvent {
   id: string;
@@ -95,11 +27,18 @@ export const SpecialEventList: React.FC<SpecialEventListProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  const totalPages = Math.ceil(events.length / itemsPerPage);
-  const paginatedEvents = events.slice(
+  const filteredEvents = events.filter(
+    (event) =>
+      event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
+  const paginatedEvents = filteredEvents.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -108,12 +47,28 @@ export const SpecialEventList: React.FC<SpecialEventListProps> = ({
     return <div className="text-center">Loading events...</div>;
   }
 
-  if (events.length === 0) {
-    return <div className="text-center text-gray-400">No events found.</div>;
+  if (filteredEvents.length === 0) {
+    return (
+      <div className="text-center text-gray-400">
+        No events found matching your search query.
+      </div>
+    );
   }
 
   return (
     <div>
+      {/* Search Bar */}
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Search by name or description..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full max-w-md"
+        />
+      </div>
+
+      {/* Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full border-collapse border border-gray-200">
           <thead>
