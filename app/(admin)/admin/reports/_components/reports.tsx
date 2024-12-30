@@ -33,7 +33,7 @@ interface AdminReportsProps {
 }
 
 export const AdminReports: React.FC<AdminReportsProps> = ({ metrics }) => {
-  const { handleLogout, user } = useAuth();
+  const { user } = useAuth();
 
   //   const handleGenerateReport = () => {
   //     // Logic to generate and download reports based on metrics
@@ -91,18 +91,12 @@ export const AdminReports: React.FC<AdminReportsProps> = ({ metrics }) => {
         </h1>
         <div className="flex items-center justify-between">
           <p className="text-gray-600">Welcome, {user?.email || "Admin"}!</p>
-          <Button
+          {/* <Button
             onClick={handleLogout}
             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
           >
             Logout
-          </Button>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main>
-        <div className="mb-8 text-center">
+          </Button> */}
           <Button
             onClick={handleGenerateReport}
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg"
@@ -110,6 +104,13 @@ export const AdminReports: React.FC<AdminReportsProps> = ({ metrics }) => {
             Generate Report
           </Button>
         </div>
+      </header>
+
+      {/* Main Content */}
+      <main>
+        {/* <div className="mb-8 text-center">
+         
+        </div> */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Metrics Overview */}
