@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface CouponGift {
   id: string;
@@ -28,11 +29,23 @@ export const CouponGiftList: React.FC<CouponGiftListProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  const totalPages = Math.ceil(couponGifts.length / itemsPerPage);
-  const paginatedCoupons = couponGifts.slice(
+  // Filter coupons based on the search query
+  const filteredCoupons = couponGifts.filter((coupon) => {
+    const name = coupon.name.toLowerCase();
+    const code = coupon.code.toLowerCase();
+
+    return (
+      name.includes(searchQuery.toLowerCase()) ||
+      code.includes(searchQuery.toLowerCase())
+    );
+  });
+
+  const totalPages = Math.ceil(filteredCoupons.length / itemsPerPage);
+  const paginatedCoupons = filteredCoupons.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -41,16 +54,28 @@ export const CouponGiftList: React.FC<CouponGiftListProps> = ({
     return <div className="text-center">Loading coupon gifts...</div>;
   }
 
-  if (couponGifts.length === 0) {
+  if (filteredCoupons.length === 0) {
     return (
       <div className="text-center text-gray-400">
-        No coupon gifts found. Add a new one to get started!
+        No coupon gifts found matching your search query.
       </div>
     );
   }
 
   return (
     <div>
+      {/* Search Bar */}
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Search by name or code..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full max-w-md"
+        />
+      </div>
+
+      {/* Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full border-collapse border border-gray-200">
           <thead>
