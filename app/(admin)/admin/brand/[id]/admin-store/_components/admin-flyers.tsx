@@ -92,17 +92,28 @@ const AdminFlyers = ({ brandId }: { brandId: string }) => {
       const favorites = await getFavoritesFromFirebase();
 
       // Extract FCM tokens
-      const fcmTokens = favorites
-        // @ts-expect-error ignore
-        .map((fav) => fav.fcmToken)
-        .filter((token) => token);
+      // const fcmTokens = favorites
+      //   // @ts-expect-error ignore
+      //   .map((fav) => fav.fcmToken)
+      //   .filter((token) => token);
+      // Extract unique FCM tokens
+      const fcmTokens = [
+        ...new Set(
+          favorites
+            // @ts-expect-error ignore
+            .map((fav) => fav.fcmToken)
+            .filter((token) => token) // Remove falsy values (e.g., null, undefined)
+        ),
+      ];
 
       if (fcmTokens.length > 0) {
         // Prepare and send notifications
-        const notificationTitle = flyerData.title || "New Flyer Available!";
-        const notificationBody =
-          // @ts-expect-error ignore
-          flyerData.body || "Check out our latest flyer.";
+        const notificationTitle = editingFlyer
+          ? `Flyer Updated: ${flyerData.title}`
+          : `New Flyer: ${flyerData.title}`;
+        const notificationBody = editingFlyer
+          ? `The flyer "${flyerData.title}" has been updated. Check out the latest details!`
+          : `A new flyer "${flyerData.title}" is now available. Don't miss out on our latest offers!`;
 
         await sendNotification(fcmTokens, notificationTitle, notificationBody);
         console.log("Notifications sent successfully.");

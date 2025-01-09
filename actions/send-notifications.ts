@@ -8,11 +8,14 @@ export const sendNotification = async (
   body: string
 ) => {
   try {
-    const response = await axios.post("/notifications/send", {
-      tokens,
-      title,
-      body,
-    });
+    const response = await axios.post(
+      `${process.env.BACKEND_URL}/notifications/send`,
+      {
+        tokens,
+        title,
+        body,
+      }
+    );
     console.log("Notification sent successfully:", response.data);
     return response.data;
   } catch (error) {

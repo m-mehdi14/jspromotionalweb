@@ -21,6 +21,7 @@ export async function deleteFlyer(
         data: { flyerId },
       }
     );
+    console.log("🚀 ~ response:", response);
 
     // Handle success response
     if (response.status === 200) {

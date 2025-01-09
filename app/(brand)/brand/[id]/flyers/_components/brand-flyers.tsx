@@ -9,6 +9,8 @@ import { deleteFlyer } from "@/actions/brand/flyers/delete-flyers";
 import { FlyerList } from "./FlyerList";
 import { FlyerFormDialog } from "./FlyerFormDialog";
 import { Button } from "@/components/ui/button";
+import { getFavoritesFromFirebase } from "@/actions/get-favourites";
+import { sendNotification } from "@/actions/send-notifications";
 
 interface BrandFlyersProps {
   brandId: string;
@@ -43,24 +45,95 @@ const BrandFlyers = ({ brandId }: BrandFlyersProps) => {
     brandId: string;
   }
 
-  const handleSaveFlyer = async (flyerData: FlyerData) => {
+  // const handleSaveFlyer = async (flyerData: FlyerData) => {
+  //   setIsSubmitting(true);
+  //   try {
+  //     if (editingFlyer) {
+  //       await editFlyer(editingFlyer.id, flyerData);
+  //       toast.success("Flyer updated successfully!");
+  //     } else {
+  //       await saveFlyer(flyerData);
+  //       toast.success("Flyer created successfully!");
+  //     }
+  //     await fetchFlyers();
+  //     setIsDialogOpen(false);
+  //     setEditingFlyer(null);
+  //   } catch (error) {
+  //     console.error("Error saving flyer:", error);
+  //     toast.error("Failed to save flyer.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+  // @ts-expect-error ignore
+  const handleSaveFlyer = async (flyerData: Omit<Flyer, "id">) => {
     setIsSubmitting(true);
+
     try {
+      let isEdit = false;
+      let response;
+
       if (editingFlyer) {
-        await editFlyer(editingFlyer.id, flyerData);
-        toast.success("Flyer updated successfully!");
+        // If editing, call editFlyer
+        response = await editFlyer(editingFlyer.id, flyerData);
+        isEdit = true;
       } else {
-        await saveFlyer(flyerData);
-        toast.success("Flyer created successfully!");
+        // If creating, call saveFlyer
+        response = await saveFlyer(flyerData);
       }
+
+      if (response?.success) {
+        toast.success(
+          isEdit ? "Flyer updated successfully!" : "Flyer created successfully!"
+        );
+      } else {
+        toast.error(response?.message || "Failed to save flyer.");
+        return;
+      }
+
+      // Fetch all favorites to get FCM tokens
+      const favorites = await getFavoritesFromFirebase();
+
+      // Extract FCM tokens
+      // const fcmTokens = favorites
+      //   // @ts-expect-error ignore
+      //   .map((fav) => fav.fcmToken)
+      //   .filter((token) => token);
+      // Extract unique FCM tokens
+      const fcmTokens = [
+        ...new Set(
+          favorites
+            // @ts-expect-error ignore
+            .map((fav) => fav.fcmToken)
+            .filter((token) => token) // Remove falsy values (e.g., null, undefined)
+        ),
+      ];
+
+      if (fcmTokens.length > 0) {
+        // Prepare and send notifications
+        const notificationTitle = editingFlyer
+          ? `Flyer Updated: ${flyerData.title}`
+          : `New Flyer: ${flyerData.title}`;
+        const notificationBody = editingFlyer
+          ? `The flyer "${flyerData.title}" has been updated. Check out the latest details!`
+          : `A new flyer "${flyerData.title}" is now available. Don't miss out on our latest offers!`;
+
+        await sendNotification(fcmTokens, notificationTitle, notificationBody);
+        console.log("Notifications sent successfully.");
+      } else {
+        console.log("No FCM tokens found to send notifications.");
+      }
+
+      // Fetch latest flyers and reset state
       await fetchFlyers();
-      setIsDialogOpen(false);
-      setEditingFlyer(null);
+      setIsDialogOpen(false); // Close dialog
+      setEditingFlyer(null); // Reset editing flyer
     } catch (error) {
-      console.error("Error saving flyer:", error);
-      toast.error("Failed to save flyer.");
+      console.error("Error in handleSaveFlyer:", error);
+      toast.error("An unexpected error occurred while saving the flyer.");
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Reset submitting state
     }
   };
 
@@ -112,7 +185,6 @@ const BrandFlyers = ({ brandId }: BrandFlyersProps) => {
       <FlyerFormDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        // @ts-expect-error ignore
         onSave={handleSaveFlyer}
         // @ts-expect-error ignore
         flyer={editingFlyer}

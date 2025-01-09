@@ -10,6 +10,8 @@ import { fetchFlyersByStore } from "@/actions/store/flyers/fetch-flyers";
 import { editFlyer } from "@/actions/store/flyers/edit-flyers";
 import { saveFlyer } from "@/actions/store/flyers/save-flyers";
 import { deleteFlyer } from "@/actions/store/flyers/delete-flyers";
+import { getFavoritesFromFirebase } from "@/actions/get-favourites";
+import { sendNotification } from "@/actions/send-notifications";
 
 const StoreFlyers = () => {
   const { user } = useAuth();
@@ -39,29 +41,99 @@ const StoreFlyers = () => {
   }, [storeId]);
 
   // @ts-expect-error ignore
-  const handleSaveFlyer = async (flyerData: FlyerData) => {
-    if (!storeId) {
-      toast.error("Store ID is missing.");
-      return;
-    }
+  // const handleSaveFlyer = async (flyerData: FlyerData) => {
+  //   if (!storeId) {
+  //     toast.error("Store ID is missing.");
+  //     return;
+  //   }
 
+  //   setIsSubmitting(true);
+  //   try {
+  //     if (editingFlyer) {
+  //       await editFlyer(editingFlyer.id, flyerData);
+  //       toast.success("Flyer updated successfully!");
+  //     } else {
+  //       await saveFlyer({ ...flyerData, storeId });
+  //       toast.success("Flyer created successfully!");
+  //     }
+  //     await fetchFlyers();
+  //     setIsDialogOpen(false);
+  //     setEditingFlyer(null);
+  //   } catch (error) {
+  //     console.error("Error saving flyer:", error);
+  //     toast.error("Failed to save flyer.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+  const handleSaveFlyer = async (flyerData: FlyerData) => {
     setIsSubmitting(true);
+
     try {
+      let isEdit = false;
+      let response;
+
       if (editingFlyer) {
-        await editFlyer(editingFlyer.id, flyerData);
-        toast.success("Flyer updated successfully!");
+        // If editing, call editFlyer
+        response = await editFlyer(editingFlyer.id, flyerData);
+        isEdit = true;
       } else {
-        await saveFlyer({ ...flyerData, storeId });
-        toast.success("Flyer created successfully!");
+        // If creating, call saveFlyer
+        response = await saveFlyer(flyerData);
       }
+
+      if (response?.success) {
+        toast.success(
+          isEdit ? "Flyer updated successfully!" : "Flyer created successfully!"
+        );
+      } else {
+        toast.error(response?.message || "Failed to save flyer.");
+        return;
+      }
+
+      // Fetch all favorites to get FCM tokens
+      const favorites = await getFavoritesFromFirebase();
+
+      // Extract FCM tokens
+      // const fcmTokens = favorites
+      //   // @ts-expect-error ignore
+      //   .map((fav) => fav.fcmToken)
+      //   .filter((token) => token);
+      // Extract unique FCM tokens
+      const fcmTokens = [
+        ...new Set(
+          favorites
+            // @ts-expect-error ignore
+            .map((fav) => fav.fcmToken)
+            .filter((token) => token) // Remove falsy values (e.g., null, undefined)
+        ),
+      ];
+
+      if (fcmTokens.length > 0) {
+        // Prepare and send notifications
+        const notificationTitle = editingFlyer
+          ? `Flyer Updated: ${flyerData.title}`
+          : `New Flyer: ${flyerData.title}`;
+        const notificationBody = editingFlyer
+          ? `The flyer "${flyerData.title}" has been updated. Check out the latest details!`
+          : `A new flyer "${flyerData.title}" is now available. Don't miss out on our latest offers!`;
+
+        await sendNotification(fcmTokens, notificationTitle, notificationBody);
+        console.log("Notifications sent successfully.");
+      } else {
+        console.log("No FCM tokens found to send notifications.");
+      }
+
+      // Fetch latest flyers and reset state
       await fetchFlyers();
-      setIsDialogOpen(false);
-      setEditingFlyer(null);
+      setIsDialogOpen(false); // Close dialog
+      setEditingFlyer(null); // Reset editing flyer
     } catch (error) {
-      console.error("Error saving flyer:", error);
-      toast.error("Failed to save flyer.");
+      console.error("Error in handleSaveFlyer:", error);
+      toast.error("An unexpected error occurred while saving the flyer.");
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Reset submitting state
     }
   };
 
@@ -85,9 +157,7 @@ const StoreFlyers = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">
-          Manage Flyers for Store
-        </h1>
+        <h1 className="text-3xl font-bold">Manage Flyers for Store</h1>
         <Button
           className="bg-blue-600 text-white"
           onClick={() => {
