@@ -3,7 +3,9 @@
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, doc, setDoc } from "firebase/firestore";
 import crypto from "crypto";
+// import bwipjs from "bwip-js"; // Install bwip-js for barcode generation
 import { db } from "@/config/firebase";
+import QRCode from "qrcode";
 
 // Function to hash passwords using SHA-256 with salt
 const hashPassword = (password: string, salt: string): string => {
@@ -11,15 +13,38 @@ const hashPassword = (password: string, salt: string): string => {
   return crypto.createHash("sha256").update(saltedPassword).digest("hex");
 };
 
-interface FirebaseError {
-  code?: string;
-  message: string;
-  response?: {
-    data: {
-      message?: string;
-    };
-  };
-}
+// Function to generate a barcode as a Base64 string
+// const generateBarcode = async (data: string): Promise<string> => {
+//   return new Promise((resolve, reject) => {
+//     bwipjs.toBuffer(
+//       {
+//         bcid: "code128", // Barcode type
+//         text: data, // Data to encode
+//         scale: 3, // Scale factor
+//         height: 10, // Bar height, in millimeters
+//         includetext: true, // Include human-readable text
+//         textxalign: "center", // Align text
+//       },
+//       (err, png) => {
+//         if (err) {
+//           reject(err);
+//         } else {
+//           resolve(`data:image/png;base64,${png.toString("base64")}`);
+//         }
+//       }
+//     );
+//   });
+// };
+
+// Function to generate a QR code as a Base64 string
+const generateQRCode = async (data: string): Promise<string> => {
+  try {
+    return await QRCode.toDataURL(data); // Generate a QR Code as a Base64 string
+  } catch (error) {
+    console.log("🚀 ~ generateQRCode ~ error:", error);
+    return "";
+  }
+};
 
 // Action to save a brand
 export async function saveBrand(brandData: {
@@ -49,6 +74,11 @@ export async function saveBrand(brandData: {
     const salt = crypto.randomBytes(16).toString("hex");
     const hashedPassword = hashPassword(password, salt);
 
+    // Generate a barcode for the brand
+    // const barcode = await generateBarcode(brandId);
+    // const barcode = await generateBarcode(name); // we have to generate brandcode with brand Name .
+
+    const qrCode = await generateQRCode(name);
     // Prepare brand data to be saved in Firestore
     const brandDoc = {
       name,
@@ -59,8 +89,10 @@ export async function saveBrand(brandData: {
       hashedPassword, // Save hashed password
       salt, // Save salt for validation
       createdAt: new Date().toISOString(),
-      type: "brand", // type brand for when brand is try to login, so this type field will help there
+      type: "brand", // Type field for brand login
       postalCode,
+      // barcode, // Add barcode to the document
+      qrCode, // Add QR code to the document
     };
 
     // Save brand data to Firestore
@@ -71,13 +103,14 @@ export async function saveBrand(brandData: {
       success: true,
       message: `Brand '${name}' has been successfully created with login credentials.`,
     };
-  } catch (error: FirebaseError | unknown) {
-    const err = error as FirebaseError;
-    console.error("Error creating brand:", err);
-
+  } catch (error) {
+    console.error("Error creating brand:", error);
     let message = "An error occurred while creating the brand.";
-    if (err.code) {
-      switch (err.code) {
+
+    // @ts-expect-error ignore
+    if (error.code) {
+      // @ts-expect-error ignore
+      switch (error.code) {
         case "auth/email-already-in-use":
           message = "The email address is already in use by another account.";
           break;

@@ -3,23 +3,48 @@
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, doc, setDoc } from "firebase/firestore";
 import crypto from "crypto";
+// import bwipjs from "bwip-js"; // Import the barcode generation library
 import { db } from "@/config/firebase";
-
+import { FirebaseError } from "firebase/app";
+import QRCode from "qrcode"; // Import the QR Code generation library
 // Function to hash passwords using SHA-256 with salt
 const hashPassword = (password: string, salt: string): string => {
   const saltedPassword = password + salt;
   return crypto.createHash("sha256").update(saltedPassword).digest("hex");
 };
 
-interface FirebaseError {
-  code?: string;
-  message: string;
-  response?: {
-    data: {
-      message?: string;
-    };
-  };
-}
+// Function to generate a barcode as a Base64 string
+// const generateBarcode = async (data: string): Promise<string> => {
+//   return new Promise((resolve, reject) => {
+//     bwipjs.toBuffer(
+//       {
+//         bcid: "code128", // Barcode type
+//         text: data, // Data to encode
+//         scale: 3, // Scale factor
+//         height: 10, // Bar height, in millimeters
+//         includetext: true, // Include human-readable text
+//         textxalign: "center", // Align text
+//       },
+//       (err, png) => {
+//         if (err) {
+//           reject(err);
+//         } else {
+//           resolve(`data:image/png;base64,${png.toString("base64")}`);
+//         }
+//       }
+//     );
+//   });
+// };
+
+// Function to generate a QR code as a Base64 string
+const generateQRCode = async (data: string): Promise<string> => {
+  try {
+    return await QRCode.toDataURL(data); // Generate a QR Code as a Base64 string
+  } catch (error) {
+    console.error("Failed to generate QR Code", error);
+    return "";
+  }
+};
 
 // Server Action to save a store
 export async function saveStore(storeData: {
@@ -49,6 +74,13 @@ export async function saveStore(storeData: {
     const salt = crypto.randomBytes(16).toString("hex");
     const hashedPassword = hashPassword(password, salt);
 
+    // Generate a barcode for the store
+    // const barcode = await generateBarcode(storeId);
+    // const barcode = await generateBarcode(name);
+
+    // Generate a QR code for the store
+    const qrCode = await generateQRCode(name);
+
     // Prepare store data to be saved in Firestore
     const storeDoc = {
       name,
@@ -61,6 +93,8 @@ export async function saveStore(storeData: {
       createdAt: new Date().toISOString(),
       type: "store", // Type 'store' for store-specific logic
       postalCode,
+      // barcode, // Add barcode to the store document
+      qrCode, // Add QR code to the store document
     };
 
     // Save store data to Firestore under the stores collection
@@ -71,13 +105,12 @@ export async function saveStore(storeData: {
       success: true,
       message: `Store '${name}' has been successfully created and associated with the brand.`,
     };
-  } catch (error: FirebaseError | unknown) {
-    const err = error as FirebaseError;
-    console.error("Error creating store:", err);
+  } catch (error) {
+    console.error("Error creating store:", error);
     let errorMessage = "An error occurred while creating the store.";
-    if (err.code === "auth/email-already-in-use") {
+    if ((error as FirebaseError).code === "auth/email-already-in-use") {
       errorMessage = "The email address is already in use.";
-    } else if (err.code === "auth/weak-password") {
+    } else if ((error as FirebaseError).code === "auth/weak-password") {
       errorMessage = "The password is too weak.";
     }
     return {
