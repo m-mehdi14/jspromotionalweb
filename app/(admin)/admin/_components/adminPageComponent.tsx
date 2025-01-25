@@ -11,6 +11,7 @@ import {
   FaCalendarAlt,
   FaCheckCircle,
 } from "react-icons/fa";
+import { IoIosLogOut } from "react-icons/io";
 
 interface Metric {
   value: number | string;
@@ -34,14 +35,17 @@ export const AdminPageComponent = ({ metrics }: { metrics: Metric[] }) => {
     <div className="min-h-screen bg-white text-black">
       {/* Header Section */}
       <header className="w-full items-center justify-between p-6">
-        <h1 className="text-2xl font-bold text-white bg-black rounded-md p-7 mb-10">Admin Dashboard</h1>
-        <div className="flex items-center space-x-4 ">
+        <h1 className="text-2xl font-bold text-white bg-black rounded-md p-7 mb-10">
+          Admin Dashboard
+        </h1>
+        <div className="flex items-center space-x-4">
           <p className="text-gray-600">Welcome, {user?.email || "Admin"}!</p>
           <Button
             onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded flex items-center space-x-2"
+            title="Logout"
           >
-            Logout
+            <IoIosLogOut className="text-xl" />
           </Button>
         </div>
       </header>

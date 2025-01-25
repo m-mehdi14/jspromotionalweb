@@ -5,6 +5,15 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { fetchCategories } from "@/actions/admin/categories/fetch-categories";
+import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface FlyerFormDialogProps {
   isOpen: boolean;
@@ -47,6 +56,28 @@ export const FlyerFormDialog: React.FC<FlyerFormDialogProps> = ({
     validTo: "",
   });
 
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const categoriesData = (await fetchCategories()) as {
+          id: string;
+          name: string;
+        }[];
+        setCategories(categoriesData); // Populate categories
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load categories.");
+      }
+    };
+
+    loadCategories();
+  }, []);
+
   useEffect(() => {
     if (flyer) {
       setFormData(flyer);
@@ -76,7 +107,13 @@ export const FlyerFormDialog: React.FC<FlyerFormDialogProps> = ({
   };
 
   const handleSubmit = () => {
-    onSave(formData);
+    if (!selectedCategory) {
+      toast.error("Please select a category.");
+      return;
+    }
+    // onSave(formData);
+    // @ts-expect-error ignore
+    onSave({ ...formData, categoryId: selectedCategory });
   };
 
   return (
@@ -108,6 +145,31 @@ export const FlyerFormDialog: React.FC<FlyerFormDialogProps> = ({
               className="w-32 h-auto mt-4 rounded-md"
             />
           )}
+
+          {/* Category Select Field */}
+          <Select
+            onValueChange={(value) => setSelectedCategory(value)}
+            value={selectedCategory}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue
+                placeholder="Select a Category"
+                defaultValue={selectedCategory}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem
+                  key={category.id}
+                  value={category.name}
+                  className=" hover:bg-gray-100 transition-all duration-300 ease-in-out"
+                >
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <Input
             type="date"
             value={formData.validFrom}
