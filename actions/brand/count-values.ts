@@ -234,3 +234,69 @@ export async function BrandCountView(email: string): Promise<number> {
     return 0;
   }
 }
+
+/////////////////////////////////////////////////
+
+export async function StoreQRCode(email: string): Promise<number> {
+  try {
+    if (!email) {
+      throw new Error("Store ID is required.");
+    }
+
+    const flyersCollection = collection(db, "stores");
+
+    // Query to filter brands by brandId to get the QR code
+    const brandQuery = query(flyersCollection, where("email", "==", email));
+    const snapshot = await getDocs(brandQuery);
+
+    if (snapshot.empty) {
+      throw new Error("No QR code found for the given brand ID.");
+    }
+
+    // Assuming there's only one document per brandId
+    const brandDoc = snapshot.docs[0];
+    const qrCode = brandDoc.data().qrCode;
+
+    if (!qrCode) {
+      throw new Error("QR code not found in the document.");
+    }
+
+    // Return the QR code
+    return qrCode;
+  } catch (error) {
+    console.error("Error fetching flyers count by store ID:", error);
+    return 0;
+  }
+}
+
+export async function StoreCountView(email: string): Promise<number> {
+  try {
+    if (!email) {
+      throw new Error("Store ID is required.");
+    }
+
+    const flyersCollection = collection(db, "stores");
+
+    // Query to filter brands by brandId to get the QR code
+    const brandQuery = query(flyersCollection, where("email", "==", email));
+    const snapshot = await getDocs(brandQuery);
+
+    if (snapshot.empty) {
+      throw new Error("No QR code found for the given brand ID.");
+    }
+
+    // Assuming there's only one document per brandId
+    const brandDoc = snapshot.docs[0];
+    const count = brandDoc.data()?.countView;
+
+    if (!count) {
+      throw new Error("QR code not found in the document.");
+    }
+
+    // Return the QR code
+    return count;
+  } catch (error) {
+    console.error("Error fetching flyers count by store ID:", error);
+    return 0;
+  }
+}

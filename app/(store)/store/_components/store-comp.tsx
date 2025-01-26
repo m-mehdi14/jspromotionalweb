@@ -17,6 +17,8 @@ import { User } from "lucide-react";
 import {
   fetchFlyersCountByStore,
   fetchSpecialEventsCountByStore,
+  StoreCountView,
+  StoreQRCode,
 } from "@/actions/brand/count-values";
 import { FaCalendarAlt, FaCheckCircle } from "react-icons/fa";
 
@@ -33,6 +35,8 @@ export const StoreMainPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   console.log("🚀 ~ StoreMainPage ~ loading:", loading);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [qrCode, setqrCode] = useState("");
+  const [countView, setcountView] = useState("");
 
   const storeId: string | undefined = user?.uid; // Store ID
 
@@ -63,11 +67,16 @@ export const StoreMainPage = () => {
         setError("");
 
         // Fetch metrics data
-        const [specialEvents, flyers] = await Promise.all([
+        const [specialEvents, flyers, qrCode, count] = await Promise.all([
           fetchSpecialEventsCountByStore(storeId as string),
           fetchFlyersCountByStore(storeId as string),
+          StoreQRCode(user?.email as string),
+          StoreCountView(user?.email as string),
         ]);
-
+        // @ts-expect-error ignore
+        setqrCode(qrCode);
+        // @ts-expect-error ignore
+        setcountView(count);
         // Set metrics
         setMetrics([
           {
@@ -193,7 +202,21 @@ export const StoreMainPage = () => {
         </div>
       )} */}
 
-      <div>CREATE boxes here</div>
+      {/* <div>CREATE boxes here</div> */}
+      {qrCode && (
+        <div className="mt-8">
+          <h2 className="text-xl font-bold mb-4">Brand QR Code</h2>
+          <img src={qrCode} alt="Brand QR Code" className="w-64 h-64" />
+          <p>Count : {countView}</p>
+          <a
+            href={qrCode}
+            download="brand-qr-code.png"
+            className="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            Download QR Code
+          </a>
+        </div>
+      )}
 
       {/* Info Section */}
       {/* <div className="bg-gray-100 p-6 rounded-lg shadow-md">
