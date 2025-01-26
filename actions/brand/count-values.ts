@@ -197,6 +197,31 @@ export async function fetchFlyersCountByStore(
   }
 }
 
+export async function fetchCouponCountByStore(
+  storeId: string
+): Promise<number> {
+  try {
+    if (!storeId) {
+      throw new Error("Brand ID is required.");
+    }
+
+    const flyersCollection = collection(db, "couponGifts");
+
+    // Query to filter flyers by brandId
+    const flyersQuery = query(
+      flyersCollection,
+      where("storeId", "==", storeId)
+    );
+    const snapshot = await getDocs(flyersQuery);
+
+    // Return the count of flyers
+    return snapshot.size;
+  } catch (error) {
+    console.error("Error fetching flyers count by brand ID:", error);
+    return 0;
+  }
+}
+
 export async function BrandQRCode(email: string): Promise<number> {
   try {
     if (!email) {

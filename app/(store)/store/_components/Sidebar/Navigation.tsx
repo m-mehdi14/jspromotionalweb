@@ -80,6 +80,11 @@ export const Navigation = () => {
             icon: Gift,
           },
           {
+            label: "Store Reports",
+            href: `/store/reports`,
+            icon: Gift,
+          },
+          {
             label: "Setting",
             href: `/store/settings`,
             icon: Users,

@@ -204,8 +204,8 @@ export const StoreMainPage = () => {
 
       {/* <div>CREATE boxes here</div> */}
       {qrCode && (
-        <div className="mt-8">
-          <h2 className="text-xl font-bold mb-4">Brand QR Code</h2>
+        <div className="mt-8 text-black">
+          <h2 className="text-xl font-bold mb-4">Store QR Code</h2>
           <img src={qrCode} alt="Brand QR Code" className="w-64 h-64" />
           <p>Count : {countView}</p>
           <a
