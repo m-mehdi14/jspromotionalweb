@@ -12,18 +12,24 @@ const hashPassword = (password: string, salt: string): string => {
   return hash;
 };
 
-// Utility function to validate the provided password
-// const validatePassword = (inputPassword: string, storedHash: string, storedSalt: string): boolean => {
-//   const inputHash = hashPassword(inputPassword, storedSalt);
-//   return inputHash === storedHash;
-// };
-
 // Function to create an admin user
-export async function createAdminUser(
-  email: string,
-  password: string,
-  name: string
-): Promise<{ success: string; error?: string }> {
+export async function createAdminUser({
+  email,
+  password,
+  name,
+  phone,
+  postalCode,
+  province,
+  address,
+}: {
+  email: string;
+  password: string;
+  name: string;
+  phone: string;
+  postalCode: string;
+  province: string;
+  address: string;
+}): Promise<{ success: string; error?: string }> {
   try {
     // Initialize Firebase Auth
     const auth = getAuth(app);
@@ -47,6 +53,10 @@ export async function createAdminUser(
       uid: userId,
       email,
       name,
+      phone,
+      postalCode,
+      province,
+      address,
       role: "admin",
       hashedPassword,
       salt, // Store the salt for future password validation
@@ -57,7 +67,7 @@ export async function createAdminUser(
     const userDoc = doc(collection(db, "users"), userId);
     await setDoc(userDoc, adminUserData);
 
-    return { success: "Admin User Created " };
+    return { success: "Admin User Created Successfully" };
   } catch (error: unknown) {
     // Handle unknown errors safely
     if (error instanceof Error) {

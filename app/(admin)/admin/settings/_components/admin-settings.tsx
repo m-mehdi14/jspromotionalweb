@@ -15,6 +15,10 @@ const AdminSettings = () => {
   const [settings, setSettings] = useState({
     name: "",
     email: "",
+    phone: "",
+    postalCode: "",
+    province: "",
+    address: "",
     image: null as string | ArrayBuffer | null,
   });
   const [passwords, setPasswords] = useState({
@@ -42,7 +46,10 @@ const AdminSettings = () => {
   const handleSaveSettings = async () => {
     setIsSubmitting(true);
     try {
-      await saveAdminSettings(user?.uid as string, settings);
+      await saveAdminSettings(user?.uid as string, {
+        ...settings,
+        image: settings.image ? (settings.image as string) : "",
+      });
       toast.success("Settings updated successfully!");
     } catch (error) {
       console.error("Error saving admin settings:", error);
@@ -142,6 +149,61 @@ const AdminSettings = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone
+              </label>
+              <Input
+                placeholder="Enter phone number"
+                value={settings.phone}
+                onChange={(e) =>
+                  setSettings((prev) => ({ ...prev, phone: e.target.value }))
+                }
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Postal Code
+              </label>
+              <Input
+                placeholder="Enter postal code"
+                value={settings.postalCode}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    postalCode: e.target.value,
+                  }))
+                }
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Province
+              </label>
+              <Input
+                placeholder="Enter province"
+                value={settings.province}
+                onChange={(e) =>
+                  setSettings((prev) => ({ ...prev, province: e.target.value }))
+                }
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address
+              </label>
+              <Input
+                placeholder="Enter address"
+                value={settings.address}
+                onChange={(e) =>
+                  setSettings((prev) => ({ ...prev, address: e.target.value }))
+                }
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Profile Picture
               </label>
               <Input
@@ -165,7 +227,9 @@ const AdminSettings = () => {
             <Button
               onClick={handleSaveSettings}
               disabled={isSubmitting}
-              className={`w-full bg-${isSubmitting ? "gray" : "green"}-600 hover:bg-green-700 text-white py-2 rounded-md`}
+              className={`w-full bg-${
+                isSubmitting ? "gray" : "green"
+              }-600 hover:bg-green-700 text-white py-2 rounded-md`}
             >
               {isSubmitting ? "Saving..." : "Save Settings"}
             </Button>
@@ -229,7 +293,9 @@ const AdminSettings = () => {
             <Button
               onClick={handleUpdatePassword}
               disabled={isPasswordSubmitting}
-              className={`w-full bg-${isPasswordSubmitting ? "gray" : "blue"}-600 hover:bg-blue-700 text-white py-2 rounded-md`}
+              className={`w-full bg-${
+                isPasswordSubmitting ? "gray" : "blue"
+              }-600 hover:bg-blue-700 text-white py-2 rounded-md`}
             >
               {isPasswordSubmitting ? "Updating..." : "Update Password"}
             </Button>
