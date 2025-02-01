@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -16,230 +16,246 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { createAdminUser } from "@/actions/admin/sign-up/createAdminUser";
-import { updateAdmin } from "@/actions/admin/sign-up/update-admin";
-import { deleteAdmin } from "@/actions/admin/sign-up/delete-adminUser";
 import { PencilIcon, TrashIcon } from "lucide-react";
+import { UpdateUser } from "./update-user";
+import { DeleteUser } from "./delete-user";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface User {
-  uid: string;
-  name: string;
-  email: string;
-  role: string;
-  createdAt: string;
+  id: string;
+  userId: string;
+  fcmToken: string;
+  createdAt: string; // Stored as an ISO String in Firestore
+  postalCode: string;
 }
 
 interface UsersTableProps {
   initialUsers: User[];
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
 }
 
-export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
-  const [users, setUsers] = useState<User[]>(initialUsers);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+export const Users: React.FC<UsersTableProps> = ({
+  initialUsers,
+  setUsers,
+}) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // Pagination States
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("query") || ""
+  );
+  const [startDate, setStartDate] = useState(
+    searchParams.get("startDate") || ""
+  );
+  const [endDate, setEndDate] = useState(searchParams.get("endDate") || "");
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 8;
+  const rowsPerPage = 10;
 
-  // Dialog States
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-
-  const [newAdmin, setNewAdmin] = useState({
-    email: "",
-    password: "",
-    name: "",
-  });
-
-  const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
-  // Filter and Paginate Users
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.role.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // ✅ Filter users based on search query and date range before pagination
+  const filteredUsers = initialUsers.filter((user) => {
+    const userDate = new Date(user.createdAt).toISOString().split("T")[0]; // Extract YYYY-MM-DD
 
-  const totalPages = Math.ceil(filteredUsers.length / rowsPerPage);
+    const isWithinDateRange =
+      (!startDate || userDate >= startDate) &&
+      (!endDate || userDate <= endDate);
+
+    const matchesSearch =
+      user.postalCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.userId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.fcmToken.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return isWithinDateRange && matchesSearch;
+  });
+
+  // ✅ Pagination logic now properly updates when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredUsers.length, searchQuery, startDate, endDate]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / rowsPerPage));
   const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
-  const handleCreateAdmin = async () => {
-    if (!newAdmin.email || !newAdmin.password || !newAdmin.name) {
-      toast.error("Please fill out all fields.");
-      return;
-    }
+  // ✅ Update URL with search params (without reloading the page)
+  // const handleApplyFilters = () => {
+  //   const params = new URLSearchParams(searchParams.toString());
+  //   if (startDate) params.set("startDate", startDate);
+  //   if (endDate) params.set("endDate", endDate);
+  //   if (searchQuery) params.set("query", searchQuery);
 
-    setIsCreating(true);
-    try {
-      const response = await createAdminUser(
-        newAdmin.email,
-        newAdmin.password,
-        newAdmin.name
-      );
-      if (response.success) {
-        toast.success("Admin user created successfully!");
-        setUsers((prevUsers) => [
-          ...prevUsers,
-          {
-            uid: crypto.randomUUID(),
-            name: newAdmin.name,
-            email: newAdmin.email,
-            role: "admin",
-            createdAt: new Date().toISOString(),
-          },
-        ]);
-        setIsCreateDialogOpen(false);
-        setNewAdmin({ email: "", password: "", name: "" });
-      } else {
-        toast.error(response.error || "Failed to create admin user.");
-      }
-    } catch (error) {
-      console.error("Error creating admin user:", error);
-      toast.error("An unexpected error occurred.");
-    } finally {
-      setIsCreating(false);
-    }
+  //   router.replace(`?${params.toString()}`);
+  //   setCurrentPage(1); // Reset to first page when filters apply
+  // };
+
+  // ✅ Clear filters & reset search params
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setStartDate("");
+    setEndDate("");
+
+    router.replace(`?`);
+    setCurrentPage(1);
   };
 
-  const handleEditAdmin = async () => {
+  // ✅ Handle Edit Dialog Open
+  const handleEditDialogOpen = (user: User) => {
+    setSelectedUser(user);
+    setIsEditDialogOpen(true);
+  };
+
+  // ✅ Handle Edit User
+  const handleEditUser = async () => {
     if (!selectedUser) return;
 
     setIsUpdating(true);
     try {
-      const response = await updateAdmin(selectedUser.uid, {
-        email: selectedUser.email,
-        name: selectedUser.name,
-      });
+      const response = await UpdateUser(
+        selectedUser.postalCode,
+        selectedUser.id,
+        {
+          userId: selectedUser.userId,
+          fcmToken: selectedUser.fcmToken,
+        }
+      );
 
       if (response.success) {
-        toast.success("Admin user updated successfully!");
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
-            user.uid === selectedUser.uid ? { ...selectedUser } : user
+            user.id === selectedUser.id ? { ...selectedUser } : user
           )
         );
         setIsEditDialogOpen(false);
-        setSelectedUser(null);
       } else {
-        toast.error(response.message || "Failed to update admin user.");
+        alert("Failed to update user.");
       }
     } catch (error) {
-      console.error("Error updating admin user:", error);
-      toast.error("An unexpected error occurred.");
+      console.error("Error updating user:", error);
+      alert("An unexpected error occurred.");
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const handleDeleteAdmin = async (adminId: string) => {
-    setIsDeleting(adminId);
+  // ✅ Handle Delete User
+  const handleDeleteUser = async (userId: string, postalCode: string) => {
+    if (!confirm("Are you sure you want to delete this user?")) return;
+
+    setIsDeleting(userId);
     try {
-      const response = await deleteAdmin(adminId);
+      const response = await DeleteUser(postalCode, userId);
+
       if (response.success) {
-        toast.success("Admin user deleted successfully!");
-        setUsers((prevUsers) =>
-          prevUsers.filter((user) => user.uid !== adminId)
-        );
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
       } else {
-        toast.error(response.message || "Failed to delete admin user.");
+        alert("Failed to delete user.");
       }
     } catch (error) {
-      console.error("Error deleting admin user:", error);
-      toast.error("An unexpected error occurred.");
+      console.error("Error deleting user:", error);
+      alert("An unexpected error occurred.");
     } finally {
       setIsDeleting(null);
     }
   };
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg shadow">
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-gray-800">Users</h2>
-        <div className="flex items-center space-x-4">
-          <Input
-            type="text"
-            placeholder="Search by name, email, or role"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-64"
-          />
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            Add Admin User
-          </Button>
-        </div>
+    <div className="p-6 bg-white rounded-lg shadow-lg">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-gray-800">All Postal Users</h2>
       </div>
 
-      {/* Table Section */}
-      <Table>
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+        <Input
+          type="text"
+          placeholder="Search by Postal Code, User ID, or FCM Token"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+        />
+        <Input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+        />
+        <Input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+        />
+        {/* <Button
+          onClick={handleApplyFilters}
+          className="bg-blue-500 text-white hover:bg-blue-600"
+        >
+          Apply
+        </Button> */}
+        <Button
+          onClick={handleClearFilters}
+          className="bg-red-500 text-white hover:bg-red-600 flex items-center"
+        >
+          <TrashIcon className="w-4 h-4 mr-2" />
+          Clear
+        </Button>
+      </div>
+
+      {/* Users Table */}
+      <Table className="min-w-full">
         <TableHeader>
-          <TableRow>
-            <TableHead>UID</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
+          <TableRow className="bg-gray-100 text-gray-700">
+            <TableHead>Postal Code</TableHead>
+            <TableHead>User ID</TableHead>
+            <TableHead>FCM Token</TableHead>
             <TableHead>Created At</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="text-center">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {paginatedUsers.length > 0 ? (
-            paginatedUsers.map((user) => (
-              <TableRow key={user.uid}>
-                <TableCell>{user.uid}</TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
-                <TableCell>
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setIsEditDialogOpen(true);
-                      }}
-                    >
-                      <PencilIcon className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDeleteAdmin(user.uid)}
-                      disabled={isDeleting === user.uid}
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center">
-                No users found.
+          {paginatedUsers.map((user) => (
+            <TableRow key={user.id} className="hover:bg-gray-50">
+              <TableCell>{user.postalCode}</TableCell>
+              <TableCell>{user.userId}</TableCell>
+              <TableCell>{user.fcmToken.slice(0, 20)}...</TableCell>
+              <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
+              <TableCell className="flex justify-center space-x-2">
+                <Button
+                  variant={"secondary"}
+                  size="sm"
+                  onClick={() => handleEditDialogOpen(user)}
+                  className="hover:border-2 hover:border-blue-500 duration-300 transition-all ease-in-out"
+                >
+                  <PencilIcon className="w-4 h-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => handleDeleteUser(user.id, user.postalCode)}
+                  variant={"secondary"}
+                  className="hover:border-2 hover:border-red-700 duration-300 ease-in-out transition-all"
+                  disabled={isDeleting === user.id}
+                >
+                  <TrashIcon className="w-4 h-4 text-red-500" />
+                </Button>
               </TableCell>
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
 
       {/* Pagination Controls */}
       <div className="flex justify-center items-center space-x-4 mt-4">
         <Button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          variant={"secondary"}
+          onClick={() => setCurrentPage((p) => p - 1)}
         >
           Previous
         </Button>
@@ -247,83 +263,50 @@ export const Users: React.FC<UsersTableProps> = ({ initialUsers }) => {
           Page {currentPage} of {totalPages}
         </span>
         <Button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
           disabled={currentPage === totalPages}
-          variant="secondary"
+          onClick={() => setCurrentPage((p) => p + 1)}
         >
           Next
         </Button>
       </div>
 
-      {/* Create Admin Dialog */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create Admin User</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              type="text"
-              placeholder="Name"
-              value={newAdmin.name}
-              onChange={(e) =>
-                setNewAdmin({ ...newAdmin, name: e.target.value })
-              }
-            />
-            <Input
-              type="email"
-              placeholder="Email"
-              value={newAdmin.email}
-              onChange={(e) =>
-                setNewAdmin({ ...newAdmin, email: e.target.value })
-              }
-            />
-            <Input
-              type="password"
-              placeholder="Password"
-              value={newAdmin.password}
-              onChange={(e) =>
-                setNewAdmin({ ...newAdmin, password: e.target.value })
-              }
-            />
-            <Button onClick={handleCreateAdmin} disabled={isCreating}>
-              {isCreating ? "Creating..." : "Create Admin"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Admin Dialog */}
+      {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Admin User</DialogTitle>
+            <DialogTitle>Edit User</DialogTitle>
           </DialogHeader>
           {selectedUser && (
             <div className="space-y-4">
               <Input
                 type="text"
-                placeholder="Name"
-                value={selectedUser.name}
+                placeholder="User ID"
+                value={selectedUser.userId}
                 onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, name: e.target.value })
+                  setSelectedUser({ ...selectedUser, userId: e.target.value })
                 }
               />
               <Input
-                type="email"
-                placeholder="Email"
-                value={selectedUser.email}
+                type="text"
+                placeholder="FCM Token"
+                value={selectedUser.fcmToken}
                 onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, email: e.target.value })
+                  setSelectedUser({ ...selectedUser, fcmToken: e.target.value })
                 }
               />
-              <Button onClick={handleEditAdmin} disabled={isUpdating}>
-                {isUpdating ? "Updating..." : "Update Admin"}
-              </Button>
             </div>
           )}
+          <DialogFooter>
+            <Button
+              onClick={() => setIsEditDialogOpen(false)}
+              variant="secondary"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleEditUser} disabled={isUpdating}>
+              {isUpdating ? "Updating..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
