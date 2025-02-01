@@ -1,34 +1,185 @@
+// "use server";
+
+// import { db } from "@/config/firebase";
+// import { collection, getDocs } from "firebase/firestore";
+
+// export async function fetchBrandsCount(): Promise<number> {
+//   try {
+//     const brandsCollection = collection(db, "brands");
+//     const snapshot = await getDocs(brandsCollection);
+//     return snapshot.size; // Return the total number of documents
+//   } catch (error) {
+//     console.error("Error fetching brands count:", error);
+//     return 0; // Return 0 if an error occurs
+//   }
+// }
+
+// export async function fetchCategoriesCount(): Promise<number> {
+//   try {
+//     const categoriesCollection = collection(db, "categories");
+//     const snapshot = await getDocs(categoriesCollection);
+//     return snapshot.size; // Return the total number of documents
+//   } catch (error) {
+//     console.error("Error fetching categories count:", error);
+//     return 0;
+//   }
+// }
+
+// export async function fetchUsersCount(): Promise<number> {
+//   try {
+//     const usersCollection = collection(db, "users");
+//     const snapshot = await getDocs(usersCollection);
+//     return snapshot.size;
+//   } catch (error) {
+//     console.error("Error fetching users count:", error);
+//     return 0;
+//   }
+// }
+
+// export async function fetchStoresCount(): Promise<number> {
+//   try {
+//     const storesCollection = collection(db, "stores");
+//     const snapshot = await getDocs(storesCollection);
+//     return snapshot.size;
+//   } catch (error) {
+//     console.error("Error fetching stores count:", error);
+//     return 0;
+//   }
+// }
+
+// // export async function fetchFavouriteStoresCount(): Promise<number> {
+// //   try {
+// //     const favouritesCollection = collection(db, "favouriteStores");
+// //     const snapshot = await getDocs(favouritesCollection);
+// //     return snapshot.size;
+// //   } catch (error) {
+// //     console.error("Error fetching favourite stores count:", error);
+// //     return 0;
+// //   }
+// // }
+
+// export async function fetchSpecialEventsCount(): Promise<number> {
+//   try {
+//     const eventsCollection = collection(db, "specialEvents");
+//     const snapshot = await getDocs(eventsCollection);
+//     // Debug: Log the documents
+//     console.log(snapshot.size);
+
+//     return snapshot.size;
+//   } catch (error) {
+//     console.error("Error fetching special events count:", error);
+//     return 0;
+//   }
+// }
+
+// export async function fetchFlyersCount(): Promise<number> {
+//   try {
+//     const flyersCollection = collection(db, "flyers");
+//     const snapshot = await getDocs(flyersCollection);
+//     return snapshot.size;
+//   } catch (error) {
+//     console.error("Error fetching flyers count:", error);
+//     return 0;
+//   }
+// }
+
+/////////////////////////////////////////////////////////////////////////////
+
 "use server";
 
 import { db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
-export async function fetchBrandsCount(): Promise<number> {
+// Helper function to filter documents based on date range
+// const filterByDateRange = (docs: any[], startDate: string, endDate: string) => {
+//   return docs.filter((doc) => {
+//     const createdAt = doc.data().createdAt;
+
+//     // Check if createdAt is a Firestore Timestamp
+//     if (createdAt && typeof createdAt.toDate === "function") {
+//       const createdAtDate = createdAt.toDate(); // Convert Firestore timestamp to JavaScript Date
+//       const docDate = createdAtDate.toISOString().split("T")[0]; // Extract YYYY-MM-DD from the timestamp
+//       return docDate >= startDate && docDate <= endDate;
+//     }
+
+//     // Skip documents with missing or invalid createdAt fields
+//     return false;
+//   });
+// };
+const filterByDateRange = (docs: any[], startDate: string, endDate: string) => {
+  return docs.filter((doc) => {
+    const createdAt = doc.data().createdAt;
+
+    if (createdAt && typeof createdAt === "string") {
+      const createdAtDate = new Date(createdAt); // Convert ISO string to JavaScript Date
+      const docDate = createdAtDate.toISOString().split("T")[0]; // Extract YYYY-MM-DD from the date
+
+      return docDate >= startDate && docDate <= endDate;
+    }
+
+    console.warn(
+      "Skipping document due to invalid createdAt format:",
+      doc.id,
+      createdAt
+    );
+    return false; // Skip invalid documents
+  });
+};
+
+export async function fetchBrandsCount(
+  startDate?: string,
+  endDate?: string
+): Promise<number> {
   try {
     const brandsCollection = collection(db, "brands");
     const snapshot = await getDocs(brandsCollection);
-    return snapshot.size; // Return the total number of documents
+
+    if (startDate && endDate) {
+      const filteredDocs = filterByDateRange(snapshot.docs, startDate, endDate);
+      return filteredDocs.length;
+    }
+
+    return snapshot.size; // Return the total number of documents if no date range is provided
   } catch (error) {
     console.error("Error fetching brands count:", error);
-    return 0; // Return 0 if an error occurs
+    return 0;
   }
 }
 
-export async function fetchCategoriesCount(): Promise<number> {
+export async function fetchCategoriesCount(
+  startDate?: string,
+  endDate?: string
+): Promise<number> {
   try {
     const categoriesCollection = collection(db, "categories");
     const snapshot = await getDocs(categoriesCollection);
-    return snapshot.size; // Return the total number of documents
+
+    if (startDate && endDate) {
+      const filteredDocs = filterByDateRange(snapshot.docs, startDate, endDate);
+      return filteredDocs.length;
+    }
+
+    console.log("🚀 ~ category ---------- > ", snapshot.size);
+    return snapshot.size;
   } catch (error) {
     console.error("Error fetching categories count:", error);
     return 0;
   }
 }
 
-export async function fetchUsersCount(): Promise<number> {
+export async function fetchUsersCount(
+  startDate?: string,
+  endDate?: string
+): Promise<number> {
   try {
     const usersCollection = collection(db, "users");
     const snapshot = await getDocs(usersCollection);
+
+    if (startDate && endDate) {
+      const filteredDocs = filterByDateRange(snapshot.docs, startDate, endDate);
+      return filteredDocs.length;
+    }
+
     return snapshot.size;
   } catch (error) {
     console.error("Error fetching users count:", error);
@@ -36,10 +187,19 @@ export async function fetchUsersCount(): Promise<number> {
   }
 }
 
-export async function fetchStoresCount(): Promise<number> {
+export async function fetchStoresCount(
+  startDate?: string,
+  endDate?: string
+): Promise<number> {
   try {
     const storesCollection = collection(db, "stores");
     const snapshot = await getDocs(storesCollection);
+
+    if (startDate && endDate) {
+      const filteredDocs = filterByDateRange(snapshot.docs, startDate, endDate);
+      return filteredDocs.length;
+    }
+
     return snapshot.size;
   } catch (error) {
     console.error("Error fetching stores count:", error);
@@ -47,23 +207,18 @@ export async function fetchStoresCount(): Promise<number> {
   }
 }
 
-// export async function fetchFavouriteStoresCount(): Promise<number> {
-//   try {
-//     const favouritesCollection = collection(db, "favouriteStores");
-//     const snapshot = await getDocs(favouritesCollection);
-//     return snapshot.size;
-//   } catch (error) {
-//     console.error("Error fetching favourite stores count:", error);
-//     return 0;
-//   }
-// }
-
-export async function fetchSpecialEventsCount(): Promise<number> {
+export async function fetchSpecialEventsCount(
+  startDate?: string,
+  endDate?: string
+): Promise<number> {
   try {
     const eventsCollection = collection(db, "specialEvents");
     const snapshot = await getDocs(eventsCollection);
-    // Debug: Log the documents
-    console.log(snapshot.size);
+
+    if (startDate && endDate) {
+      const filteredDocs = filterByDateRange(snapshot.docs, startDate, endDate);
+      return filteredDocs.length;
+    }
 
     return snapshot.size;
   } catch (error) {
@@ -72,10 +227,19 @@ export async function fetchSpecialEventsCount(): Promise<number> {
   }
 }
 
-export async function fetchFlyersCount(): Promise<number> {
+export async function fetchFlyersCount(
+  startDate?: string,
+  endDate?: string
+): Promise<number> {
   try {
     const flyersCollection = collection(db, "flyers");
     const snapshot = await getDocs(flyersCollection);
+
+    if (startDate && endDate) {
+      const filteredDocs = filterByDateRange(snapshot.docs, startDate, endDate);
+      return filteredDocs.length;
+    }
+
     return snapshot.size;
   } catch (error) {
     console.error("Error fetching flyers count:", error);

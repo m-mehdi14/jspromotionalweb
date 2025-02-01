@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   PieChart,
@@ -13,6 +13,7 @@ import {
 import { useAuth } from "@/lib/AuthContext/authContext";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { useRouter } from "next/navigation";
 
 const COLORS = [
   "#0088FE",
@@ -34,20 +35,23 @@ interface AdminReportsProps {
 
 export const AdminReports: React.FC<AdminReportsProps> = ({ metrics }) => {
   const { user } = useAuth();
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const router = useRouter();
 
-  //   const handleGenerateReport = () => {
-  //     // Logic to generate and download reports based on metrics
-  //     const reportData = metrics
-  //       .map((metric) => `${metric.label}: ${metric.value}`)
-  //       .join("\n");
-  //     const blob = new Blob([reportData], { type: "text/plain" });
-  //     const url = window.URL.createObjectURL(blob);
-  //     const link = document.createElement("a");
-  //     link.href = url;
-  //     link.download = "admin_report.txt";
-  //     link.click();
-  //     window.URL.revokeObjectURL(url);
-  //   };
+  const handleApplyDateRange = () => {
+    // Navigate to the same page with the date range as query parameters
+    router.push(`/admin/reports?startDate=${startDate}&endDate=${endDate}`);
+  };
+
+  const handleClearDateRange = () => {
+    // Clear the date range state
+    setStartDate("");
+    setEndDate("");
+
+    // Navigate to the same page without query parameters
+    router.push("/admin/reports");
+  };
 
   const handleGenerateReport = () => {
     const doc = new jsPDF();
@@ -60,6 +64,11 @@ export const AdminReports: React.FC<AdminReportsProps> = ({ metrics }) => {
     doc.setFontSize(12);
     doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
 
+    // Add date range
+    if (startDate && endDate) {
+      doc.text(`Date Range: ${startDate} to ${endDate}`, 14, 40);
+    }
+
     // Add table for metrics
     const tableData = metrics.map((metric) => [metric.label, metric.value]);
 
@@ -67,7 +76,7 @@ export const AdminReports: React.FC<AdminReportsProps> = ({ metrics }) => {
     doc.autoTable({
       head: [["Metric", "Value"]],
       body: tableData,
-      startY: 40,
+      startY: startDate && endDate ? 50 : 40, // Adjust startY based on whether date range is present
       styles: { halign: "center" },
       headStyles: { fillColor: [0, 123, 255] },
       bodyStyles: { fillColor: [245, 245, 245] },
@@ -91,12 +100,6 @@ export const AdminReports: React.FC<AdminReportsProps> = ({ metrics }) => {
         </h1>
         <div className="flex items-center justify-between">
           <p className="text-gray-600">Welcome, {user?.email || "Admin"}!</p>
-          {/* <Button
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-          >
-            Logout
-          </Button> */}
           <Button
             onClick={handleGenerateReport}
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg"
@@ -108,11 +111,38 @@ export const AdminReports: React.FC<AdminReportsProps> = ({ metrics }) => {
 
       {/* Main Content */}
       <main>
-        {/* <div className="mb-8 text-center">
-         
-        </div> */}
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Date Range Selection */}
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-bold mb-4">Select Date Range</h2>
+            <div className="flex flex-col space-y-4">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="p-2 border border-gray-300 rounded"
+              />
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="p-2 border border-gray-300 rounded"
+              />
+              <Button
+                onClick={handleApplyDateRange}
+                className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg"
+              >
+                Apply Date Range
+              </Button>
+              <Button
+                onClick={handleClearDateRange}
+                className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg flex-1"
+              >
+                Clear Date Range
+              </Button>
+            </div>
+          </div>
+
           {/* Metrics Overview */}
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-bold mb-4">Metrics Overview</h2>

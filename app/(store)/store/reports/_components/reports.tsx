@@ -33,7 +33,7 @@ interface AdminReportsProps {
   metrics: Metric[];
 }
 
-export const BrandReports: React.FC<AdminReportsProps> = ({ metrics }) => {
+export const StoreReports: React.FC<AdminReportsProps> = ({ metrics }) => {
   const { user } = useAuth();
 
   const router = useRouter();
@@ -51,7 +51,7 @@ export const BrandReports: React.FC<AdminReportsProps> = ({ metrics }) => {
     if (startDate) params.set("startDate", startDate);
     if (endDate) params.set("endDate", endDate);
 
-    router.replace(`/brand/${user?.uid}/reports?${params.toString()}`);
+    router.replace(`/store/reports?${params.toString()}`);
   };
 
   // Function to clear date filters
@@ -59,7 +59,7 @@ export const BrandReports: React.FC<AdminReportsProps> = ({ metrics }) => {
     setStartDate("");
     setEndDate("");
 
-    router.replace(`/brand/${user?.uid}/reports`);
+    router.replace(`/store/reports`);
   };
 
   const handleGenerateReport = () => {
@@ -105,7 +105,7 @@ export const BrandReports: React.FC<AdminReportsProps> = ({ metrics }) => {
       {/* Header Section */}
       <header className="mb-10">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
-          Brand Reports
+          Store Reports
         </h1>
         <div className="flex items-center justify-between">
           <p className="text-gray-600">Welcome, {user?.email || "Admin"}!</p>

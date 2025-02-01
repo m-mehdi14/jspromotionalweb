@@ -10,7 +10,8 @@ import {
   fetchSpecialEventsCountByBrand,
   fetchStoresCountByBrand,
 } from "@/actions/brand/count-values";
-import { AdminReports } from "@/app/(admin)/admin/reports/_components/reports";
+import { useSearchParams } from "next/navigation";
+import { BrandReports } from "./_components/reports";
 
 interface Metric {
   label: string;
@@ -23,6 +24,13 @@ const BrandReportsPage: React.FC = () => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const searchParams = useSearchParams();
+
+  // Extract startDate and endDate from search params
+  const startDate = searchParams.get("startDate") || ""; // Default to empty string if not provided
+  console.log("🚀 ~ startDate:", startDate);
+  const endDate = searchParams.get("endDate") || ""; // Default to empty string if not provided
+  console.log("🚀 ~ endDate:", endDate);
 
   useEffect(() => {
     const fetchMetrics = async () => {
@@ -33,10 +41,14 @@ const BrandReportsPage: React.FC = () => {
 
       try {
         const [stores, specialEvents, flyers, coupon] = await Promise.all([
-          fetchStoresCountByBrand(user.uid),
-          fetchSpecialEventsCountByBrand(user.uid),
-          fetchFlyersCountByBrand(user.uid),
-          fetchCouponCountByBrand(user?.uid),
+          // fetchStoresCountByBrand(user.uid),
+          // fetchSpecialEventsCountByBrand(user.uid),
+          // fetchFlyersCountByBrand(user.uid),
+          // fetchCouponCountByBrand(user?.uid),
+          fetchStoresCountByBrand(user.uid, startDate, endDate),
+          fetchSpecialEventsCountByBrand(user.uid, startDate, endDate),
+          fetchFlyersCountByBrand(user.uid, startDate, endDate),
+          fetchCouponCountByBrand(user.uid, startDate, endDate),
         ]);
 
         setMetrics([
@@ -70,7 +82,7 @@ const BrandReportsPage: React.FC = () => {
     };
 
     fetchMetrics();
-  }, [user?.uid]);
+  }, [user?.uid, startDate, endDate]);
 
   return (
     <RoleBasedRoute allowedRoles={["brand"]}>
@@ -80,7 +92,7 @@ const BrandReportsPage: React.FC = () => {
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
-          <AdminReports metrics={metrics} />
+          <BrandReports metrics={metrics} />
         )}
       </div>
     </RoleBasedRoute>

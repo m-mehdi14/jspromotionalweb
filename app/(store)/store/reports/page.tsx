@@ -9,7 +9,8 @@ import {
   fetchFlyersCountByStore,
   fetchSpecialEventsCountByStore,
 } from "@/actions/brand/count-values";
-import { AdminReports } from "@/app/(admin)/admin/reports/_components/reports";
+import { StoreReports } from "./_components/reports";
+import { useSearchParams } from "next/navigation";
 
 interface Metric {
   label: string;
@@ -17,11 +18,16 @@ interface Metric {
   icon: JSX.Element;
 }
 
-const BrandReportsPage: React.FC = () => {
+const StoreReportsPage: React.FC = () => {
   const { user } = useAuth();
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const searchParams = useSearchParams();
+
+  // Extract startDate and endDate from search params
+  const startDate = searchParams.get("startDate") || "";
+  const endDate = searchParams.get("endDate") || "";
 
   useEffect(() => {
     const fetchMetrics = async () => {
@@ -32,9 +38,12 @@ const BrandReportsPage: React.FC = () => {
 
       try {
         const [specialEvents, flyers, coupon] = await Promise.all([
-          fetchSpecialEventsCountByStore(user.uid),
-          fetchFlyersCountByStore(user.uid),
-          fetchCouponCountByStore(user?.uid),
+          // fetchSpecialEventsCountByStore(user.uid),
+          // fetchFlyersCountByStore(user.uid),
+          // fetchCouponCountByStore(user?.uid),
+          fetchSpecialEventsCountByStore(user.uid, startDate, endDate),
+          fetchFlyersCountByStore(user.uid, startDate, endDate),
+          fetchCouponCountByStore(user.uid, startDate, endDate),
         ]);
 
         setMetrics([
@@ -63,7 +72,7 @@ const BrandReportsPage: React.FC = () => {
     };
 
     fetchMetrics();
-  }, [user?.uid]);
+  }, [user?.uid, startDate, endDate]);
 
   return (
     <RoleBasedRoute allowedRoles={["store"]}>
@@ -73,11 +82,11 @@ const BrandReportsPage: React.FC = () => {
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
-          <AdminReports metrics={metrics} />
+          <StoreReports metrics={metrics} />
         )}
       </div>
     </RoleBasedRoute>
   );
 };
 
-export default BrandReportsPage;
+export default StoreReportsPage;

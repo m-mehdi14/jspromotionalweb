@@ -36,119 +36,120 @@ export async function fetchUsersCount(): Promise<number> {
   }
 }
 
+//  Brands
+
+// Helper function to filter documents based on date range
+const filterByDateRange = (docs: any[], startDate: string, endDate: string) => {
+  return docs.filter((doc) => {
+    const createdAt = doc.data().createdAt;
+
+    if (createdAt && typeof createdAt === "string") {
+      const createdAtDate = new Date(createdAt); // Convert ISO string to JavaScript Date
+      const docDate = createdAtDate.toISOString().split("T")[0]; // Extract YYYY-MM-DD from the date
+
+      return docDate >= startDate && docDate <= endDate;
+    }
+
+    console.warn(
+      "Skipping document due to invalid createdAt format:",
+      doc.id,
+      createdAt
+    );
+    return false; // Skip invalid documents
+  });
+};
+
+// Generic function to fetch and filter documents by brandId and date range
+const fetchCountByBrand = async (
+  collectionName: string,
+  brandId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<number> => {
+  try {
+    if (!brandId) {
+      throw new Error("Brand ID is required.");
+    }
+
+    // Validate date range (if provided)
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        throw new Error("Invalid date format for startDate or endDate.");
+      }
+
+      if (start > end) {
+        throw new Error("startDate cannot be greater than endDate.");
+      }
+    }
+
+    const collectionRef = collection(db, collectionName);
+    const collectionQuery = query(
+      collectionRef,
+      where("brandId", "==", brandId)
+    );
+    const snapshot = await getDocs(collectionQuery);
+
+    if (startDate && endDate) {
+      const filteredDocs = filterByDateRange(snapshot.docs, startDate, endDate);
+      return filteredDocs.length;
+    }
+    console.log("🚀 ~ snapshot:", snapshot.size);
+
+    return snapshot.size;
+  } catch (error) {
+    console.error(`Error fetching ${collectionName} count by brand ID:`, error);
+    return 0;
+  }
+};
+
+// Fetch stores count by brand ID
 export async function fetchStoresCountByBrand(
-  brandId: string
+  brandId: string,
+  startDate?: string,
+  endDate?: string
 ): Promise<number> {
-  try {
-    if (!brandId) {
-      throw new Error("Brand ID is required.");
-    }
-
-    const storesCollection = collection(db, "stores");
-
-    // Query stores where `brandId` matches
-    const storesQuery = query(
-      storesCollection,
-      where("brandId", "==", brandId)
-    );
-    const snapshot = await getDocs(storesQuery);
-
-    // Return the count of stores
-    return snapshot.size;
-  } catch (error) {
-    console.error("Error fetching stores count by brand ID:", error);
-    return 0;
-  }
+  return fetchCountByBrand("stores", brandId, startDate, endDate);
 }
 
-// export async function fetchFavouriteStoresCount(): Promise<number> {
-//   try {
-//     const favouritesCollection = collection(db, "favouriteStores");
-//     const snapshot = await getDocs(favouritesCollection);
-//     return snapshot.size;
-//   } catch (error) {
-//     console.error("Error fetching favourite stores count:", error);
-//     return 0;
-//   }
-// }
-
+// Fetch special events count by brand ID
 export async function fetchSpecialEventsCountByBrand(
-  brandId: string
+  brandId: string,
+  startDate?: string,
+  endDate?: string
 ): Promise<number> {
-  try {
-    if (!brandId) {
-      throw new Error("Brand ID is required.");
-    }
-
-    const eventsCollection = collection(db, "specialEvents");
-
-    // Query to filter special events by brandId
-    const eventsQuery = query(
-      eventsCollection,
-      where("brandId", "==", brandId)
-    );
-    const snapshot = await getDocs(eventsQuery);
-
-    // Return the count of special events
-    return snapshot.size;
-  } catch (error) {
-    console.error("Error fetching special events count by brand ID:", error);
-    return 0;
-  }
+  return fetchCountByBrand("specialEvents", brandId, startDate, endDate);
 }
 
+// Fetch flyers count by brand ID
 export async function fetchFlyersCountByBrand(
-  brandId: string
+  brandId: string,
+  startDate?: string,
+  endDate?: string
 ): Promise<number> {
-  try {
-    if (!brandId) {
-      throw new Error("Brand ID is required.");
-    }
-
-    const flyersCollection = collection(db, "flyers");
-
-    // Query to filter flyers by brandId
-    const flyersQuery = query(
-      flyersCollection,
-      where("brandId", "==", brandId)
-    );
-    const snapshot = await getDocs(flyersQuery);
-
-    // Return the count of flyers
-    return snapshot.size;
-  } catch (error) {
-    console.error("Error fetching flyers count by brand ID:", error);
-    return 0;
-  }
+  return fetchCountByBrand("flyers", brandId, startDate, endDate);
 }
 
+// Fetch coupon count by brand ID
 export async function fetchCouponCountByBrand(
-  brandId: string
+  brandId: string,
+  startDate?: string,
+  endDate?: string
 ): Promise<number> {
-  try {
-    if (!brandId) {
-      throw new Error("Brand ID is required.");
-    }
-
-    const flyersCollection = collection(db, "couponGifts");
-
-    // Query to filter flyers by brandId
-    const flyersQuery = query(
-      flyersCollection,
-      where("brandId", "==", brandId)
-    );
-    const snapshot = await getDocs(flyersQuery);
-
-    // Return the count of flyers
-    return snapshot.size;
-  } catch (error) {
-    console.error("Error fetching flyers count by brand ID:", error);
-    return 0;
-  }
+  return fetchCountByBrand("couponGifts", brandId, startDate, endDate);
 }
+
+//////////////////////////////
+/// Stores
+/////////////////////////////////////////
+// Helper function to filter documents based on date range
 
 export async function fetchSpecialEventsCountByStore(
-  storeId: string
+  storeId: string,
+  startDate?: string,
+  endDate?: string
 ): Promise<number> {
   try {
     if (!storeId) {
@@ -156,15 +157,17 @@ export async function fetchSpecialEventsCountByStore(
     }
 
     const eventsCollection = collection(db, "specialEvents");
-
-    // Query to filter special events by storeId
     const eventsQuery = query(
       eventsCollection,
-      where("storeIds", "array-contains", storeId) // Assuming `storeIds` is an array
+      where("storeIds", "array-contains", storeId)
     );
     const snapshot = await getDocs(eventsQuery);
 
-    // Return the count of special events
+    if (startDate && endDate) {
+      const filteredDocs = filterByDateRange(snapshot.docs, startDate, endDate);
+      return filteredDocs.length;
+    }
+
     return snapshot.size;
   } catch (error) {
     console.error("Error fetching special events count by store ID:", error);
@@ -173,7 +176,9 @@ export async function fetchSpecialEventsCountByStore(
 }
 
 export async function fetchFlyersCountByStore(
-  storeId: string
+  storeId: string,
+  startDate?: string,
+  endDate?: string
 ): Promise<number> {
   try {
     if (!storeId) {
@@ -181,15 +186,17 @@ export async function fetchFlyersCountByStore(
     }
 
     const flyersCollection = collection(db, "storeFlyers");
-
-    // Query to filter flyers by storeId
     const flyersQuery = query(
       flyersCollection,
-      where("storeIds", "array-contains", storeId) // Assuming `storeIds` is an array
+      where("storeIds", "array-contains", storeId)
     );
     const snapshot = await getDocs(flyersQuery);
 
-    // Return the count of flyers
+    if (startDate && endDate) {
+      const filteredDocs = filterByDateRange(snapshot.docs, startDate, endDate);
+      return filteredDocs.length;
+    }
+
     return snapshot.size;
   } catch (error) {
     console.error("Error fetching flyers count by store ID:", error);
@@ -198,29 +205,34 @@ export async function fetchFlyersCountByStore(
 }
 
 export async function fetchCouponCountByStore(
-  storeId: string
+  storeId: string,
+  startDate?: string,
+  endDate?: string
 ): Promise<number> {
   try {
     if (!storeId) {
-      throw new Error("Brand ID is required.");
+      throw new Error("Store ID is required.");
     }
 
-    const flyersCollection = collection(db, "couponGifts");
-
-    // Query to filter flyers by brandId
-    const flyersQuery = query(
-      flyersCollection,
+    const couponsCollection = collection(db, "couponGifts");
+    const couponsQuery = query(
+      couponsCollection,
       where("storeId", "==", storeId)
     );
-    const snapshot = await getDocs(flyersQuery);
+    const snapshot = await getDocs(couponsQuery);
 
-    // Return the count of flyers
+    if (startDate && endDate) {
+      const filteredDocs = filterByDateRange(snapshot.docs, startDate, endDate);
+      return filteredDocs.length;
+    }
+
     return snapshot.size;
   } catch (error) {
-    console.error("Error fetching flyers count by brand ID:", error);
+    console.error("Error fetching coupon count by store ID:", error);
     return 0;
   }
 }
+//////////////////////////////////////////
 
 export async function BrandQRCode(email: string): Promise<number> {
   try {
