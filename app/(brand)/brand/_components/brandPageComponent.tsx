@@ -1,5 +1,3 @@
-///////////////////////////////////////////////////////////////
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -26,8 +24,8 @@ export const BrandPageComponent = () => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [qrCode, setqrCode] = useState("");
-  const [countView, setcountView] = useState("");
+  const [qrCode, setQrCode] = useState("");
+  const [countView, setCountView] = useState("");
 
   useEffect(() => {
     const fetchMetrics = async () => {
@@ -35,35 +33,34 @@ export const BrandPageComponent = () => {
         setLoading(true);
         setError("");
 
-        // Fetch metrics data
         const [stores, specialEvents, flyers, qrCode, count] =
           await Promise.all([
-            fetchStoresCountByBrand(user?.uid as string), // Replace "YOUR_BRAND_ID" dynamically
+            fetchStoresCountByBrand(user?.uid as string),
             fetchSpecialEventsCountByBrand(user?.uid as string),
             fetchFlyersCountByBrand(user?.uid as string),
             BrandQRCode(user?.email as string),
             BrandCountView(user?.email as string),
           ]);
         // @ts-expect-error ignore
-        setqrCode(qrCode);
+        setQrCode(qrCode as string);
         // @ts-expect-error ignore
-        setcountView(count);
-        // Set metrics
+        setCountView(count as string);
+
         setMetrics([
           {
             label: "Stores",
             value: stores,
-            icon: <FaHome className="text-3xl text-gray-600" />,
+            icon: <FaHome className="text-3xl text-blue-600" />,
           },
           {
             label: "Special Events",
             value: specialEvents,
-            icon: <FaCalendarAlt className="text-3xl text-gray-600" />,
+            icon: <FaCalendarAlt className="text-3xl text-green-600" />,
           },
           {
             label: "Flyers",
             value: flyers,
-            icon: <FaCheckCircle className="text-3xl text-gray-600" />,
+            icon: <FaCheckCircle className="text-3xl text-yellow-500" />,
           },
         ]);
       } catch (err) {
@@ -78,15 +75,15 @@ export const BrandPageComponent = () => {
   }, [user?.uid]);
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-gray-50 text-black">
       {/* Header Section */}
-      <header className="w-full flex items-center justify-between p-6 bg-gray-100 shadow-md">
-        <h1 className="text-2xl font-bold text-black">Brand Dashboard</h1>
+      <header className="w-full flex items-center justify-between p-6 bg-white shadow-md">
+        <h1 className="text-2xl font-bold text-gray-800">Brand Dashboard</h1>
         <div className="flex items-center space-x-4">
           <p className="text-gray-600">Welcome, {user?.email || "Admin"}!</p>
           <Button
             onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
           >
             Logout
           </Button>
@@ -124,21 +121,47 @@ export const BrandPageComponent = () => {
             ))}
           </div>
         )}
-        {qrCode && (
-          <div className="mt-8">
-            <h2 className="text-xl font-bold mb-4">Brand QR Code</h2>
-            <img src={qrCode} alt="Brand QR Code" className="w-64 h-64" />
-            <p>Count : {countView}</p>
+      </main>
+      {/* QR Code Section */}
+      {qrCode && (
+        <div className="mt-12 flex flex-col  p-6 rounded-lg  max-w-lg">
+          <div className="mt-4 ">
+            <p className="text-gray-600 text-2xl font-semibold">
+              Scanned Count:{" "}
+              <span className="text-blue-500 text-xl font-bold">
+                {countView}
+              </span>
+            </p>
+          </div>
+          <h2 className="text-xl font-bold mb-4 text-gray-800">
+            Brand QR Code
+          </h2>
+          <div className=" rounded-lg p-4">
+            <img
+              src={qrCode}
+              alt="Brand QR Code"
+              className="w-64 h-64 rounded-lg shadow-md"
+            />
+          </div>
+          {/* <div className="mt-4 text-center">
+            <p className="text-gray-600 text-lg font-semibold">
+              Scanned Count:{" "}
+              <span className="text-blue-500 text-xl font-bold">
+                {countView}
+              </span>
+            </p>
+          </div> */}
+          <div className=" mt-4 ml-10 ">
             <a
               href={qrCode}
               download="brand-qr-code.png"
-              className="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+              className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md transition"
             >
               Download QR Code
             </a>
           </div>
-        )}
-      </main>
+        </div>
+      )}
     </div>
   );
 };

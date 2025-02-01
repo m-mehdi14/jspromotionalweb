@@ -144,6 +144,14 @@ export const StoreMainPage = () => {
             </DialogContent>
           </Dialog>
 
+          {/* Logout Button */}
+          <Button
+            onClick={handleLogout}
+            className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg shadow-md transition"
+          >
+            Logout
+          </Button>
+
           {/* Edit Store Details */}
           <EditStoreDetails
             // @ts-expect-error
@@ -202,19 +210,44 @@ export const StoreMainPage = () => {
         </div>
       )} */}
 
-      {/* <div>CREATE boxes here</div> */}
+      {/* QR Code Section */}
       {qrCode && (
-        <div className="mt-8 text-black">
-          <h2 className="text-xl font-bold mb-4">Store QR Code</h2>
-          <img src={qrCode} alt="Brand QR Code" className="w-64 h-64" />
-          <p>Count : {countView}</p>
-          <a
-            href={qrCode}
-            download="brand-qr-code.png"
-            className="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            Download QR Code
-          </a>
+        <div className="mt-12 flex flex-col  p-6 rounded-lg  max-w-lg">
+          <div className="mt-4 ">
+            <p className="text-gray-600 text-2xl font-semibold">
+              Scanned Count:{" "}
+              <span className="text-blue-500 text-xl font-bold">
+                {countView}
+              </span>
+            </p>
+          </div>
+          <h2 className="text-xl font-bold mb-4 text-gray-800">
+            Store QR Code
+          </h2>
+          <div className=" rounded-lg p-4">
+            <img
+              src={qrCode}
+              alt="Brand QR Code"
+              className="w-64 h-64 rounded-lg shadow-md"
+            />
+          </div>
+          {/* <div className="mt-4 text-center">
+            <p className="text-gray-600 text-lg font-semibold">
+              Scanned Count:{" "}
+              <span className="text-blue-500 text-xl font-bold">
+                {countView}
+              </span>
+            </p>
+          </div> */}
+          <div className=" mt-4 ml-10 ">
+            <a
+              href={qrCode}
+              download="brand-qr-code.png"
+              className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md transition"
+            >
+              Download QR Code
+            </a>
+          </div>
         </div>
       )}
 
@@ -248,14 +281,14 @@ export const StoreMainPage = () => {
       </div> */}
 
       {/* Logout Button */}
-      <div className="flex mt-20 justify-end mb-6">
+      {/* <div className="flex  justify-end mb-6">
         <Button
           onClick={handleLogout}
           className="bg-red-600 hover:bg-red-700 transition duration-300"
         >
           Logout
         </Button>
-      </div>
+      </div> */}
 
       {/* Recent Orders Section */}
       {/* <RecentOrders storeId={storeId} /> */}
