@@ -167,7 +167,7 @@ export const Users: React.FC<UsersTableProps> = ({
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
+    <div className="p-6 bg-white rounded-lg">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold text-gray-800">All Postal Users</h2>
