@@ -83,7 +83,7 @@ export const CouponGiftFormDialog = ({
   //   }
   // };
 
-  const handleGenerateCode = () => {
+  const handleGenerateCode = (event: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault();
     const generatedCode = Math.random()
       .toString(36)

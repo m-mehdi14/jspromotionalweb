@@ -51,7 +51,7 @@ const BrandSpecialEvents = ({ brandId }: { brandId: string }) => {
       setEditingEvent(null);
     } catch (error) {
       console.error("Error saving event:", error);
-      toast.error("Failed to save event.");
+      toast.error(`Failed to save event.`);
     } finally {
       setIsSubmitting(false);
     }

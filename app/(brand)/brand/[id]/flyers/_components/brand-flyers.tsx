@@ -83,7 +83,16 @@ const BrandFlyers = ({ brandId }: BrandFlyersProps) => {
         response = await saveFlyer(flyerData);
       }
 
-      if (response?.success) {
+      // if (response?.success) {
+      //   toast.success(
+      //     isEdit ? "Flyer updated successfully!" : "Flyer created successfully!"
+      //   );
+      // } else {
+      //   toast.error(response?.message || "Failed to save flyer.");
+      //   return;
+      // }
+
+      if (response?.success == true) {
         toast.success(
           isEdit ? "Flyer updated successfully!" : "Flyer created successfully!"
         );
