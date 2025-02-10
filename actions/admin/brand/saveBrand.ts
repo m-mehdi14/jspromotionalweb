@@ -6,6 +6,7 @@ import crypto from "crypto";
 // import bwipjs from "bwip-js"; // Install bwip-js for barcode generation
 import { db } from "@/config/firebase";
 import QRCode from "qrcode";
+import sharp from "sharp";
 
 // Function to hash passwords using SHA-256 with salt
 const hashPassword = (password: string, salt: string): string => {
@@ -61,6 +62,28 @@ export async function saveBrand(brandData: {
     const { name, email, password, description, image, adminId, postalCode } =
       brandData;
 
+    if (!image) {
+      return {
+        success: false,
+        message: "Image is required.",
+      };
+    }
+    let compressedImage: string | undefined;
+    // Compress the image using Sharp
+    const buffer = Buffer.from(
+      image.replace(/^data:image\/\w+;base64,/, ""),
+      "base64"
+    );
+
+    const compressedBuffer = await sharp(buffer)
+      .resize(300) // Resize to a width of 300px while maintaining aspect ratio
+      .jpeg({ quality: 80 }) // Convert to JPEG with 80% quality
+      .toBuffer();
+
+    compressedImage = `data:image/jpeg;base64,${compressedBuffer.toString(
+      "base64"
+    )}`;
+
     // Initialize Firebase Auth and create user
     const auth = getAuth();
     const userCredential = await createUserWithEmailAndPassword(
@@ -84,7 +107,8 @@ export async function saveBrand(brandData: {
       name,
       email,
       description,
-      image,
+      // image,
+      compressedImage,
       adminId,
       hashedPassword, // Save hashed password
       salt, // Save salt for validation

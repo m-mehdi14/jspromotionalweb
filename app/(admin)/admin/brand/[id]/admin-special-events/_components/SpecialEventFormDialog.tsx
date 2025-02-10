@@ -83,6 +83,7 @@ export const SpecialEventFormDialog = ({
           />
           {/* <Input type="file" accept="image/*" onChange={handleImageUpload} />
            */}
+
           <Button
             onClick={(event) => {
               event.preventDefault();
@@ -91,6 +92,9 @@ export const SpecialEventFormDialog = ({
           >
             Upload Image
           </Button>
+          <p className="text-sm text-gray-500">
+            Recommended size: 1280x720 pixels
+          </p>
           <Input
             id="imageUpload"
             type="file"

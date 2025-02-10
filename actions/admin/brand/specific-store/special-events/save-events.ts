@@ -28,6 +28,13 @@ export async function saveSpecialEvent(
       return { success: false, message: "Required fields are missing." };
     }
 
+    if (!eventData.image) {
+      return {
+        success: false,
+        message: "Image is Required ",
+      };
+    }
+
     if (new Date(eventData.startDate) > new Date(eventData.endDate)) {
       return {
         success: false,

@@ -33,32 +33,71 @@ const AdminCouponGifts = ({ brandId }: { brandId: string }) => {
     }
   }, [brandId]);
 
+  // const handleSaveCoupon = async (couponData: Omit<CouponGift, "id">) => {
+  //   setIsSubmitting(true);
+  //   try {
+  //     if (editingCoupon) {
+  //       const response = await editCouponGift(editingCoupon.id, {
+  //         ...couponData,
+  //         image: couponData.image ?? undefined,
+  //       });
+  //       if (response.success) {
+  //         toast.success("Coupon updated successfully!");
+  //       } else {
+  //         toast.error(response.message);
+  //         return;
+  //       }
+  //     } else {
+  //       await saveCouponGift({
+  //         ...couponData,
+  //         image: couponData.image ?? undefined,
+  //       });
+  //       toast.success("Coupon created successfully!");
+  //     }
+  //     await fetchCoupons();
+  //     setIsDialogOpen(false);
+  //     setEditingCoupon(null);
+  //   } catch (error) {
+  //     console.error("Error saving coupon:", error);
+  //     toast.error("An unexpected error occurred.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
   const handleSaveCoupon = async (couponData: Omit<CouponGift, "id">) => {
     setIsSubmitting(true);
+
     try {
-      if (editingCoupon) {
-        const response = await editCouponGift(editingCoupon.id, {
-          ...couponData,
-          image: couponData.image ?? undefined,
-        });
-        if (response.success) {
-          toast.success("Coupon updated successfully!");
-        } else {
-          toast.error(response.message);
-          return;
-        }
-      } else {
-        await saveCouponGift({
-          ...couponData,
-          image: couponData.image ?? undefined,
-        });
-        toast.success("Coupon created successfully!");
+      const isEditing = Boolean(editingCoupon);
+      const payload = {
+        ...couponData,
+        image: couponData?.image || undefined, // Ensures empty strings are converted to `undefined`
+      };
+
+      const response = isEditing
+        ? await editCouponGift(editingCoupon!.id, payload)
+        : await saveCouponGift(payload);
+
+      if (response.success !== true) {
+        toast.error(response.message);
+        return;
       }
+
+      toast.success(
+        isEditing
+          ? "Coupon updated successfully!"
+          : "Coupon created successfully!"
+      );
+
+      // Refresh Coupons List
       await fetchCoupons();
+
+      // Reset Form States
       setIsDialogOpen(false);
       setEditingCoupon(null);
     } catch (error) {
-      console.error("Error saving coupon:", error);
+      console.error("[handleSaveCoupon] Error:", error);
       toast.error("An unexpected error occurred.");
     } finally {
       setIsSubmitting(false);

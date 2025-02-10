@@ -14,7 +14,6 @@ import { Store } from "./types";
 
 export const AdminStore = ({ brandId }: { brandId: string }) => {
   const [stores, setStores] = useState<Store[]>([]);
-  console.log("🚀 ~ AdminStore ~ stores:", stores);
   const [editingStore, setEditingStore] = useState<Store | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -38,38 +37,76 @@ export const AdminStore = ({ brandId }: { brandId: string }) => {
     }
   }, [brandId]);
 
+  // const handleSaveStore = async (
+  //   storeData: Omit<Store, "id" | "brandId"> & { password: string }
+  // ) => {
+  //   try {
+  //     setIsSubmitting(true);
+  //     const response = editingStore
+  //       ? await editStore({
+  //           storeId: editingStore.id,
+  //           brandId,
+  //           name: storeData.name,
+  //           email: storeData.email,
+  //           password: storeData.password,
+  //           description: storeData.description,
+  //           image: storeData.image || undefined,
+  //           postalCode: storeData.postalCode,
+  //         })
+  //       : await saveStore({
+  //           ...storeData,
+  //           brandId,
+  //           image: storeData.image || "",
+  //         });
+
+  //     if (response.success) {
+  //       toast.success(response.message);
+  //       fetchStores();
+  //       setIsDialogOpen(false);
+  //       setEditingStore(null);
+  //     } else {
+  //       toast.error(response.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving store:", error);
+  //     toast.error("An unexpected error occurred while saving the store.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
   const handleSaveStore = async (
     storeData: Omit<Store, "id" | "brandId"> & { password: string }
   ) => {
-    try {
-      setIsSubmitting(true);
-      const response = editingStore
-        ? await editStore({
-            storeId: editingStore.id,
-            brandId,
-            name: storeData.name,
-            email: storeData.email,
-            password: storeData.password,
-            description: storeData.description,
-            image: storeData.image || undefined,
-            postalCode: storeData.postalCode,
-          })
-        : await saveStore({
-            ...storeData,
-            brandId,
-            image: storeData.image || "",
-          });
+    setIsSubmitting(true);
 
-      if (response.success) {
-        toast.success(response.message);
-        fetchStores();
-        setIsDialogOpen(false);
-        setEditingStore(null);
-      } else {
+    try {
+      const isEditing = Boolean(editingStore);
+      const payload = {
+        ...storeData,
+        brandId,
+        image: storeData.image || "", // Ensures image is always a string
+      };
+
+      const response = isEditing
+        ? await editStore({ storeId: editingStore!.id, ...payload })
+        : await saveStore(payload);
+
+      if (!response.success) {
         toast.error(response.message);
+        return;
       }
+
+      toast.success(response.message);
+
+      // Refresh Store List
+      await fetchStores();
+
+      // Reset Form State
+      setIsDialogOpen(false);
+      setEditingStore(null);
     } catch (error) {
-      console.error("Error saving store:", error);
+      console.error("[handleSaveStore] Error:", error);
       toast.error("An unexpected error occurred while saving the store.");
     } finally {
       setIsSubmitting(false);

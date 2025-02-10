@@ -41,7 +41,17 @@ export async function saveFlyer(
 
   try {
     if (!flyerData.brandId) {
-      throw new Error("Brand ID is required.");
+      return {
+        success: false,
+        message: "Brand ID is required.",
+      };
+    }
+
+    if (!flyerData.image) {
+      return {
+        success: false,
+        message: "Image is required.",
+      };
     }
 
     let compressedImage = flyerData.image;

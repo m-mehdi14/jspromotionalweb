@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -39,16 +38,16 @@ export const CouponGiftFormDialog = ({
     }
   }, [coupon]);
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, image: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleImageUpload = (event) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setFormData((prev) => ({ ...prev, image: reader.result }));
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   const generateCouponCode = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent form submission or default button behavior
@@ -101,7 +100,7 @@ export const CouponGiftFormDialog = ({
               setFormData((prev) => ({ ...prev, discount: e.target.value }))
             }
           />
-          <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          {/* <Input type="file" accept="image/*" onChange={handleImageUpload} />
           {formData.image && (
             <Image
               src={formData.image}
@@ -110,7 +109,7 @@ export const CouponGiftFormDialog = ({
               height={128}
               className="w-32 h-auto mt-4 rounded-md"
             />
-          )}
+          )} */}
           <Input
             type="date"
             value={formData.startDate}

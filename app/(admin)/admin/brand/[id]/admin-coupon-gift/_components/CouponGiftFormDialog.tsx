@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -50,16 +49,16 @@ export const CouponGiftFormDialog = ({
     }
   }, [coupon, brandId]);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, image: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setFormData((prev) => ({ ...prev, image: reader.result as string }));
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   const handleGenerateCode = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent form submission or default button behavior
@@ -121,7 +120,10 @@ export const CouponGiftFormDialog = ({
               }))
             }
           />
-          <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          {/* <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          <p className="text-sm text-gray-500">
+            Recommended size: 1280x720 pixels
+          </p>
           {formData.image && (
             <Image
               src={formData.image}
@@ -130,7 +132,7 @@ export const CouponGiftFormDialog = ({
               height={128}
               className="w-32 h-auto mt-4 rounded-md"
             />
-          )}
+          )} */}
 
           <Input
             type="date"
