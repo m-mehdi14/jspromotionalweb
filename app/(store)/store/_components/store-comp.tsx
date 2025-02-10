@@ -17,6 +17,7 @@ import { User } from "lucide-react";
 import {
   fetchFlyersCountByStore,
   fetchSpecialEventsCountByStore,
+  GetScanHistoryByEmail,
   StoreCountView,
   StoreQRCode,
 } from "@/actions/brand/count-values";
@@ -37,6 +38,7 @@ export const StoreMainPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [qrCode, setqrCode] = useState("");
   const [countView, setcountView] = useState("");
+  const [scanHistory, setscanHistory] = useState([]);
 
   const storeId: string | undefined = user?.uid; // Store ID
 
@@ -67,16 +69,21 @@ export const StoreMainPage = () => {
         setError("");
 
         // Fetch metrics data
-        const [specialEvents, flyers, qrCode, count] = await Promise.all([
-          fetchSpecialEventsCountByStore(storeId as string),
-          fetchFlyersCountByStore(storeId as string),
-          StoreQRCode(user?.email as string),
-          StoreCountView(user?.email as string),
-        ]);
+        const [specialEvents, flyers, qrCode, count, scanHistoryData] =
+          await Promise.all([
+            fetchSpecialEventsCountByStore(storeId as string),
+            fetchFlyersCountByStore(storeId as string),
+            StoreQRCode(user?.email as string),
+            StoreCountView(user?.email as string),
+            GetScanHistoryByEmail(user?.email as string),
+          ]);
         // @ts-expect-error ignore
         setqrCode(qrCode);
         // @ts-expect-error ignore
         setcountView(count);
+        // @ts-expect-error ignore
+        setscanHistory(scanHistoryData);
+
         // Set metrics
         setMetrics([
           {
@@ -251,47 +258,44 @@ export const StoreMainPage = () => {
         </div>
       )}
 
-      {/* Info Section */}
-      {/* <div className="bg-gray-100 p-6 rounded-lg shadow-md">
-        <h2 className="text-xl text-black font-bold mb-4 border-b border-gray-300 pb-2">
-          Store Information
-        </h2>
-        <div className="space-y-4 text-gray-800">
-          <div className="flex items-center">
-            <span className="font-medium w-32">Name:</span>
-            <span className="text-gray-600">{storeDetails.name}</span>
-          </div>
-          <div className="flex items-center">
-            <span className="font-medium w-32">Email:</span>
-            <span className="text-gray-600">{storeDetails.email}</span>
-          </div>
-          <div className="flex items-center">
-            <span className="font-medium w-32">Role:</span>
-            <span className="text-gray-600">{storeDetails.role}</span>
-          </div>
-          <div className="flex items-center">
-            <span className="font-medium w-32">Created At:</span>
-            <span className="text-gray-600">{storeDetails.createdAt}</span>
-          </div>
-          <div className="flex items-center">
-            <span className="font-medium w-32">Last Login:</span>
-            <span className="text-gray-600">{storeDetails.lastLogin}</span>
-          </div>
-        </div>
-      </div> */}
-
-      {/* Logout Button */}
-      {/* <div className="flex  justify-end mb-6">
-        <Button
-          onClick={handleLogout}
-          className="bg-red-600 hover:bg-red-700 transition duration-300"
-        >
-          Logout
-        </Button>
-      </div> */}
-
-      {/* Recent Orders Section */}
-      {/* <RecentOrders storeId={storeId} /> */}
+      {/* Scan History Section */}
+      <div className="mt-12 bg-white p-6 rounded-lg shadow-md text-black">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Scan History</h2>
+        {scanHistory?.length > 0 ? (
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  User ID
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Postal Code
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Scanned At
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {scanHistory?.map((scan, index) => (
+                <tr key={index} className="border-t border-gray-300">
+                  <td className="border border-gray-300 px-4 py-2">
+                    {scan.userId}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {scan.postalCode}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {new Date(scan.scannedAt).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="text-gray-600">No scan history available.</p>
+        )}
+      </div>
     </div>
   );
 };

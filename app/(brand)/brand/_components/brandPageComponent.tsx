@@ -7,6 +7,7 @@ import {
   fetchFlyersCountByBrand,
   fetchSpecialEventsCountByBrand,
   fetchStoresCountByBrand,
+  GetScanHistoryByEmailforBrand,
 } from "@/actions/brand/count-values";
 import { JSX } from "react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ export const BrandPageComponent = () => {
   const [error, setError] = useState("");
   const [qrCode, setQrCode] = useState("");
   const [countView, setCountView] = useState("");
+  const [scanHistory, setscanHistory] = useState([]);
 
   useEffect(() => {
     const fetchMetrics = async () => {
@@ -33,18 +35,21 @@ export const BrandPageComponent = () => {
         setLoading(true);
         setError("");
 
-        const [stores, specialEvents, flyers, qrCode, count] =
+        const [stores, specialEvents, flyers, qrCode, count, scanHistoryData] =
           await Promise.all([
             fetchStoresCountByBrand(user?.uid as string),
             fetchSpecialEventsCountByBrand(user?.uid as string),
             fetchFlyersCountByBrand(user?.uid as string),
             BrandQRCode(user?.email as string),
             BrandCountView(user?.email as string),
+            GetScanHistoryByEmailforBrand(user?.email as string),
           ]);
         // @ts-expect-error ignore
         setQrCode(qrCode as string);
         // @ts-expect-error ignore
         setCountView(count as string);
+        // @ts-expect-error ignore
+        setscanHistory(scanHistoryData);
 
         setMetrics([
           {
@@ -162,6 +167,44 @@ export const BrandPageComponent = () => {
           </div>
         </div>
       )}
+      {/* Scan History Section */}
+      <div className="mt-12 bg-white p-6 rounded-lg shadow-md text-black">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Scan History</h2>
+        {scanHistory?.length > 0 ? (
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  User ID
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Postal Code
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Scanned At
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {scanHistory?.map((scan, index) => (
+                <tr key={index} className="border-t border-gray-300">
+                  <td className="border border-gray-300 px-4 py-2">
+                    {scan?.userId}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {scan?.postalCode}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {new Date(scan?.scannedAt).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="text-gray-600">No scan history available.</p>
+        )}
+      </div>
     </div>
   );
 };

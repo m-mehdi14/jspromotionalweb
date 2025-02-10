@@ -362,3 +362,103 @@ export async function StoreCountView(email: string): Promise<number> {
     return 0;
   }
 }
+
+interface ScanHistory {
+  userId: string;
+  postalCode: string;
+  scannedAt: string;
+}
+
+export async function GetScanHistoryByEmail(
+  email: string
+): Promise<ScanHistory[]> {
+  try {
+    if (!email) {
+      throw new Error("Store email is required.");
+    }
+
+    const storesCollection = collection(db, "stores");
+
+    // Query to find the store by email
+    const storeQuery = query(storesCollection, where("email", "==", email));
+    const storeSnapshot = await getDocs(storeQuery);
+
+    if (storeSnapshot.empty) {
+      throw new Error("No store found for the given email.");
+    }
+
+    // Assuming there's only one document per email
+    const storeDoc = storeSnapshot.docs[0];
+
+    // Reference to scanHistory sub-collection
+    const scanHistoryCollection = collection(storeDoc.ref, "scanHistory");
+
+    // Fetch scan history documents
+    const scanHistorySnapshot = await getDocs(scanHistoryCollection);
+
+    if (scanHistorySnapshot.empty) {
+      return []; // No scan history found
+    }
+
+    // Extract scan history data
+    const scanHistoryData: ScanHistory[] = scanHistorySnapshot.docs.map(
+      (doc) => ({
+        userId: doc.data().userId,
+        postalCode: doc.data().postalCode,
+        scannedAt: doc.data().scannedAt,
+      })
+    );
+
+    return scanHistoryData;
+  } catch (error) {
+    console.error("Error fetching scan history:", error);
+    return [];
+  }
+}
+
+export async function GetScanHistoryByEmailforBrand(
+  email: string
+): Promise<ScanHistory[]> {
+  try {
+    if (!email) {
+      throw new Error("Store email is required.");
+    }
+
+    const storesCollection = collection(db, "brands");
+
+    // Query to find the store by email
+    const storeQuery = query(storesCollection, where("email", "==", email));
+    const storeSnapshot = await getDocs(storeQuery);
+
+    if (storeSnapshot.empty) {
+      throw new Error("No store found for the given email.");
+    }
+
+    // Assuming there's only one document per email
+    const storeDoc = storeSnapshot.docs[0];
+
+    // Reference to scanHistory sub-collection
+    const scanHistoryCollection = collection(storeDoc.ref, "scanHistory");
+
+    // Fetch scan history documents
+    const scanHistorySnapshot = await getDocs(scanHistoryCollection);
+
+    if (scanHistorySnapshot.empty) {
+      return []; // No scan history found
+    }
+
+    // Extract scan history data
+    const scanHistoryData: ScanHistory[] = scanHistorySnapshot.docs.map(
+      (doc) => ({
+        userId: doc.data().userId,
+        postalCode: doc.data().postalCode,
+        scannedAt: doc.data().scannedAt,
+      })
+    );
+
+    return scanHistoryData;
+  } catch (error) {
+    console.error("Error fetching scan history:", error);
+    return [];
+  }
+}
