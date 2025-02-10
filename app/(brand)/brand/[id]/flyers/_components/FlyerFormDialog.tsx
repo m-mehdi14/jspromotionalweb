@@ -136,6 +136,7 @@ export const FlyerFormDialog: React.FC<FlyerFormDialogProps> = ({
             }
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          <p>Recommended size for image upload 1280 * 720</p>
           {formData.image && (
             <Image
               src={formData.image}
