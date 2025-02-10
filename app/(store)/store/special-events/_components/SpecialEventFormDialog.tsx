@@ -98,6 +98,7 @@ export const SpecialEventFormDialog = ({
             }
           />
           <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          <p>Recommended size of image is 1280 * 720</p>
           {typeof formData.image === "string" && (
             <Image
               src={formData.image}

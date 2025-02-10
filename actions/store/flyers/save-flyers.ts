@@ -26,6 +26,13 @@ export async function saveFlyer(
       return { success: false, message: "Required fields are missing." };
     }
 
+    if (!flyerData.image) {
+      return {
+        success: false,
+        message: "Image is Required ",
+      };
+    }
+
     if (new Date(flyerData.validFrom) > new Date(flyerData.validTo)) {
       return { success: false, message: "Invalid date range provided." };
     }

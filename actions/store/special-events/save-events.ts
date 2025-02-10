@@ -21,6 +21,13 @@ export async function saveSpecialEvent(eventData: {
       throw new Error("Required fields are missing.");
     }
 
+    if (!eventData.image) {
+      return {
+        success: false,
+        message: "Image is Required ",
+      };
+    }
+
     const eventsRef = collection(db, "specialEvents");
     await addDoc(eventsRef, eventData);
 
