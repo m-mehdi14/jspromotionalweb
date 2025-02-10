@@ -115,7 +115,7 @@ export const CouponGiftsComponent = () => {
                 <TableHead>ID</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead>Store/Brand ID</TableHead>
+                {/* <TableHead>Store/Brand ID</TableHead> */}
                 <TableHead>Start Date</TableHead>
                 <TableHead>End Date</TableHead>
                 <TableHead>Usage Limit</TableHead>
@@ -129,9 +129,9 @@ export const CouponGiftsComponent = () => {
                     {coupon.name || "N/A"}
                   </TableCell>
                   <TableCell>{coupon.code || "N/A"}</TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     {coupon.storeId || coupon.brandId || "N/A"}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     {coupon.startDate
                       ? new Date(coupon.startDate).toLocaleDateString("en-US", {

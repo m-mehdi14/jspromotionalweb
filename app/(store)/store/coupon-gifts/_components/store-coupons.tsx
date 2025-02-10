@@ -86,7 +86,7 @@ const StoreCouponGifts = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <header className="flex justify-between items-center mb-8">
+      {/* <header className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">
           Manage Coupon Gifts for Store
         </h1>
@@ -99,7 +99,23 @@ const StoreCouponGifts = () => {
         >
           Add New Coupon
         </Button>
+      </header> */}
+      <header className="relative w-full">
+        {/* Black Bar Header */}
+        <div className="flex justify-between items-center bg-black text-white rounded-md p-6 mb-10">
+          <h1 className="text-3xl font-bold">Manage Coupon Gifts for Store</h1>
+          <Button
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg"
+            onClick={() => {
+              setIsDialogOpen(true);
+              setEditingCoupon(null);
+            }}
+          >
+            Add New Coupon
+          </Button>
+        </div>
       </header>
+
 
       {/* Coupon Gift List */}
       <CouponGiftList

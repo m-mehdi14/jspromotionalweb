@@ -102,11 +102,11 @@ export const Navigation = () => {
     } else if (brandId) {
       // Brand-Specific Navigation
       routes = [
-        {
-          label: "Brand Dashboard",
-          href: `/admin/brand/${brandId}`,
-          icon: Fullscreen,
-        },
+        // {
+        //   label: "Brand Dashboard",
+        //   href: `/admin/brand/${brandId}`,
+        //   icon: Fullscreen,
+        // },
         {
           label: "Brand Stores",
           href: `/admin/brand/${brandId}/admin-store`,

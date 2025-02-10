@@ -22,6 +22,7 @@ import {
   StoreQRCode,
 } from "@/actions/brand/count-values";
 import { FaCalendarAlt, FaCheckCircle } from "react-icons/fa";
+import { IoIosLogOut } from "react-icons/io";
 
 export const StoreMainPage = () => {
   const { handleLogout, user } = useAuth();
@@ -51,12 +52,12 @@ export const StoreMainPage = () => {
     // @ts-expect-error
     lastLogin: user?.metadata?.lastLoginAt
       ? // @ts-expect-error
-        new Date(parseInt(user.metadata.lastLoginAt)).toLocaleString()
+      new Date(parseInt(user.metadata.lastLoginAt)).toLocaleString()
       : "N/A",
     // @ts-expect-error
     createdAt: user?.metadata?.createdAt
       ? // @ts-expect-error
-        new Date(parseInt(user.metadata.createdAt)).toLocaleString()
+      new Date(parseInt(user.metadata.createdAt)).toLocaleString()
       : "N/A",
   };
 
@@ -156,7 +157,7 @@ export const StoreMainPage = () => {
             onClick={handleLogout}
             className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg shadow-md transition"
           >
-            Logout
+            <IoIosLogOut className="" />
           </Button>
 
           {/* Edit Store Details */}

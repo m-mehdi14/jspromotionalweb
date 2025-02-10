@@ -61,7 +61,7 @@ export const FlyerList = ({
 
   return (
     <div className="w-full">
-      <Table className="rounded-lg shadow-2xl p-2">
+      <Table className="rounded-lg p-2">
         <TableHeader className="bg-white">
           <TableRow>
             <TableHead className="text-left">Image</TableHead>
@@ -111,9 +111,8 @@ export const FlyerList = ({
                   disabled={isDeleting === flyer.id}
                 >
                   <Trash
-                    className={`w-4 h-4 ${
-                      isDeleting === flyer.id && "disabled:cursor-wait"
-                    }`}
+                    className={`w-4 h-4 ${isDeleting === flyer.id && "disabled:cursor-wait"
+                      }`}
                   />
                 </Button>
               </TableCell>

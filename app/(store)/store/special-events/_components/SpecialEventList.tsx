@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PencilIcon, Trash } from "lucide-react";
 
 interface SpecialEvent {
   id: string;
@@ -69,10 +70,10 @@ export const SpecialEventList: React.FC<SpecialEventListProps> = ({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-        <table className="min-w-full border-collapse border border-gray-200">
+      <div className="overflow-x-auto ">
+        <table className="min-w-full border-collapse ">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="">
               <th className="px-4 py-2 text-left text-gray-600 font-medium">
                 Image
               </th>
@@ -97,9 +98,8 @@ export const SpecialEventList: React.FC<SpecialEventListProps> = ({
             {paginatedEvents.map((event, index) => (
               <tr
                 key={event.id}
-                className={`border-b ${
-                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                }`}
+                className={`border-b ${index % 2 === 0 ? "" : "bg-white"
+                  }`}
               >
                 <td className="px-4 py-2">
                   <Image
@@ -130,13 +130,15 @@ export const SpecialEventList: React.FC<SpecialEventListProps> = ({
                 </td>
                 <td className="px-4 py-2 flex justify-center space-x-2">
                   <Button variant="secondary" onClick={() => onEdit(event)}>
-                    Edit
+
+                    <PencilIcon />
                   </Button>
                   <Button
                     variant="destructive"
                     onClick={() => onDelete(event.id)}
                   >
-                    Delete
+
+                    <Trash />
                   </Button>
                 </td>
               </tr>

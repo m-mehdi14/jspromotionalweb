@@ -7,7 +7,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onAddStore }) => {
   return (
-    <header className="flex justify-between items-center mb-8 bg-gradient-to-r from-blue-500 to-indigo-600 p-4 rounded-md shadow-lg">
+    <header className="flex justify-between items-center mb-8 bg-black p-6 rounded-md shadow-lg">
       {/* Title */}
       <h1 className="text-3xl font-bold text-white">Brand Stores</h1>
 

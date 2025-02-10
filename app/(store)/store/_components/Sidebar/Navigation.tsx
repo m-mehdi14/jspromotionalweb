@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import {
-  Fullscreen,
   Users,
   UserCircle,
   Store,
@@ -24,72 +23,72 @@ export const Navigation = () => {
   // Define routes conditionally based on the path
   const routes =
     storeId &&
-    pathname.includes(`/admin/brand/${brandId}/admin-store/${storeId}`)
+      pathname.includes(`/admin/brand/${brandId}/admin-store/${storeId}`)
       ? [
-          {
-            label: "Store Dashboard",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}`,
-            icon: Store,
-          },
-          {
-            label: "Store Flyers",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}/flyers`,
-            icon: UserCircle,
-          },
-          {
-            label: "Store Special Events",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}/special-events`,
-            icon: Users,
-          },
-          {
-            label: "Store Coupon Events",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}/coupon-gifts`,
-            icon: Users,
-          },
-          {
-            label: "Store Settings",
-            href: `/admin/brand/${brandId}/admin-store/${storeId}/settings`,
-            icon: Settings,
-          },
-        ]
+        {
+          label: "Store Dashboard",
+          href: `/admin/brand/${brandId}/admin-store/${storeId}`,
+          icon: Store,
+        },
+        {
+          label: "Store Flyers",
+          href: `/admin/brand/${brandId}/admin-store/${storeId}/flyers`,
+          icon: UserCircle,
+        },
+        {
+          label: "Store Special Events",
+          href: `/admin/brand/${brandId}/admin-store/${storeId}/special-events`,
+          icon: Users,
+        },
+        {
+          label: "Store Coupon Events",
+          href: `/admin/brand/${brandId}/admin-store/${storeId}/coupon-gifts`,
+          icon: Users,
+        },
+        {
+          label: "Store Settings",
+          href: `/admin/brand/${brandId}/admin-store/${storeId}/settings`,
+          icon: Settings,
+        },
+      ]
       : [
-          {
-            label: "Home",
-            href: `/`,
-            icon: Fullscreen,
-          },
-          {
-            label: "Store",
-            href: `/store`,
-            icon: UserCircle,
-          },
-          {
-            label: "Store Flyers",
-            href: `/store/flyers`,
-            icon: UserCircle,
-          },
+        // {
+        //   label: "Home",
+        //   href: `/`,
+        //   icon: Fullscreen,
+        // },
+        {
+          label: "Store",
+          href: `/store`,
+          icon: UserCircle,
+        },
+        {
+          label: "Store Flyers",
+          href: `/store/flyers`,
+          icon: UserCircle,
+        },
 
-          {
-            label: "Store Special Events",
-            href: `/store/special-events`,
-            icon: UserCircle,
-          },
-          {
-            label: "Store Coupon Gifts",
-            href: `/store/coupon-gifts`,
-            icon: Gift,
-          },
-          {
-            label: "Store Reports",
-            href: `/store/reports`,
-            icon: Gift,
-          },
-          {
-            label: "Setting",
-            href: `/store/settings`,
-            icon: Users,
-          },
-        ];
+        {
+          label: "Store Special Events",
+          href: `/store/special-events`,
+          icon: UserCircle,
+        },
+        {
+          label: "Store Coupon Gifts",
+          href: `/store/coupon-gifts`,
+          icon: Gift,
+        },
+        {
+          label: "Store Reports",
+          href: `/store/reports`,
+          icon: Gift,
+        },
+        {
+          label: "Setting",
+          href: `/store/settings`,
+          icon: Users,
+        },
+      ];
 
   // Show skeletons while user data is loading
   if (!user?.name) {

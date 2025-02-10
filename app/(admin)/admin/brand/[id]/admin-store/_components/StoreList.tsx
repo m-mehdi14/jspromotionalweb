@@ -76,10 +76,10 @@ const StoreList = ({
   }
 
   return (
-    <div className="w-full p-4 bg-white shadow-md rounded-lg">
-      <Table className="rounded-lg border border-gray-200">
+    <div className="w-full p-4  rounded-lg">
+      <Table className="rounded-lg">
         <TableHeader>
-          <TableRow className="bg-gray-100 text-gray-700 rounded-t-lg">
+          <TableRow className=" text-gray-700">
             <TableHead className="py-4">Logo</TableHead>
             <TableHead className="py-4">Store Name</TableHead>
             <TableHead className="py-4">Description</TableHead>

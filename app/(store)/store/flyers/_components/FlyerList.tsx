@@ -70,10 +70,10 @@ export const FlyerList: React.FC<FlyerListProps> = ({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-        <table className="min-w-full border-collapse border border-gray-200">
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="">
               <th className="px-4 py-2 text-left text-gray-600 font-medium">
                 Image
               </th>
@@ -98,9 +98,8 @@ export const FlyerList: React.FC<FlyerListProps> = ({
             {paginatedFlyers.map((flyer, index) => (
               <tr
                 key={flyer.id}
-                className={`border-b ${
-                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                }`}
+                className={`border-b ${index % 2 === 0 ? "" : "bg-white"
+                  }`}
               >
                 <td className="px-4 py-2">
                   <Image

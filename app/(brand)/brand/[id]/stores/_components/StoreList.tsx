@@ -68,10 +68,10 @@ const StoreList: React.FC<StoreListProps> = ({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-        <table className="min-w-full border-collapse border border-gray-200">
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="">
               <th className="px-4 py-2 text-left text-gray-600 font-medium">
                 Name
               </th>
@@ -93,9 +93,8 @@ const StoreList: React.FC<StoreListProps> = ({
             {paginatedStores.map((store, index) => (
               <tr
                 key={store.id}
-                className={`border-b ${
-                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                }`}
+                className={`border-b ${index % 2 === 0 ? "" : "bg-white"
+                  }`}
               >
                 <td className="px-4 py-2 text-black">{store.name}</td>
                 <td className="px-4 py-2 text-black">{store.email}</td>
@@ -121,7 +120,7 @@ const StoreList: React.FC<StoreListProps> = ({
                     className="text-black bg-red-500 hover:text-green-600 flex items-center"
                     onClick={() => onEdit(store)}
                   >
-                    <Edit className="w-4 h-4 mr-1" /> Edit
+                    <Edit className="w-4 h-4 mr-1" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -130,7 +129,7 @@ const StoreList: React.FC<StoreListProps> = ({
                       onDelete(store.id as string, store.name || "Unknown")
                     }
                   >
-                    <Trash2 className="w-4 h-4 mr-1" /> Delete
+                    <Trash2 className="w-4 h-4 mr-1" />
                   </Button>
                 </td>
               </tr>

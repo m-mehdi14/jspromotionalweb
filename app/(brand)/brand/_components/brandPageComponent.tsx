@@ -13,6 +13,7 @@ import { JSX } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/AuthContext/authContext";
 import { FaHome, FaCalendarAlt, FaCheckCircle } from "react-icons/fa";
+import { IoIosLogOut } from "react-icons/io";
 
 export const BrandPageComponent = () => {
   const { handleLogout, user } = useAuth();
@@ -82,15 +83,15 @@ export const BrandPageComponent = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-black">
       {/* Header Section */}
-      <header className="w-full flex items-center justify-between p-6 bg-white shadow-md">
-        <h1 className="text-2xl font-bold text-gray-800">Brand Dashboard</h1>
+      <header className="w-full flex items-center justify-between p-6 bg-black rounded-md shadow-md">
+        <h1 className="text-2xl font-bold text-white">Brand Dashboard</h1>
         <div className="flex items-center space-x-4">
-          <p className="text-gray-600">Welcome, {user?.email || "Admin"}!</p>
+          <p className="text-gray-400">Welcome, {user?.email || "Admin"}!</p>
           <Button
             onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center"
           >
-            Logout
+            <IoIosLogOut className="" />
           </Button>
         </div>
       </header>
