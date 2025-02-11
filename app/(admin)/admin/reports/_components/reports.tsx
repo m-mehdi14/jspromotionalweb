@@ -192,7 +192,6 @@
 //   );
 // };
 
-
 "use client";
 
 import React, { useState } from "react";
@@ -211,12 +210,21 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useAuth } from "@/lib/AuthContext/authContext";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useRouter } from "next/navigation";
+import { User } from "../../users/_components/action";
+import { SpecialEvent } from "../../brand/[id]/admin-special-events/_components/types";
+import { Flyer } from "../../brand/[id]/admin-store/_components/types";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF6384", "#36A2EB"];
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#FF6384",
+  "#36A2EB",
+];
 
 interface Metric {
   label: string;
@@ -244,10 +252,21 @@ interface AdminReportsProps {
   brands: Brand[];
   categories: Category[];
   stores: Store[];
+  users: User[];
+  specialEvents: SpecialEvent[];
+  flyers: Flyer[];
 }
 
-export const AdminReports: React.FC<AdminReportsProps> = ({ metrics, brands, categories, stores }) => {
-  const { user } = useAuth();
+export const AdminReports: React.FC<AdminReportsProps> = ({
+  metrics,
+  brands,
+  categories,
+  stores,
+  users,
+  specialEvents,
+  flyers,
+}) => {
+  // const { user } = useAuth();
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const router = useRouter();
@@ -371,9 +390,21 @@ export const AdminReports: React.FC<AdminReportsProps> = ({ metrics, brands, cat
             <h2 className="text-xl font-bold mb-4">Data Distribution</h2>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
-                <Pie data={metrics} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label>
+                <Pie
+                  data={metrics}
+                  dataKey="value"
+                  nameKey="label"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  fill="#8884d8"
+                  label
+                >
                   {metrics.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -385,7 +416,9 @@ export const AdminReports: React.FC<AdminReportsProps> = ({ metrics, brands, cat
           {/* Dynamic Data Section */}
           {selectedCategory && (
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-bold mb-4">{selectedCategory} Details</h2>
+              <h2 className="text-xl font-bold mb-4">
+                {selectedCategory} Details
+              </h2>
               {selectedCategory === "Brands" && brands?.length > 0 ? (
                 brands.map((brand) => <p key={brand.id}>{brand.name}</p>)
               ) : selectedCategory === "Brands" ? (
@@ -398,12 +431,32 @@ export const AdminReports: React.FC<AdminReportsProps> = ({ metrics, brands, cat
                 <p className="text-gray-500">No stores available.</p>
               ) : null}
 
+              {selectedCategory === "Users" && users?.length > 0 ? (
+                users.map((store) => <p key={store.id}>{store.id}</p>)
+              ) : selectedCategory === "Users" ? (
+                <p className="text-gray-500">No Users available.</p>
+              ) : null}
+
+              {selectedCategory === "Special Events" &&
+              specialEvents?.length > 0 ? (
+                specialEvents.map((store) => <p key={store.id}>{store.name}</p>)
+              ) : selectedCategory === "Users" ? (
+                <p className="text-gray-500">No Users available.</p>
+              ) : null}
+
+              {selectedCategory === "Flyers" && flyers?.length > 0 ? (
+                flyers.map((store) => <p key={store.id}>{store.title}</p>)
+              ) : selectedCategory === "Flyers" ? (
+                <p className="text-gray-500">No Users available.</p>
+              ) : null}
+
               {selectedCategory === "Categories" && categories?.length > 0 ? (
-                categories.map((category) => <p key={category.id}>{category.name}</p>)
+                categories.map((category) => (
+                  <p key={category.id}>{category.name}</p>
+                ))
               ) : selectedCategory === "Categories" ? (
                 <p className="text-gray-500">No categories available.</p>
               ) : null}
-
             </div>
           )}
         </div>

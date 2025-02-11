@@ -14,7 +14,7 @@ import {
 /**
  * ✅ Define the User Type
  */
-interface User {
+export interface User {
   id: string;
   userId: string;
   fcmToken: string;
@@ -140,5 +140,48 @@ export const DeleteUser = async (
   } catch (error) {
     console.error("Error deleting user:", error);
     return { success: false, error: (error as Error).message };
+  }
+};
+
+export const fetchUsersCount = async (
+  startDate?: string,
+  endDate?: string
+): Promise<number> => {
+  try {
+    const postalCodesCollection = collection(db, "postalCodes");
+    const postalCodesSnapshot = await getDocs(postalCodesCollection);
+
+    let totalUsersCount = 0;
+
+    for (const postalCodeDoc of postalCodesSnapshot.docs) {
+      const postalCode = postalCodeDoc.id;
+      const usersCollection = collection(
+        db,
+        "postalCodes",
+        postalCode,
+        "postalusers"
+      );
+
+      // Query users within the date range if provided
+      let usersQuery: Query<DocumentData>;
+      if (startDate && endDate) {
+        usersQuery = query(
+          usersCollection,
+          where("createdAt", ">=", startDate),
+          where("createdAt", "<=", endDate)
+        );
+      } else {
+        usersQuery = usersCollection;
+      }
+
+      const usersSnapshot = await getDocs(usersQuery);
+      totalUsersCount += usersSnapshot.size; // ✅ Count users instead of fetching data
+    }
+
+    console.log("🚀 ~ Total Users Count:", totalUsersCount);
+    return totalUsersCount;
+  } catch (error) {
+    console.error("Error fetching users count:", error);
+    return 0;
   }
 };

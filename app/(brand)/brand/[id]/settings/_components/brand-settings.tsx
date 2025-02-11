@@ -226,10 +226,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { updateBrandSettings } from "@/actions/brand/settings/update-settings";
 import { fetchBrandSettings } from "@/actions/brand/settings/fetch-settings";
 import Image from "next/image";
-import { useAuth } from "@/lib/AuthContext/authContext";
 
 const BrandSettings = ({ brandId }: { brandId: string }) => {
-  const { handleLogout } = useAuth();
+  // const { handleLogout } = useAuth();
   const [settings, setSettings] = useState({
     name: "",
     description: "",
@@ -252,7 +251,8 @@ const BrandSettings = ({ brandId }: { brandId: string }) => {
         description: data.description || "",
         email: data.email || "",
         image: data.image || null,
-        notifications: data.notifications !== undefined ? data.notifications : true,
+        notifications:
+          data.notifications !== undefined ? data.notifications : true,
       });
     } catch (error) {
       console.error("Error fetching settings:", error);
@@ -315,25 +315,30 @@ const BrandSettings = ({ brandId }: { brandId: string }) => {
 
       {/* Horizontal Layout: Brand Information & Update Password */}
       <div className="bg-white p-6 rounded-lg shadow flex flex-col md:flex-row gap-8">
-
         {/* Brand Information */}
         <div className="w-full md:w-1/2">
           <h2 className="text-xl font-semibold mb-4">Brand Information</h2>
           <Input
             placeholder="Name"
             value={settings.name}
-            onChange={(e) => setSettings((prev) => ({ ...prev, name: e.target.value }))}
+            onChange={(e) =>
+              setSettings((prev) => ({ ...prev, name: e.target.value }))
+            }
           />
           <Textarea
             placeholder="Description"
             value={settings.description}
-            onChange={(e) => setSettings((prev) => ({ ...prev, description: e.target.value }))}
+            onChange={(e) =>
+              setSettings((prev) => ({ ...prev, description: e.target.value }))
+            }
             className="mt-4"
           />
           <Input
             placeholder="Email"
             value={settings.email}
-            onChange={(e) => setSettings((prev) => ({ ...prev, email: e.target.value }))}
+            onChange={(e) =>
+              setSettings((prev) => ({ ...prev, email: e.target.value }))
+            }
             className="mt-4"
           />
           <Input
@@ -379,7 +384,9 @@ const BrandSettings = ({ brandId }: { brandId: string }) => {
             placeholder="New Password"
             type="password"
             value={passwords.newPassword}
-            onChange={(e) => setPasswords((prev) => ({ ...prev, newPassword: e.target.value }))}
+            onChange={(e) =>
+              setPasswords((prev) => ({ ...prev, newPassword: e.target.value }))
+            }
             className="mt-4"
           />
           <Input
@@ -399,7 +406,11 @@ const BrandSettings = ({ brandId }: { brandId: string }) => {
 
       {/* Save & Logout Buttons */}
       <div className="flex flex-col md:flex-row gap-4 mt-6">
-        <Button onClick={handleSaveSettings} disabled={isSubmitting} className="bg-green-600 hover:bg-green-700 w-full md:w-auto">
+        <Button
+          onClick={handleSaveSettings}
+          disabled={isSubmitting}
+          className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
+        >
           {isSubmitting ? "Saving..." : "Save Changes"}
         </Button>
 

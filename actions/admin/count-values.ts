@@ -246,3 +246,130 @@ export async function fetchFlyersCount(
     return 0;
   }
 }
+
+/////////////////////////////////////////////////////////////////
+
+//   brand data functions
+export async function fetchBrandsData(
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  try {
+    const brandsCollection = collection(db, "brands");
+    const snapshot = await getDocs(brandsCollection);
+
+    let brandsData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    if (startDate && endDate) {
+      brandsData = filterByDateRange(brandsData, startDate, endDate);
+    }
+
+    return brandsData;
+  } catch (error) {
+    console.error("Error fetching brands data:", error);
+    return [];
+  }
+}
+
+export async function fetchCategoriesData(
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  try {
+    const categoriesCollection = collection(db, "categories");
+    const snapshot = await getDocs(categoriesCollection);
+
+    let categoriesData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    if (startDate && endDate) {
+      categoriesData = filterByDateRange(categoriesData, startDate, endDate);
+    }
+
+    console.log("🚀 ~ Categories Data:", categoriesData);
+    return categoriesData;
+  } catch (error) {
+    console.error("Error fetching categories data:", error);
+    return [];
+  }
+}
+
+export async function fetchStoresData(
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  try {
+    const storesCollection = collection(db, "stores");
+    const snapshot = await getDocs(storesCollection);
+
+    let storesData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    if (startDate && endDate) {
+      storesData = filterByDateRange(storesData, startDate, endDate);
+    }
+
+    console.log("🚀 ~ Stores Data:", storesData);
+    return storesData;
+  } catch (error) {
+    console.error("Error fetching stores data:", error);
+    return [];
+  }
+}
+
+export async function fetchSpecialEventsData(
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  try {
+    const eventsCollection = collection(db, "specialEvents");
+    const snapshot = await getDocs(eventsCollection);
+
+    let eventsData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    if (startDate && endDate) {
+      eventsData = filterByDateRange(eventsData, startDate, endDate);
+    }
+
+    console.log("🚀 ~ Special Events Data:", eventsData);
+    return eventsData;
+  } catch (error) {
+    console.error("Error fetching special events data:", error);
+    return [];
+  }
+}
+
+export async function fetchFlyersData(
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  try {
+    const flyersCollection = collection(db, "flyers");
+    const snapshot = await getDocs(flyersCollection);
+
+    let flyersData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    if (startDate && endDate) {
+      flyersData = filterByDateRange(flyersData, startDate, endDate);
+    }
+
+    console.log("🚀 ~ Flyers Data:", flyersData);
+    return flyersData;
+  } catch (error) {
+    console.error("Error fetching flyers data:", error);
+    return [];
+  }
+}
