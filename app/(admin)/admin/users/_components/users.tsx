@@ -215,7 +215,7 @@ export const Users: React.FC<UsersTableProps> = ({
           <TableRow className="bg-gray-100 text-gray-700">
             <TableHead>Postal Code</TableHead>
             <TableHead>User ID</TableHead>
-            <TableHead>FCM Token</TableHead>
+            {/* <TableHead>FCM Token</TableHead> */}
             <TableHead>Created At</TableHead>
             <TableHead className="text-center">Actions</TableHead>
           </TableRow>
@@ -225,7 +225,7 @@ export const Users: React.FC<UsersTableProps> = ({
             <TableRow key={user.id} className="hover:bg-gray-50">
               <TableCell>{user.postalCode}</TableCell>
               <TableCell>{user.userId}</TableCell>
-              <TableCell>{user.fcmToken.slice(0, 20)}...</TableCell>
+              {/* <TableCell>{user.fcmToken.slice(0, 20)}...</TableCell> */}
               <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
               <TableCell className="flex justify-center space-x-2">
                 <Button
