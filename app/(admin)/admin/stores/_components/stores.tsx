@@ -60,8 +60,9 @@ export const Stores: React.FC<StoresTableProps> = ({ stores }) => {
     <div className="p-6 bg-gray-50 rounded-lg shadow">
       {/* Header Section */}
       <div className=" justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-white bg-black p-7 rounded-md">Stores</h2>
-
+        <h2 className="text-2xl font-semibold text-white bg-black p-7 rounded-md">
+          Stores
+        </h2>
       </div>
       <div>
         {/* Search Input */}
@@ -82,7 +83,8 @@ export const Stores: React.FC<StoresTableProps> = ({ stores }) => {
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Description</TableHead>
-            <TableHead>Brand ID</TableHead>
+            {/* <TableHead>Brand ID</TableHead> */}
+            <TableHead>Brand Name</TableHead>
             <TableHead>Postal Code</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Created At</TableHead>
@@ -104,16 +106,22 @@ export const Stores: React.FC<StoresTableProps> = ({ stores }) => {
                 <TableCell>{store.name || "N/A"}</TableCell>
                 <TableCell>{store.email || "N/A"}</TableCell>
                 <TableCell>{store.description || "N/A"}</TableCell>
-                <TableCell>{store.brandId || "N/A"}</TableCell>
+                {/* <TableCell>{store.brandId || "N/A"}</TableCell> */}
+                <TableCell>
+                  {
+                    // @ts-expect-error ignore
+                    store.brandName || "N/A"
+                  }
+                </TableCell>
                 <TableCell>{store.postalCode || "N/A"}</TableCell>
                 <TableCell>{store.type || "N/A"}</TableCell>
                 <TableCell>
                   {store.createdAt
                     ? new Date(store.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
                     : "N/A"}
                 </TableCell>
               </TableRow>
