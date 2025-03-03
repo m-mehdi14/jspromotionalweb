@@ -193,6 +193,7 @@ const sendStoreEmail = async (
 
     await transporter.sendMail(mailOptions);
     console.log(`📧 Email sent to ${storeEmail}`);
+    // this is works for both admin and store
   } catch (error) {
     console.error("❌ [sendStoreEmail] Error sending email:", error);
   }
