@@ -14,7 +14,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  getAuth,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 import { app, db } from "@/config/firebase"; // Firebase app config
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -37,7 +41,6 @@ const validateAdmin = async (email: string): Promise<boolean> => {
       where("role", "==", "admin")
     );
     const querySnapshot = await getDocs(q);
-    console.log("🚀 ~ validateAdmin ~ querySnapshot:", querySnapshot);
     return !querySnapshot.empty; // Returns true if a matching document is found
   } catch (error) {
     console.error("Error validating admin:", error);
@@ -48,6 +51,7 @@ const validateAdmin = async (email: string): Promise<boolean> => {
 export const AdminAuthLogin = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResetting, setIsResetting] = useState(false); // State for password reset
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -75,7 +79,6 @@ export const AdminAuthLogin = () => {
       await signInWithEmailAndPassword(auth, email, password);
       toast.success("Logged in successfully!");
       form.reset(); // Clear form on success
-      // Navigate Admin to user
       router.push("/admin");
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -85,6 +88,27 @@ export const AdminAuthLogin = () => {
       }
     } finally {
       setIsSubmitting(false); // Re-enable fields and hide loader
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    const email = form.getValues("email");
+    if (!email) {
+      toast.error("Please enter your email first.");
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      const auth = getAuth(app);
+      await sendPasswordResetEmail(auth, email);
+      toast.success("Password reset email sent! Check your inbox.");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message || "Failed to send password reset email.");
+      }
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -139,6 +163,18 @@ export const AdminAuthLogin = () => {
                 )}
               />
             </Form>
+
+            {/* Forgot Password Button */}
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-sm text-blue-400 hover:text-blue-500"
+                disabled={isResetting}
+              >
+                {isResetting ? "Sending email..." : "Forgot Password?"}
+              </button>
+            </div>
 
             {/* Submit Button */}
             <Button
