@@ -6,8 +6,12 @@ import { useAuth } from "@/lib/AuthContext/authContext";
 import { FaCalendarAlt, FaCheckCircle, FaHome } from "react-icons/fa";
 import {
   fetchCouponCountByBrand,
+  fetchcouponGiftsByBrand,
+  fetchFlyersByBrand,
   fetchFlyersCountByBrand,
+  fetchspecialEventsByBrand,
   fetchSpecialEventsCountByBrand,
+  fetchStoresByBrand,
   fetchStoresCountByBrand,
 } from "@/actions/brand/count-values";
 import { useSearchParams } from "next/navigation";
@@ -24,6 +28,10 @@ const BrandReportsPage: React.FC = () => {
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [storesData, setstoresData] = useState([]);
+  const [specialEventsData, setspecialEventsData] = useState([]);
+  const [flyersData, setflyersData] = useState([]);
+  const [couponGiftsData, setcouponGiftsData] = useState([]);
   const searchParams = useSearchParams();
 
   // Extract startDate and endDate from search params
@@ -40,7 +48,16 @@ const BrandReportsPage: React.FC = () => {
       setError("");
 
       try {
-        const [stores, specialEvents, flyers, coupon] = await Promise.all([
+        const [
+          stores,
+          specialEvents,
+          flyers,
+          coupon,
+          storesData,
+          specialEventsData,
+          flyersData,
+          couponData,
+        ] = await Promise.all([
           // fetchStoresCountByBrand(user.uid),
           // fetchSpecialEventsCountByBrand(user.uid),
           // fetchFlyersCountByBrand(user.uid),
@@ -49,7 +66,23 @@ const BrandReportsPage: React.FC = () => {
           fetchSpecialEventsCountByBrand(user.uid, startDate, endDate),
           fetchFlyersCountByBrand(user.uid, startDate, endDate),
           fetchCouponCountByBrand(user.uid, startDate, endDate),
+          fetchStoresByBrand(user.uid, startDate, endDate),
+          fetchspecialEventsByBrand(user.uid, startDate, endDate),
+          fetchFlyersByBrand(user.uid, startDate, endDate),
+          fetchcouponGiftsByBrand(user.uid, startDate, endDate),
         ]);
+
+        // @ts-expect-error ignore
+        setstoresData(storesData);
+
+        // @ts-expect-error ignore
+        setspecialEventsData(specialEventsData);
+
+        // @ts-expect-error ignore
+        setflyersData(flyersData);
+
+        // @ts-expect-error ignore
+        setcouponGiftsData(couponData);
 
         setMetrics([
           {
@@ -92,7 +125,17 @@ const BrandReportsPage: React.FC = () => {
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
-          <BrandReports metrics={metrics} />
+          <BrandReports
+            metrics={metrics}
+            // @ts-expect-error ignore
+            storesData={storesData}
+            // @ts-expect-error ignore
+            specialEvents={specialEventsData}
+            // @ts-expect-error ignore
+            flyersData={flyersData}
+            // @ts-expect-error ignore
+            couponGiftsData={couponGiftsData}
+          />
         )}
       </div>
     </RoleBasedRoute>
