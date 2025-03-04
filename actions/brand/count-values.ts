@@ -1,7 +1,13 @@
 "use server";
 
 import { db } from "@/config/firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  Timestamp,
+  where,
+} from "firebase/firestore";
 
 export async function fetchBrandsCount(): Promise<number> {
   try {
@@ -175,6 +181,47 @@ export async function fetchSpecialEventsCountByStore(
   }
 }
 
+export async function fetchSpecialEventsByStore(
+  storeId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  try {
+    if (!storeId) {
+      throw new Error("Store ID is required.");
+    }
+
+    const eventsCollection = collection(db, "specialEvents");
+    let eventsQuery = query(
+      eventsCollection,
+      where("storeIds", "array-contains", storeId)
+    );
+
+    // Apply date filters if provided
+    if (startDate && endDate) {
+      const startTimestamp = Timestamp.fromDate(new Date(startDate));
+      const endTimestamp = Timestamp.fromDate(new Date(endDate));
+
+      eventsQuery = query(
+        eventsCollection,
+        where("storeIds", "array-contains", storeId),
+        where("eventDate", ">=", startTimestamp),
+        where("eventDate", "<=", endTimestamp)
+      );
+    }
+
+    const snapshot = await getDocs(eventsQuery);
+
+    // Convert snapshot data to an array of event objects
+    const events = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    return events;
+  } catch (error) {
+    console.error("Error fetching special events by store ID:", error);
+    return [];
+  }
+}
+
 export async function fetchFlyersCountByStore(
   storeId: string,
   startDate?: string,
@@ -201,6 +248,54 @@ export async function fetchFlyersCountByStore(
   } catch (error) {
     console.error("Error fetching flyers count by store ID:", error);
     return 0;
+  }
+}
+
+/**
+ * Fetches flyers for a given storeId within an optional date range.
+ * @param storeId - The ID of the store.
+ * @param startDate - (Optional) Start date in YYYY-MM-DD format.
+ * @param endDate - (Optional) End date in YYYY-MM-DD format.
+ * @returns An array of flyer objects.
+ */
+export async function fetchFlyersByStore(
+  storeId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  try {
+    if (!storeId) {
+      throw new Error("Store ID is required.");
+    }
+
+    const flyersCollection = collection(db, "storeFlyers");
+    let flyersQuery = query(
+      flyersCollection,
+      where("storeIds", "array-contains", storeId)
+    );
+
+    // Apply date filtering if startDate and endDate are provided
+    if (startDate && endDate) {
+      const startTimestamp = Timestamp.fromDate(new Date(startDate));
+      const endTimestamp = Timestamp.fromDate(new Date(endDate));
+
+      flyersQuery = query(
+        flyersCollection,
+        where("storeIds", "array-contains", storeId),
+        where("flyerDate", ">=", startTimestamp),
+        where("flyerDate", "<=", endTimestamp)
+      );
+    }
+
+    const snapshot = await getDocs(flyersQuery);
+
+    // Convert snapshot data into an array of flyer objects
+    const flyers = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    return flyers;
+  } catch (error) {
+    console.error("Error fetching flyers by store ID:", error);
+    return [];
   }
 }
 
@@ -232,6 +327,55 @@ export async function fetchCouponCountByStore(
     return 0;
   }
 }
+
+/**
+ * Fetches coupon gifts for a given storeId within an optional date range.
+ * @param storeId - The ID of the store.
+ * @param startDate - (Optional) Start date in YYYY-MM-DD format.
+ * @param endDate - (Optional) End date in YYYY-MM-DD format.
+ * @returns An array of coupon objects.
+ */
+export async function fetchCouponsByStore(
+  storeId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  try {
+    if (!storeId) {
+      throw new Error("Store ID is required.");
+    }
+
+    const couponsCollection = collection(db, "couponGifts");
+    let couponsQuery = query(
+      couponsCollection,
+      where("storeId", "==", storeId)
+    );
+
+    // Apply date range filtering if provided
+    if (startDate && endDate) {
+      const startTimestamp = Timestamp.fromDate(new Date(startDate));
+      const endTimestamp = Timestamp.fromDate(new Date(endDate));
+
+      couponsQuery = query(
+        couponsCollection,
+        where("storeId", "==", storeId),
+        where("couponDate", ">=", startTimestamp),
+        where("couponDate", "<=", endTimestamp)
+      );
+    }
+
+    const snapshot = await getDocs(couponsQuery);
+
+    // Convert snapshot data into an array of coupon objects
+    const coupons = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    return coupons;
+  } catch (error) {
+    console.error("Error fetching coupons by store ID:", error);
+    return [];
+  }
+}
+
 //////////////////////////////////////////
 
 export async function BrandQRCode(email: string): Promise<number> {
