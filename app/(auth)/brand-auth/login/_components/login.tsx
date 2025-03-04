@@ -18,7 +18,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signInBrandUser } from "@/actions/brand/login/signInBrandUser";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth"; // Import reset function
 import { useRouter } from "next/navigation";
+import { app } from "@/config/firebase"; // Firebase app config
 
 // Validation schema for brand login form
 const brandLoginSchema = z.object({
@@ -29,6 +31,7 @@ const brandLoginSchema = z.object({
 const BrandAuthLogin = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResetting, setIsResetting] = useState(false); // Forgot password state
 
   const form = useForm({
     resolver: zodResolver(brandLoginSchema),
@@ -47,9 +50,7 @@ const BrandAuthLogin = () => {
 
       if (result.success) {
         toast.success(result.success);
-        // router.push(`/brand/${result?.id}/stores`);
         router.push(`/brand`);
-        // Redirect or perform additional actions after successful login
       } else {
         toast.error(result.message || "Login failed. Please try again.");
       }
@@ -58,6 +59,27 @@ const BrandAuthLogin = () => {
       toast.error("An unexpected error occurred.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    const email = form.getValues("email");
+
+    if (!email) {
+      toast.error("Please enter your email first.");
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      const auth = getAuth(app);
+      await sendPasswordResetEmail(auth, email);
+      toast.success("Password reset email sent! Check your inbox.");
+    } catch (error) {
+      console.error("Error sending reset email:", error);
+      toast.error("Failed to send password reset email.");
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -112,6 +134,18 @@ const BrandAuthLogin = () => {
                 )}
               />
             </Form>
+
+            {/* Forgot Password Button */}
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-sm text-blue-400 hover:text-blue-500"
+                disabled={isResetting}
+              >
+                {isResetting ? "Sending email..." : "Forgot Password?"}
+              </button>
+            </div>
 
             {/* Submit Button */}
             <Button
