@@ -606,3 +606,100 @@ export async function GetScanHistoryByEmailforBrand(
     return [];
   }
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+/// Now these Functions For Fetching data ,
+
+// Generic function to fetch and filter documents by brandId and date range
+const fetchDataByBrand = async (
+  collectionName: string,
+  brandId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> => {
+  try {
+    if (!brandId) {
+      throw new Error("Brand ID is required.");
+    }
+
+    // Validate date range (if provided)
+    let start: Date | null = null;
+    let end: Date | null = null;
+
+    if (startDate && endDate) {
+      start = new Date(startDate);
+      end = new Date(endDate);
+
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        throw new Error("Invalid date format for startDate or endDate.");
+      }
+
+      if (start > end) {
+        throw new Error("startDate cannot be greater than endDate.");
+      }
+    }
+
+    // Firestore query
+    const collectionRef = collection(db, collectionName);
+    let collectionQuery = query(collectionRef, where("brandId", "==", brandId));
+
+    const snapshot = await getDocs(collectionQuery);
+
+    let filteredDocs = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // Apply date filtering if startDate and endDate exist
+    if (start && end) {
+      filteredDocs = filteredDocs.filter((doc) => {
+        // @ts-expect-error ignore
+        const docDate = new Date(doc.createdAt); // Ensure your Firestore document has `createdAt`
+        return docDate >= start && docDate <= end;
+      });
+    }
+
+    console.log(
+      `Fetched ${filteredDocs.length} documents from ${collectionName}`
+    );
+    return filteredDocs;
+  } catch (error) {
+    console.error(`Error fetching ${collectionName} data by brand ID:`, error);
+    return [];
+  }
+};
+
+// Fetch stores data by brand ID
+export async function fetchStoresByBrand(
+  brandId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  return fetchDataByBrand("stores", brandId, startDate, endDate);
+}
+// Fetch stores data by brand ID
+export async function fetchspecialEventsByBrand(
+  brandId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  return fetchDataByBrand("specialEvents", brandId, startDate, endDate);
+}
+
+// Fetch stores data by brand ID
+export async function fetchFlyersByBrand(
+  brandId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  return fetchDataByBrand("flyers", brandId, startDate, endDate);
+}
+// Fetch stores data by brand ID
+export async function fetchcouponGiftsByBrand(
+  brandId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<any[]> {
+  return fetchDataByBrand("couponGifts", brandId, startDate, endDate);
+}
