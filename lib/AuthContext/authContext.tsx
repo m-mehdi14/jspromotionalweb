@@ -95,6 +95,8 @@ const fetchUserDataByRole = async (
 // Public routes that do not require authentication
 const publicRoutes = [
   "/",
+  "/privacy-policy",
+  "/terms",
   "/admin-auth/login",
   "/admin-auth/sign-up",
   "/admin-auth",
