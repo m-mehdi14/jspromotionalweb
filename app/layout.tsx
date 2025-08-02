@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JS-PROMOTIONAL",
+  title: "Easy Flyers",
   description: "Its an app for promotional purposes",
 };
 
