@@ -32,7 +32,7 @@ export default function PrivacyPolicy() {
               1. Introduction
             </h2>
             <p className="text-gray-700 mb-4">
-              JS Promotional Web (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or
+              Easy Flyer (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or
               &ldquo;us&rdquo;) is committed to protecting your privacy. This
               Privacy Policy explains how we collect, use, disclose, and
               safeguard your information when you use our promotional management
@@ -315,14 +315,15 @@ export default function PrivacyPolicy() {
             </p>
             <div className="bg-gray-50 p-6 rounded-lg">
               <p className="text-gray-700 mb-2">
-                <strong>Email:</strong> privacy@jspromotionalweb.com
+                <strong>Email:</strong> info@easyfllyer.ca
               </p>
-              {/* <p className="text-gray-700 mb-2">
-                <strong>Address:</strong> [Your Business Address]
+              <p className="text-gray-700 mb-2">
+                <strong>Website:</strong> www.easyfllyer.ca
               </p>
               <p className="text-gray-700">
-                <strong>Phone:</strong> [Your Contact Number]
-              </p> */}
+                <strong>Business Hours:</strong> Monday - Friday, 9:00 AM - 6:00
+                PM EST
+              </p>
             </div>
           </section>
 
@@ -332,8 +333,9 @@ export default function PrivacyPolicy() {
             </h2>
             <p className="text-gray-700">
               This Privacy Policy is governed by and construed in accordance
-              with the laws of [Your Jurisdiction]. Any disputes arising from
-              this policy will be resolved in the courts of [Your Jurisdiction].
+              with the laws of the Province of Ontario, Canada. Any disputes
+              arising from this policy will be resolved in the courts of
+              Ontario, Canada.
             </p>
           </section>
         </div>
