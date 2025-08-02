@@ -9,7 +9,7 @@ export default function Home() {
         {/* Header Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Easy Flyer
+            EasyFlyers
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Your comprehensive platform for managing promotional activities,
