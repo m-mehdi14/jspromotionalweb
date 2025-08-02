@@ -106,6 +106,7 @@ const publicRoutes = [
   "/store-auth",
   "/store-auth/login",
   "/store-auth/sign-up",
+  "/dashboard",
 ];
 
 export function AuthProvider({ children }: AuthProviderProps) {
