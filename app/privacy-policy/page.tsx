@@ -53,20 +53,11 @@ export default function PrivacyPolicy() {
               2.1 Personal Information
             </h3>
             <p className="text-gray-700 mb-4">
-              We may collect the following personal information:
+              We only collect postal code information from our users. This
+              minimal data collection approach ensures your privacy while
+              allowing us to provide location-based services and promotional
+              content relevant to your area.
             </p>
-            <ul className="list-disc pl-6 text-gray-700 mb-4">
-              <li>
-                Name and contact information (email address, phone number)
-              </li>
-              <li>
-                Business information (company name, store details, brand
-                information)
-              </li>
-              <li>Account credentials and profile information</li>
-              <li>Payment and billing information</li>
-              <li>Communication preferences</li>
-            </ul>
 
             <h3 className="text-xl font-semibold text-gray-900 mb-3">
               2.2 Usage Information
