@@ -39,17 +39,19 @@ export default function Home() {
               Register Business
             </Link>
             <Link
-              href="#"
+              href="https://play.google.com/store/apps/details?id=com.jspromotionalatestversion"
               className="text-gray-700 hover:text-green-600 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Download App
             </Link>
-            <Link
+            {/* <Link
               href="#"
               className="text-gray-700 hover:text-green-600 transition-colors"
             >
               Pricing
-            </Link>
+            </Link> */}
             <Link
               href="#"
               className="text-gray-700 hover:text-green-600 transition-colors"
