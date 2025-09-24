@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -9,8 +11,15 @@ import {
   Upload,
   BarChart3,
 } from "lucide-react";
+import { useState } from "react";
+import RegistrationForm from "@/components/RegistrationForm";
+import ContactForm from "@/components/ContactForm";
+import DownloadAppModal from "@/components/DownloadAppModal";
 
 export default function Home() {
+  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -38,22 +47,20 @@ export default function Home() {
             >
               Register Business
             </Link>
-            <Link
-              href="https://play.google.com/store/apps/details?id=com.jspromotionalatestversion"
+            <button
+              onClick={() => setShowDownloadModal(true)}
               className="text-gray-700 hover:text-green-600 transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
             >
               Download App
-            </Link>
-            {/* <Link
-              href="#"
+            </button>
+            <Link
+              href="/pricing"
               className="text-gray-700 hover:text-green-600 transition-colors"
             >
               Pricing
-            </Link> */}
+            </Link>
             <Link
-              href="#"
+              href="/contact"
               className="text-gray-700 hover:text-green-600 transition-colors"
             >
               Contact
@@ -74,10 +81,14 @@ export default function Home() {
             customers than traditional paper flyers.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg text-lg font-medium">
+            <Button
+              onClick={() => setShowRegistrationForm(true)}
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg text-lg font-medium"
+            >
               Get Started
             </Button>
             <Button
+              onClick={() => setShowContactForm(true)}
               variant="outline"
               className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-3 rounded-lg text-lg font-medium"
             >
@@ -278,7 +289,10 @@ export default function Home() {
           <p className="text-xl text-green-100 mb-8">
             Join thousands of businesses already using Digital Flyer Pro
           </p>
-          <Button className="bg-white text-green-600 hover:bg-gray-50 px-8 py-3 rounded-lg text-lg font-bold shadow-lg">
+          <Button
+            onClick={() => setShowRegistrationForm(true)}
+            className="bg-white text-green-600 hover:bg-gray-50 px-8 py-3 rounded-lg text-lg font-bold shadow-lg"
+          >
             Start Your Free Trial
           </Button>
         </div>
@@ -304,6 +318,24 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Registration Form Modal */}
+      <RegistrationForm
+        isOpen={showRegistrationForm}
+        onClose={() => setShowRegistrationForm(false)}
+      />
+
+      {/* Contact Form Modal */}
+      <ContactForm
+        isOpen={showContactForm}
+        onClose={() => setShowContactForm(false)}
+      />
+
+      {/* Download App Modal */}
+      <DownloadAppModal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+      />
     </div>
   );
 }
