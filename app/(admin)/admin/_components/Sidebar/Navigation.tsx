@@ -31,6 +31,7 @@ export const Navigation = () => {
         { label: "Users", href: `/admin/users`, icon: Users },
         { label: "Brands", href: `/admin/brand`, icon: Store },
         { label: "Stores", href: `/admin/stores`, icon: UserCircle },
+        { label: "Categories", href: `/admin/categories`, icon: Store },
         { label: "Flyers", href: `/admin/flyers`, icon: UserCircle },
         { label: "Coupon Gifts", href: `/admin/coupon-gifts`, icon: Gift },
         { label: "Special Events", href: `/admin/special-events`, icon: Store },
