@@ -87,15 +87,17 @@ export const SpecialEventList = ({
             >
               <TableCell className="py-4 px-6">
                 {event.image ? (
-                  <Image
-                    src={event.image}
-                    alt={event.name}
-                    width={60}
-                    height={60}
-                    className="rounded-md shadow-sm"
-                  />
+                  <div className="h-12 w-12 overflow-hidden rounded-md shadow-sm">
+                    <Image
+                      src={event.image}
+                      alt={event.name}
+                      width={60}
+                      height={60}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
                 ) : (
-                  <div className="h-10 w-10 bg-gray-200 rounded-md"></div>
+                  <div className="h-12 w-12 bg-gray-200 rounded-md"></div>
                 )}
               </TableCell>
               <TableCell className="py-4 px-6 font-medium text-gray-700">

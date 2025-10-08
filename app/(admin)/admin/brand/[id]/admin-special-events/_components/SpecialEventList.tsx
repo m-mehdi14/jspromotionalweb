@@ -82,13 +82,15 @@ export const SpecialEventList = ({
             <TableRow key={event.id} className="hover:bg-gray-50">
               <TableCell className="w-24">
                 {event.image ? (
-                  <Image
-                    src={event.image}
-                    alt={event.name}
-                    width={50}
-                    height={50}
-                    className="rounded-md object-cover"
-                  />
+                  <div className="h-12 w-12 overflow-hidden rounded-md">
+                    <Image
+                      src={event.image}
+                      alt={event.name}
+                      width={50}
+                      height={50}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
                 ) : (
                   <div className="h-12 w-12 bg-gray-200 rounded-md"></div>
                 )}
