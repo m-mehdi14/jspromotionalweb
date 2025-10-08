@@ -169,41 +169,154 @@ export const BrandPageComponent = () => {
         </div>
       )}
       {/* Scan History Section */}
-      <div className="mt-12 bg-white p-6 rounded-lg shadow-md text-black">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Scan History</h2>
+      <div className="mt-12 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Scan History</h2>
+          <div className="bg-blue-50 px-3 py-1 rounded-full">
+            <span className="text-blue-600 font-medium text-sm">
+              {scanHistory?.length || 0} Total Scans
+            </span>
+          </div>
+        </div>
+
         {scanHistory?.length > 0 ? (
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  User ID
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Postal Code
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Scanned At
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {scanHistory?.map((scan, index) => (
-                <tr key={index} className="border-t border-gray-300">
-                  <td className="border border-gray-300 px-4 py-2">
-                    {scan?.userId}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {scan?.postalCode}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {new Date(scan?.scannedAt).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="overflow-hidden rounded-lg border border-gray-200">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      User ID
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Location
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Scanned At
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {scanHistory?.map((scan, index) => (
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-8 w-8">
+                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                              <span className="text-blue-600 font-medium text-sm">
+                                {scan?.userId?.charAt(0)?.toUpperCase() || "U"}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="ml-3">
+                            <div className="text-sm font-medium text-gray-900">
+                              {scan?.userId}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-6 w-6 mr-2">
+                            <svg
+                              className="h-6 w-6 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                          </div>
+                          <div className="text-sm text-gray-900 font-medium">
+                            {scan?.postalCode || "N/A"}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-6 w-6 mr-2">
+                            <svg
+                              className="h-6 w-6 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-900 font-medium">
+                              {new Date(scan?.scannedAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {new Date(scan?.scannedAt).toLocaleTimeString(
+                                "en-US",
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                }
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         ) : (
-          <p className="text-gray-600">No scan history available.</p>
+          <div className="text-center py-12">
+            <div className="mx-auto h-24 w-24 mb-4 flex items-center justify-center rounded-full bg-gray-100">
+              <svg
+                className="h-12 w-12 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No scan history yet
+            </h3>
+            <p className="text-gray-500">
+              When users scan your QR code, their activity will appear here.
+            </p>
+          </div>
         )}
       </div>
     </div>
