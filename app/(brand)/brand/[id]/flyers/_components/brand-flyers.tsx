@@ -179,7 +179,6 @@ const BrandFlyers = ({ brandId }: BrandFlyersProps) => {
         </div>
       </header>
 
-
       {/* Flyer List */}
       <FlyerList
         // @ts-expect-error ignore
@@ -202,6 +201,7 @@ const BrandFlyers = ({ brandId }: BrandFlyersProps) => {
         // @ts-expect-error ignore
         flyer={editingFlyer}
         isSubmitting={isSubmitting}
+        brandId={brandId}
       />
     </div>
   );

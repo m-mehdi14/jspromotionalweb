@@ -41,11 +41,24 @@ export async function saveFlyer(
     await addDoc(flyerCollection, flyerData);
 
     return { success: true, message: "Flyer created successfully." };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error saving flyer:", error);
+
+    // Handle specific Firebase errors
+    if (
+      error?.code === "invalid-argument" &&
+      error?.message?.includes("longer than")
+    ) {
+      return {
+        success: false,
+        message:
+          "Image file is too large. Please use a smaller image (under 1MB).",
+      };
+    }
+
     return {
       success: false,
-      message: "An error occurred while creating the flyer.",
+      message: error?.message || "An error occurred while creating the flyer.",
     };
   }
 }

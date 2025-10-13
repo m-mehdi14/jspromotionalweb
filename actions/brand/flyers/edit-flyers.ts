@@ -28,11 +28,24 @@ export async function editFlyer(
     await updateDoc(flyerDocRef, updatedData);
 
     return { success: true, message: "Flyer updated successfully." };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error editing flyer:", error);
+
+    // Handle specific Firebase errors
+    if (
+      error?.code === "invalid-argument" &&
+      error?.message?.includes("longer than")
+    ) {
+      return {
+        success: false,
+        message:
+          "Image file is too large. Please use a smaller image (under 1MB).",
+      };
+    }
+
     return {
       success: false,
-      message: "An error occurred while updating the flyer.",
+      message: error?.message || "An error occurred while updating the flyer.",
     };
   }
 }
